@@ -114,8 +114,8 @@
 
             $allowed_pages = [
                 'dashboard/index',
-                'properties/index', 'properties/create', 'properties/update', 'properties/delete',
-                'tenants/index', 
+                'properties/index', 'properties/create', 'properties/update', 'properties/delete', 'properties/view',
+                'tenants/index', 'tenants/create', 'tenants/update', 'tenants/delete', 'tenants/view',
                 'payments/index',
                 'reports/index', 
                 'settings/index'];
@@ -130,7 +130,8 @@
     </main>
 
 
-    <script src="./js/script.js?v=<?php echo time(); ?>" defer></script>
+    <!-- <script src="./js/script.js?v=<?php echo time(); ?>" defer></script> -->
+    <script src="./js/script.js" defer></script>
     <!-- Bootstrap JS -->
     <script src="/rent-master/bootstrap-5.3.3-dist/js/bootstrap.bundle.js"></script>
 </body>

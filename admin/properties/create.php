@@ -62,13 +62,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $location = mysqli_real_escape_string($conn, $_POST['location']);
         $description = mysqli_real_escape_string($conn, $_POST['description']);
         $date_created = mysqli_real_escape_string($conn, $_POST['date_created']);
-        
+
         // Call the uploadImage function to handle the image upload
         $house_image = uploadImage($_FILES['house_image']);
 
         if ($house_image) {
             // If the image upload is successful, insert the property data into the database
-            $queryInsert = "INSERT INTO property (property_name, property_location, property_date_created, property_description, property_image) 
+            $queryInsert = "INSERT INTO properties (property_name, property_location, property_date_created, property_description, property_image) 
                             VALUES ('$property_name', '$location', '$date_created', '$description', '$house_image')";
             mysqli_query($conn, $queryInsert);
 
@@ -116,8 +116,10 @@ mysqli_close($conn);
             <label for="house-image">Image</label>
             <input type="file" id="house-image" name="house_image" class="form-control" accept="image/*" required>
         </div>
-        <button type="button" class="btn btn-success px-4 rounded-5 mt-3" id="submit-btn" >Submit</button>
+        <button type="button" class="btn btn-success px-4 rounded-5 mt-3" id="submit-btn">Submit</button>
     </form>
+    <!-- Back Button -->
+    <a href="?page=properties/index" class="btn btn-secondary mt-3 rounded-5">Back to Properties List</a>
 </div>
 
 <!-- Modal -->
@@ -145,41 +147,41 @@ mysqli_close($conn);
 </div>
 
 <script>
-document.getElementById("submit-btn").addEventListener("click", function () {
-    // Get values from the form
-    let propertyName = document.getElementById("property-name").value.trim();
-    let location = document.getElementById("location").value.trim();
-    let description = document.getElementById("description").value.trim();
-    let dateCreated = document.getElementById("date-created").value;
-    let fileInput = document.getElementById("house-image");
+    document.getElementById("submit-btn").addEventListener("click", function() {
+        // Get values from the form
+        let propertyName = document.getElementById("property-name").value.trim();
+        let location = document.getElementById("location").value.trim();
+        let description = document.getElementById("description").value.trim();
+        let dateCreated = document.getElementById("date-created").value;
+        let fileInput = document.getElementById("house-image");
 
-    // Validation: Stop execution if any field is empty
-    if (propertyName === "" || location === "" || description === "" || dateCreated === "" || fileInput.files.length === 0) {
-        alert("All fields are required!");
-        return;
-    }
+        // Validation: Stop execution if any field is empty
+        if (propertyName === "" || location === "" || description === "" || dateCreated === "" || fileInput.files.length === 0) {
+            alert("All fields are required!");
+            return;
+        }
 
-    // Set modal content
-    document.getElementById("modal-property-name").innerText = propertyName;
-    document.getElementById("modal-location").innerText = location;
-    document.getElementById("modal-description").innerText = description;
-    document.getElementById("modal-date-created").innerText = dateCreated;
+        // Set modal content
+        document.getElementById("modal-property-name").innerText = propertyName;
+        document.getElementById("modal-location").innerText = location;
+        document.getElementById("modal-description").innerText = description;
+        document.getElementById("modal-date-created").innerText = dateCreated;
 
-    // Handle image preview
-    let imagePreview = document.getElementById("modal-image-preview");
-    let fileReader = new FileReader();
+        // Handle image preview
+        let imagePreview = document.getElementById("modal-image-preview");
+        let fileReader = new FileReader();
 
-    fileReader.onload = function(event) {
-        imagePreview.src = event.target.result;
-        imagePreview.classList.remove("d-none");
-    };
-    fileReader.readAsDataURL(fileInput.files[0]);
+        fileReader.onload = function(event) {
+            imagePreview.src = event.target.result;
+            imagePreview.classList.remove("d-none");
+        };
+        fileReader.readAsDataURL(fileInput.files[0]);
 
-    // Manually trigger the modal only when inputs are valid
-    let modal = new bootstrap.Modal(document.getElementById("propertyModal"));
-    modal.show();
-});
-document.getElementById("confirmed-btn").addEventListener("click", function() {
-    document.getElementById("property-form").submit();
-});
+        // Manually trigger the modal only when inputs are valid
+        let modal = new bootstrap.Modal(document.getElementById("propertyModal"));
+        modal.show();
+    });
+    document.getElementById("confirmed-btn").addEventListener("click", function() {
+        document.getElementById("property-form").submit();
+    });
 </script>

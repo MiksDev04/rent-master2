@@ -10,7 +10,7 @@ if (!$conn) {
 if (isset($_GET['property_id'])) {
     $property_id = $_GET['property_id'];
 
-    $query = "SELECT * FROM property WHERE property_id = '$property_id'";
+    $query = "SELECT * FROM properties WHERE property_id = '$property_id'";
     $result = mysqli_query($conn, $query);
     $property = mysqli_fetch_assoc($result);
 
@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Delete property from the database
-        $query = "DELETE FROM property WHERE property_id = '$property_id'";
+        $query = "DELETE FROM properties WHERE property_id = '$property_id'";
 
         if (mysqli_query($conn, $query)) {
             // Redirect to properties list page after successful deletion

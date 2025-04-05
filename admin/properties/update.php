@@ -15,7 +15,7 @@ if (isset($_GET['property_id'])) {
     $property_id = $_GET['property_id'];
 
     // Fetch the property data from the database
-    $query = "SELECT * FROM property WHERE property_id = '$property_id'";
+    $query = "SELECT * FROM properties WHERE property_id = '$property_id'";
     $result = mysqli_query($conn, $query);
 
     if (mysqli_num_rows($result) > 0) {
@@ -104,7 +104,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Update property record
-        $queryUpdate = "UPDATE property 
+        $queryUpdate = "UPDATE properties
                         SET property_name = '$property_name', property_location = '$property_location', 
                             property_date_created = '$property_date_created', 
                             property_description = '$property_description', 
@@ -167,6 +167,8 @@ mysqli_close($conn);
         </div>
         <button type="button" id="submit-btn" class="btn btn-primary px-4 rounded-5 mt-3">Update</button>
     </form>
+     <!-- Back Button -->
+     <a href="?page=properties/index" class="btn btn-secondary mt-3 rounded-5">Back to Properties List</a>
 </div>
 
 <!-- Modal (Optional Preview) -->
