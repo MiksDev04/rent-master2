@@ -3,7 +3,7 @@
 $conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
 
 if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
+    echo "Error: cannot connect to database" . mysqli_connect_error();
 }
 
 // Fetch property details for deletion confirmation

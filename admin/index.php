@@ -115,7 +115,7 @@
             $allowed_pages = [
                 'dashboard/index',
                 'properties/index', 'properties/create', 'properties/update', 'properties/delete', 'properties/view',
-                'tenants/index', 'tenants/create', 'tenants/update', 'tenants/delete', 'tenants/view',
+                'tenants/index', 'tenants/create', 'tenants/update', 'tenants/delete', 'tenants/view', 
                 'payments/index',
                 'reports/index', 
                 'settings/index'];

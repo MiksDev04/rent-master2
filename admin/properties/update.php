@@ -1,13 +1,8 @@
 <?php
-$server = "127.0.0.1";
-$user = "root";
-$password = "";
-$database = "rentsystem";
+$conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
 
-// Create a connection
-$conn = mysqli_connect($server, $user, $password, $database);
 if (!$conn) {
-    die("Error: Cannot connect to database " . mysqli_connect_error());
+    echo "Error: cannot connect to database" . mysqli_connect_error();
 }
 
 // Fetch property details for editing
