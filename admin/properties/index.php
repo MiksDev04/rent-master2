@@ -11,6 +11,8 @@ $status_filter = isset($_POST['status']) ? $_POST['status'] : 'available';
 // Adjust the query based on the filter
 $query = "SELECT * FROM properties WHERE property_status = '$status_filter' ORDER BY property_date_created DESC";
 $result = mysqli_query($conn, $query);
+
+
 ?>
 
 <div class="container px-lg-5">

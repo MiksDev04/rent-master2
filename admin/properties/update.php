@@ -37,7 +37,7 @@ if (isset($_GET['property_id'])) {
 function uploadImage($file, $existingImage = null)
 {
     // Use a relative path for deployment
-    $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/rent-master2/admin/properties/images/";
+    $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/rent-master2/admin/assets/properties/";
 
     // Check if the directory exists and create it if not
     if (!is_dir($targetDir)) {
@@ -76,7 +76,7 @@ function uploadImage($file, $existingImage = null)
     // Attempt to upload the file
     if ($uploadOk == 1 && move_uploaded_file($file["tmp_name"], $targetFile)) {
         // Return the full path of the image relative to the root of the web server
-        return "/rent-master2/admin/properties/images/" . $fileName;
+        return "/rent-master2/admin/assets/properties/" . $fileName;
     } else {
         echo "Error uploading file.";
         return null;
@@ -130,9 +130,13 @@ mysqli_close($conn);
 
 <!-- Property Update Form -->
 <div class="container px-lg-5 mb-4">
-    <header class="d-flex justify-content-between mt-3">
-        <h4 class="fw-medium">Update Property</h4>
+    <header class="d-flex align-items-center mt-3 gap-2">
+        <a href="?page=properties/index" class=" p-2 rounded-circle bg-dark-subtle" width="2rem" height="2rem">
+            <svg xmlns="http://www.w3.org/2000/svg"  height="24px" width="24px" fill="grey" viewBox="0 0 448 512">!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+        </a>
+        <h4 class="fw-medium ">Property / Update Property</h4>
     </header>
+   
     <form id="property-form" action="" method="post" enctype="multipart/form-data">
         <input type="hidden" name="property_id" value="<?php echo $property_id; ?>">
         <div class="mt-2">
@@ -152,11 +156,12 @@ mysqli_close($conn);
             <textarea id="description" name="description" class="form-control" required><?php echo $description; ?></textarea>
         </div>
         <div class="mt-2">
-            <label for="house-image">Image</label>
+            <label for="house-image">Upload Image</label>
             <input type="file" id="house-image" name="house_image" class="form-control" accept="image/*">
             <input type="hidden" name="existing_image" value="<?php echo $existing_image; ?>">
             <?php if (!empty($existing_image)) : ?>
                 <div class="mt-2">
+                    <label for="current-image-preview" class=" w-100">Current Image</label>
                     <img id="current-image-preview"
                         src="<?php echo $existing_image; ?>"
                         alt="Current Image"
@@ -167,8 +172,6 @@ mysqli_close($conn);
         </div>
         <button type="button" id="submit-btn" class="btn btn-primary px-4 rounded-5 mt-3">Update</button>
     </form>
-     <!-- Back Button -->
-     <a href="?page=properties/index" class="btn btn-secondary mt-3 rounded-5">Back to Properties List</a>
 </div>
 
 <!-- Modal (Optional Preview) -->

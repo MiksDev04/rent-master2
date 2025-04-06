@@ -30,13 +30,17 @@ if (isset($_GET['tenant_id'])) {
     $tenant = mysqli_fetch_assoc($tenantResult);
 }
 
-// Function to handle image upload
 function uploadImage($file, $existingImage = null)
 {
     $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/rent-master2/admin/tenants/images/";
 
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0777, true);
+    }
+
+    // If no file was uploaded, return the existing image
+    if ($file["error"] === 4 || empty($file["tmp_name"])) {
+        return $existingImage;
     }
 
     $fileName = basename($file["name"]);
@@ -62,9 +66,9 @@ function uploadImage($file, $existingImage = null)
         $uploadOk = 0;
     }
 
-    // Only delete existing image if a new one is being uploaded
-    if ($uploadOk == 1 && $file["tmp_name"] && $existingImage && file_exists($existingImage)) {
-        unlink($existingImage);  // Delete old image
+    // Only delete existing image if a new one is being uploaded successfully
+    if ($uploadOk == 1 && file_exists($existingImage)) {
+        unlink($existingImage);
     }
 
     if ($uploadOk == 1 && move_uploaded_file($file["tmp_name"], $targetFile)) {
@@ -85,7 +89,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
         $user_description = mysqli_real_escape_string($conn, $_POST['user_description']);
 
-        
+
         // Get the existing image path
         $existingImage = $tenant['user_image'];
 
@@ -131,8 +135,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 mysqli_close($conn);
 ?>
 <div class="container px-lg-5 mb-3">
-    <header class="d-flex justify-content-between mt-3">
-        <h4 class="fw-medium">Update Tenant</h4>
+<header class="d-flex align-items-center mt-3 gap-2">
+        <a href="?page=tenants/index" class=" p-2 rounded-circle bg-dark-subtle" width="2rem" height="2rem">
+            <svg xmlns="http://www.w3.org/2000/svg"  height="24px" width="24px" fill="grey" viewBox="0 0 448 512">!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.<path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg>
+        </a>
+        <h4 class="fw-medium ">Tenants / Update Tenant</h4>
     </header>
     <form id="tenant-form" action="" method="post" enctype="multipart/form-data">
         <div class="mt-2">
@@ -160,7 +167,7 @@ mysqli_close($conn);
             <input type="file" id="user-image" name="user_image" class="form-control" accept="image/*">
         </div>
         <div class="mt-2">
-            <label for="user-image-preview">Current Image</label>
+            <label for="user-image-preview" class=" w-100">Current Image</label>
             <img src="<?php echo $tenant['user_image']; ?>" id="user-image-preview" class="img-fluid" width="200">
         </div>
         <div class="mt-2">
@@ -168,16 +175,16 @@ mysqli_close($conn);
             <select id="property-id" name="property_id" class="form-control" required>
                 <option value="" disabled>Select Property</option>
                 <?php foreach ($properties as $property): ?>
-                    <option value="<?php echo $property['property_id']; ?>" 
-                        <?php echo $tenant['property_id'] == $property['property_id'] ? 'selected' : ''; ?>>
+                    <option value="<?php echo $property['property_id']; ?>"
+                        <?php echo ($tenant['property_id'] == $property['property_id']) ? 'selected' : ''; ?>>
                         <?php echo $property['property_name']; ?>
                     </option>
                 <?php endforeach; ?>
             </select>
         </div>
-        <button type="button" class="btn btn-success px-4 rounded-5 mt-3" id="submit-btn">Submit</button>
+
+        <button type="button" class="btn btn-success px-4 rounded-5 mt-3" id="submit-btn" data-bs-toggle="modal" data-bs-target="#tenantModal">Submit</button>
     </form>
-    <a href="?page=tenants/index" class="btn btn-secondary mt-3 rounded-5">Back to Tenants List</a>
 </div>
 
 <!-- Modal -->
@@ -216,18 +223,19 @@ mysqli_close($conn);
         document.getElementById("modal-user-description").innerText = document.getElementById("user-description").value;
         document.getElementById("modal-property-name").innerText = document.getElementById("property-id").selectedOptions[0].text;
 
-        // Set the property image in modal
-        var selectedProperty = document.getElementById("property-id").selectedOptions[0];
-        var propertyImage = selectedProperty.getAttribute("data-property-image");
-        document.getElementById("modal-property-image").src = propertyImage;
-
         const fileInput = document.getElementById("user-image");
+        const modalImagePreview = document.getElementById("modal-image-preview");
+
         if (fileInput.files && fileInput.files[0]) {
+            // New image selected; read and display it
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById("modal-image-preview").src = e.target.result;
+                modalImagePreview.src = e.target.result;
             };
             reader.readAsDataURL(fileInput.files[0]);
+        } else {
+            // No new image selected; use existing image
+            modalImagePreview.src = document.getElementById("user-image-preview").src;
         }
 
         // Show the modal
@@ -239,4 +247,3 @@ mysqli_close($conn);
         document.getElementById("tenant-form").submit();
     }
 </script>
-
