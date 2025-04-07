@@ -131,7 +131,7 @@
 
 
     <!-- <script src="./js/script.js?v=<?php echo time(); ?>" defer></script> -->
-    <script src="./js/script.js" defer></script>
+    <script src="./js/script.js"></script>
     <!-- Bootstrap JS -->
     <script src="/rent-master/bootstrap-5.3.3-dist/js/bootstrap.bundle.js"></script>
 </body>

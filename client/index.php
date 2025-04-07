@@ -3,45 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RentMaster - Login</title>
-    <link rel="stylesheet" href="./css/login.css">
+    <title>Insert User</title>
+    <!-- Bootstrap 4 CSS -->
+    <link href="/rent-master2/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="background-blur"></div>
-    <header>
-        <div class="logo-container">
-            <img src="./assets/images/logo.png" alt="RentMaster Logo">
-            <div class="logo-text">RentMaster</div>
-            <ul class="nav-links">
-                <li><a href="HomePage.html">Home</a></li>
-                <li><a href="#properties">Property</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-        <nav>
-            <ul>
-                <li class="auth"><a href="register.html">Register</a></li>
-                <li class="auth"><a href="login.html">Login</a></li>
-            </ul>
-        </nav>
-    </header>
+    <?php
+        $page = isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 'src/login';
 
-    <section id="login">
-        <div class="login-container">
-            <div class="login-box">
-                <h2>Login Here</h2>
-                <form>
-                    <label for="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter your email">
-                    
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password">
-                    
-                    <button type="submit" class="login-btn">Login</button>
-                </form>
-            </div>
-        </div>
-    </section>
+        $allowed_pages = [
+            'src/home',
+            'src/login',
+            'src/register'
+        ];
+        if (!in_array($page, $allowed_pages)) {
+            $page = 'src/home';
+        }
+
+        include_once "$page.php";
+    ?>
+
+    <!-- Bootstrap 4 JS and dependencies -->
+    <script src="/rent-master2/bootstrap-5.3.3-dist/js/bootstrap.bundle.js"></script>
 </body>
 </html>

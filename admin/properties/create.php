@@ -111,7 +111,7 @@ mysqli_close($conn);
             <textarea id="description" name="description" class="form-control" required></textarea>
         </div>
         <div class="mt-2">
-            <label for="house-image">Image</label>
+            <label for="house-image" class="form-label">Image</label>
             <input type="file" id="house-image" name="house_image" class="form-control" accept="image/*" required>
         </div>
         <button type="button" class="btn btn-success px-4 rounded-5 mt-3" id="submit-btn">Submit</button>
