@@ -28,7 +28,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('image.jpg') no-repeat center center fixed;
+            background: url('./house-1836070_1920.jpg') no-repeat center center fixed;
             background-size: cover;
             z-index: -1;
         }

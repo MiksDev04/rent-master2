@@ -15,7 +15,7 @@ while ($row = mysqli_fetch_assoc($propertiesResult)) {
 }
 
 // Fetch users with 'visitor' status
-$queryUsers = "SELECT user_id, user_name FROM users WHERE user_status = 'visitor'";
+$queryUsers = "SELECT user_id, user_name FROM users WHERE user_role = 'visitor'";
 $usersResult = mysqli_query($conn, $queryUsers);
 $users = [];
 while ($row = mysqli_fetch_assoc($usersResult)) {
@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         mysqli_query($conn, $queryInsertTenant);
 
         // Mark user as a tenant
-        $queryUpdateProperty = "UPDATE users SET user_status = 'tenant' WHERE user_id = '$user_id'";
+        $queryUpdateProperty = "UPDATE users SET user_role = 'tenant' WHERE user_id = '$user_id'";
         mysqli_query($conn, $queryUpdateProperty);
 
         // Mark property as unavailable

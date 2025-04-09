@@ -9,7 +9,7 @@
 </head>
 <body>
     <?php
-        $page = isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 'src/login';
+        $page = isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 'src/register';
 
         $allowed_pages = [
             'src/home',

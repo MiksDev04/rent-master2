@@ -23,7 +23,7 @@ $current_user_id = $tenant['user_id'];
 $current_property_id = $tenant['property_id'];
 
 // Fetch users with 'visitor' status and current assigned user
-$queryUsers = "SELECT user_id, user_name FROM users WHERE user_status = 'visitor' OR user_id = '$current_user_id'";
+$queryUsers = "SELECT user_id, user_name FROM users WHERE user_role = 'visitor' OR user_id = '$current_user_id'";
 $usersResult = mysqli_query($conn, $queryUsers);
 $users = [];
 while ($row = mysqli_fetch_assoc($usersResult)) {
@@ -55,11 +55,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($new_user_id !== $current_user_id) {
         // Set previous user to visitor
-        $queryRevertUser = "UPDATE users SET user_status = 'visitor' WHERE user_id = '$current_user_id'";
+        $queryRevertUser = "UPDATE users SET user_role = 'visitor' WHERE user_id = '$current_user_id'";
         mysqli_query($conn, $queryRevertUser);
 
         // Set new user to tenant
-        $queryAssignUser = "UPDATE users SET user_status = 'tenant' WHERE user_id = '$new_user_id'";
+        $queryAssignUser = "UPDATE users SET user_role = 'tenant' WHERE user_id = '$new_user_id'";
         mysqli_query($conn, $queryAssignUser);
     }
 

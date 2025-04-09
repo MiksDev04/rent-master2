@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $queryDelete = "DELETE FROM tenants WHERE tenant_id = '$tenant_id'";
         if (mysqli_query($conn, $queryDelete)) {
             // Update user status to 'visitor'
-            mysqli_query($conn, "UPDATE users SET user_status = 'visitor' WHERE user_id = '$user_id'");
+            mysqli_query($conn, "UPDATE users SET user_role = 'visitor' WHERE user_id = '$user_id'");
 
             // Update property status to 'available'
             mysqli_query($conn, "UPDATE properties SET property_status = 'available' WHERE property_id = '$property_id'");
