@@ -6,25 +6,6 @@ if (!$conn) {
     echo "Error: cannot connect to database" . mysqli_connect_error();
 }
 
-// Fetch tenant details for deletion confirmation
-if (isset($_GET['tenant_id'])) {
-    $tenant_id = $_GET['tenant_id'];
-
-    $query = "SELECT t.*, u.user_name, p.property_name FROM tenants t
-              JOIN users u ON t.user_id = u.user_id
-              JOIN properties p ON t.property_id = p.property_id
-              WHERE t.tenant_id = '$tenant_id'";
-    $result = mysqli_query($conn, $query);
-    $tenant = mysqli_fetch_assoc($result);
-
-    if (!$tenant) {
-        echo "Tenant not found.";
-        exit();
-    }
-} else {
-    echo "No tenant ID provided.";
-    exit();
-}
 
 // Handle the deletion after form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -51,6 +32,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         echo "Invalid request.";
     }
+} else {
+    // Fetch tenant details for deletion confirmation
+    if (isset($_GET['tenant_id'])) {
+        $tenant_id = $_GET['tenant_id'];
+
+        $query = "SELECT t.*, u.user_name, p.property_name FROM tenants t
+                JOIN users u ON t.user_id = u.user_id
+                JOIN properties p ON t.property_id = p.property_id
+                WHERE t.tenant_id = '$tenant_id'";
+        $result = mysqli_query($conn, $query);
+        $tenant = mysqli_fetch_assoc($result);
+
+        if (!$tenant) {
+            echo "Tenant not found.";
+            exit();
+        }
+    } else {
+        echo "No tenant ID provided.";
+        exit();
+    }
+
 }
 
 mysqli_close($conn);
@@ -79,7 +81,7 @@ mysqli_close($conn);
         <div class="form-control-plaintext"><?php echo htmlspecialchars($tenant['property_name']); ?></div>
     </div>
     
-    <form action="" method="POST">
+    <form action="tenants/delete.php" method="POST">
         <input type="hidden" name="tenant_id" value="<?php echo htmlspecialchars($tenant['tenant_id']); ?>">
         <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($tenant['user_id']); ?>">
         <input type="hidden" name="property_id" value="<?php echo htmlspecialchars($tenant['property_id']); ?>">

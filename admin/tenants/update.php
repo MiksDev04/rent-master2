@@ -85,7 +85,8 @@ mysqli_close($conn);
         <h4 class="fw-medium">Tenants / Update Tenant</h4>
     </header>
 
-    <form id="tenant-form" action="" method="POST">
+    <form id="tenant-form" action="tenants/update.php?tenant_id=<?php echo htmlspecialchars($tenant_id); ?>&page=tenants" method="POST">
+
         <div class="mt-3">
             <label for="user-id" class="form-label">Select User</label>
             <select id="user-id" name="user_id" class="form-control" required>
