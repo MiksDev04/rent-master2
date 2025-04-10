@@ -83,6 +83,11 @@ mysqli_close($conn);
     </div>
 
     <div class="mt-2">
+        <label class="form-label fw-bold">Rental Price</label>
+        <div class="form-control-plaintext">PHP <?php echo number_format(htmlspecialchars($property['property_rental_price']), 2, '.', ',');?></div>
+    </div>
+
+    <div class="mt-2">
         <label class="form-label fw-bold">Description</label>
         <div class="form-control-plaintext"><?php echo htmlspecialchars($property['property_description']); ?></div>
     </div>

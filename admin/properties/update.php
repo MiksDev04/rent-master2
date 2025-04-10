@@ -65,6 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $property_description = mysqli_real_escape_string($conn, $_POST['description']);
         $property_date_created = mysqli_real_escape_string($conn, $_POST['date_created']);
         $existing_image = mysqli_real_escape_string($conn, $_POST['existing_image']); // Existing image path
+        $property_rental_price = mysqli_real_escape_string($conn, $_POST['property_rental_price']);
 
         // Check if a new image is uploaded
         if ($_FILES['house_image']['name']) {
@@ -80,7 +81,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         SET property_name = '$property_name', property_location = '$property_location', 
                             property_date_created = '$property_date_created', 
                             property_description = '$property_description', 
-                            property_image = '$property_image' 
+                            property_image = '$property_image',
+                            property_rental_price = '$property_rental_price' 
                         WHERE property_id = '$property_id'";
 
         if (mysqli_query($conn, $queryUpdate)) {
@@ -109,6 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $description = $property['property_description'];
             $date_created = $property['property_date_created'];
             $existing_image = $property['property_image'];
+            $rental_price = $property['property_rental_price'];
         } else {
             echo "Property not found.";
             exit;
@@ -149,6 +152,10 @@ mysqli_close($conn);
             <input type="date" id="date-created" name="date_created" class="form-control" value="<?php echo $date_created; ?>" required>
         </div>
         <div class="mt-2">
+            <label for="rental-price" class="form-label">Rental Price (PHP)</label>
+            <input type="number" id="rental-price" name="property_rental_price" class="form-control" value="<?php echo $rental_price; ?>" required>
+        </div>
+        <div class="mt-2">
             <label for="description" class="form-label">Description</label>
             <textarea id="description" name="description" class="form-control" required><?php echo $description; ?></textarea>
         </div>
@@ -183,6 +190,7 @@ mysqli_close($conn);
                 <p><strong>Property Name:</strong> <span id="modal-property-name"></span></p>
                 <p><strong>Location:</strong> <span id="modal-location"></span></p>
                 <p><strong>Date Created:</strong> <span id="modal-date-created"></span></p>
+                <p><strong>Rental Price:</strong> PHP <span id="modal-rental-price"></span></p>
                 <p><strong>Description:</strong> <span id="modal-description"></span></p>
                 <p><strong>Image Preview:</strong></p>
                 <img id="modal-image-preview" src="" alt="Property Image" class="img-fluid d-none">
@@ -203,10 +211,11 @@ mysqli_close($conn);
         let location = document.getElementById("location").value.trim();
         let description = document.getElementById("description").value.trim();
         let dateCreated = document.getElementById("date-created").value;
+        let rentalPrice = document.getElementById("rental-price").value.trim(); // Get the rental price
         let fileInput = document.getElementById("house-image");
         let existingImage = document.querySelector("input[name='existing_image']").value;
 
-        if (propertyName === "" || location === "" || description === "" || dateCreated === "") {
+        if (propertyName === "" || location === "" || description === "" || dateCreated === "" || rentalPrice === "") {
             alert("All fields are required!");
             return;
         }
@@ -216,6 +225,7 @@ mysqli_close($conn);
         document.getElementById("modal-location").innerText = location;
         document.getElementById("modal-description").innerText = description;
         document.getElementById("modal-date-created").innerText = dateCreated;
+        document.getElementById("modal-rental-price").innerText = rentalPrice; // Set rental price in modal
 
         let imagePreview = document.getElementById("modal-image-preview");
 

@@ -52,19 +52,20 @@ function uploadImage($file, $existingImage = null)
 
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (!empty($_POST['property_name']) && !empty($_POST['location']) && !empty($_POST['description']) && !empty($_POST['date_created']) && isset($_FILES['house_image'])) {
+    if (!empty($_POST['property_name']) && !empty($_POST['location']) && !empty($_POST['description']) && !empty($_POST['date_created']) && !empty($_POST['rental-price'])  && isset($_FILES['house_image'])) {
         $property_name = mysqli_real_escape_string($conn, $_POST['property_name']);
         $location = mysqli_real_escape_string($conn, $_POST['location']);
         $description = mysqli_real_escape_string($conn, $_POST['description']);
         $date_created = mysqli_real_escape_string($conn, $_POST['date_created']);
+        $rental_price = mysqli_real_escape_string($conn, $_POST['rental-price']);
 
         // Call the uploadImage function to handle the image upload
         $house_image = uploadImage($_FILES['house_image']);
 
         if ($house_image) {
             // If the image upload is successful, insert the property data into the database
-            $queryInsert = "INSERT INTO properties (property_name, property_location, property_date_created, property_description, property_image) 
-                            VALUES ('$property_name', '$location', '$date_created', '$description', '$house_image')";
+            $queryInsert = "INSERT INTO properties (property_name, property_location, property_date_created, property_description, property_image, property_rental_price) 
+                            VALUES ('$property_name', '$location', '$date_created', '$description', '$house_image', '$rental_price')";
             mysqli_query($conn, $queryInsert);
 
             // Redirect to the properties index page inside /rent-master2/admin/
@@ -107,6 +108,10 @@ mysqli_close($conn);
             <input type="date" id="date-created" name="date_created" class="form-control" required>
         </div>
         <div class="mt-2">
+            <label for="rental-price" class="form-label">Rental Price (PHP)</label>
+            <input type="number" id="rental-price" name="rental-price" class="form-control" required>
+        </div>
+        <div class="mt-2">
             <label for="description" class="form-label">Description</label>
             <textarea id="description" name="description" class="form-control" required></textarea>
         </div>
@@ -131,6 +136,7 @@ mysqli_close($conn);
                 <p><strong>Property Name:</strong> <span id="modal-property-name"></span></p>
                 <p><strong>Location:</strong> <span id="modal-location"></span></p>
                 <p><strong>Date Created:</strong> <span id="modal-date-created"></span></p>
+                <p><strong>Rental Price:</strong> PHP <span id="modal-rental-price"></span></p>
                 <p><strong>Description:</strong> <span id="modal-description"></span></p>
                 <p><strong>Image Preview:</strong></p>
                 <img id="modal-image-preview" src="" alt="Property Image" class="img-fluid d-none">
@@ -150,6 +156,7 @@ mysqli_close($conn);
         let location = document.getElementById("location").value.trim();
         let description = document.getElementById("description").value.trim();
         let dateCreated = document.getElementById("date-created").value;
+        let rentalPrice = document.getElementById("rental-price").value;
         let fileInput = document.getElementById("house-image");
 
         // Validation: Stop execution if any field is empty
@@ -162,7 +169,8 @@ mysqli_close($conn);
         document.getElementById("modal-property-name").innerText = propertyName;
         document.getElementById("modal-location").innerText = location;
         document.getElementById("modal-description").innerText = description;
-        document.getElementById("modal-date-created").innerText = dateCreated;
+        document.getElementById("modal-rental-price").innerText = dateCreated;
+        document.getElementById("modal-date-created").innerText = rentalPrice;
 
         // Handle image preview
         let imagePreview = document.getElementById("modal-image-preview");

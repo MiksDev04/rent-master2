@@ -31,10 +31,12 @@ if (isset($_GET['property_id'])) {
         <div class="row g-0">
             <!-- Left Column: Property Details -->
             <div class="col-lg-6">
-                <div class="card-body"> 
+                <div class="card-body">
+                
                     <h5 class="card-title"><strong>Name:</strong> <?php echo htmlspecialchars($property['property_name']); ?></h5>
                     <p class="card-text"><strong>Location:</strong> <?php echo htmlspecialchars($property['property_location']); ?></p>
                     <p class="card-text"><strong>Created On:</strong> <?php echo htmlspecialchars($property['property_date_created']); ?></p>
+                    <p class="card-text"><strong>Rental Price:</strong> PHP <?php echo number_format(htmlspecialchars($property['property_rental_price']), 2, '.', ',') ?></p>
                     <p class="card-text"><strong>Description:</strong> <?php echo htmlspecialchars($property['property_description']); ?></p>
                     <p class="card-text"><strong>Status:</strong> <?php echo htmlspecialchars(ucfirst($property['property_status'])); ?></p>
                 </div>
