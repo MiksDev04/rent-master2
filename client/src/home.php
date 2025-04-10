@@ -3,10 +3,8 @@
 $conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
 
 if (!$conn) {
-    echo "Error: cannot connect to database" . mysqli_connect_error();
+  echo "Error: cannot connect to database" . mysqli_connect_error();
 }
-
-
 // Fetch 4 latest available properties
 $sql = "SELECT property_name, property_location, property_image, property_rental_price
         FROM properties 
@@ -21,68 +19,87 @@ $result = $conn->query($sql);
 <div class="hero">
   <div class="hero-overlay">
     <div>
-      <h1>Welcome to <strong>RentMaster!!!</strong></h1>
-      <p>RentMaster is an all-in-one property rental management system designed for landlords and property managers. It streamlines rent tracking, tenant management, lease organization, and automated reminders—making rental operations easier, more efficient, and stress-free. Perfect for managing multiple properties.</p>
-      <a class="btn btn-pink mt-3" style="background-color: #f36; color: white;">RENT NOW</a>
+      <p class=" lh-sm">A Place to Call Home</p>
+      <h1 class=" lh-sm"><strong>Find Your Ideal Home Away from Home</strong></h1>
+      <p class=" mt-2">Explore our wide range of rental properties and find the perfect place that fits your lifestyle and needs. Your dream home is just a click away!</p>
+      <a class="btn btn-primary rounded-5 hover-top me-2">Rent Now</a>
+      <a class="btn border-1 btn-outline-white rounded-5 hover-top">About Us</a>
     </div>
   </div>
-</div>
-
-<!-- Property Cards -->
-<div class="container my-5 px-lg-5 px-md-3">
-    <h2>Our Properties</h2>
-    <div class="row row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
-        <?php while ($row = $result->fetch_assoc()): ?>
-            <div class="col">
-                <div class="card p-2">
-                    <img class="card-img " src="<?php echo $row['property_image']; ?>" alt="<?php echo htmlspecialchars($row['property_name']); ?>">
-                    <div class="mt-2">
-                        <h5 class=" card-title"><?php echo htmlspecialchars($row['property_name']); ?></h5>
-                        <p class=" card-subtitle"><?php echo htmlspecialchars($row['property_location']); ?></p>
-                        <p class=" fs-6 card-subtitle fw-medium">PHP  <?php echo number_format(htmlspecialchars($row['property_rental_price']), 2, '.', ',')  ?></p>
-                    </div>
-                </div>
-            </div>
-        <?php endwhile; ?>
-    </div>
-    <div class="d-flex align-items-center justify-content-center">
-        <button class="btn btn-outline-primary mt-3">View More</button>
-    </div>
 </div>
 
 <!-- About Us Section -->
-<div class="container mb-5 px-lg-5 px-md-3">
-  <div class="row justify-content-center">
-    <div class="col-md-6 about-section">
-      <h4>About Us</h4>
-      <p>
-        RentMaster is your go-to platform for renting apartments, condos, and homes. We offer a wide variety of listings in various locations to suit your needs.
-      </p>
+<div id="about" class=" bg-body-tertiary py-5">
+  <div class="container px-lg-5 px-md-3 ">
+    <div class="row row-cols-1 row-cols-md-2 justify-content-evenly align-items-center">
+      <div class="col">
+        <div>
+          <span class=" rounded-5 px-2 py-1 bg-info-subtle text-primary ">Our Story</span>
+          <h2 class=" fw-bold">About Us</h2>
+        </div>
+        <p class=" fw-medium">RentMaster: Your Trusted Platform for Apartments and Homes</p>
+        <p class=" opacity-75">
+        At RentMaster, we specialize in renting apartments and homes across various locations. Our diverse selection is tailored to meet your unique needs, whether you're looking for a cozy apartment or a spacious home. Start your journey today and find the perfect place to call home!
+        </p>
+      </div>
+      <div class=" col">
+        <img src="./assets/images/image3.png" alt="About Us" class="img-fluid" >
+      </div>
     </div>
   </div>
 </div>
 
+
 <!-- Features Section -->
-<div class="container mb-5 px-lg-5 px-md-3">
+<div class="container mb-5 px-lg-5 px-md-3 py-5">
+  <h2 class="fw-bold text-center">Features</h2>
   <div class="row g-4 text-center">
     <div class="col-md-4">
       <div class="p-3 border rounded shadow-sm bg-light">
-        <h6><strong>Property Management</strong></h6>
-        <p>Streamline property listings, tenant records, and lease agreements.</p>
+        <i class="fas fa-building fa-2x mb-3"></i>
+        <h6><strong>Discover Your Perfect Home</strong></h6>
+        <p>Browse a wide range of apartments and homes that match your needs and preferences, making the home-search process simple and seamless.</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="p-3 border rounded shadow-sm bg-light">
-        <h6><strong>Payment Tracking</strong></h6>
-        <p>Track payments in real time and send reminders.</p>
+        <i class="fas fa-dollar-sign fa-2x mb-3"></i>
+        <h6><strong>Transparent Payment Tracking</strong></h6>
+        <p>Stay informed about your rent payments in real-time and receive reminders so you never miss a payment, keeping everything clear and stress-free.</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="p-3 border rounded shadow-sm bg-light">
-        <h6><strong>Maintenance Management</strong></h6>
-        <p>Allow tenants to submit issues and resolve them easily.</p>
+        <i class="fas fa-tools fa-2x mb-3"></i>
+        <h6><strong>Hassle-Free Maintenance Requests</strong></h6>
+        <p>Easily submit maintenance issues and track their resolution, ensuring your living space stays in top shape without the stress.</p>
       </div>
     </div>
+  </div>
+</div>
+
+
+<!-- Property Cards -->
+<div class="container my-5 px-lg-5 px-md-3">
+  <h2 class=" fw-bold">Our Properties</h2>
+  <div class="row row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
+    <?php while ($row = $result->fetch_assoc()): ?>
+      <div class="col">
+        <div class="card p-2 border-0 ">
+          <div class=" overflow-hidden rounded-5">
+            <img class="card-img img hover-image" src="<?php echo $row['property_image']; ?>" alt="<?php echo htmlspecialchars($row['property_name']); ?>">
+          </div>
+          <div class="mt-2">
+            <h5 class=" card-title"><?php echo htmlspecialchars($row['property_name']); ?></h5>
+            <p class=" card-subtitle"><?php echo htmlspecialchars($row['property_location']); ?></p>
+            <p class=" fs-6 card-subtitle"><span class=" fw-medium">PHP <?php echo number_format(htmlspecialchars($row['property_rental_price']), 2, '.', ',')  ?></span> <span class=" opacity-75">Monthly</span> </p>
+          </div>
+        </div>
+      </div>
+    <?php endwhile; ?>
+  </div>
+  <div class="d-flex align-items-center justify-content-center">
+    <button class="btn btn-outline-primary mt-3">View More</button>
   </div>
 </div>
 

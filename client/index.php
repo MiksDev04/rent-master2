@@ -19,15 +19,15 @@
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="?page=src/home">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="?page=src/">Property</a></li>
-                    <li class="nav-item"><a class="nav-link" href="?page=src/">About</a></li>
-                    <li class="nav-item"><a class="nav-link" href="?page=src/">Contact</a></li>
-                    <li class="nav-item"><a class="nav-link" href="?page=src/">Payment</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/">Property</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/">Contact</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/">Payment</a></li>
                 </ul>
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link" href="?page=src/login">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="?page=src/register">Register</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/login">Login</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/register">Register</a></li>
                 </ul>
             </div>
         </nav>
@@ -49,6 +49,7 @@
     ?>
 
     <!-- Bootstrap 4 JS and dependencies -->
+     <script src="./js/script.js"></script>
     <script src="/rent-master2/bootstrap-5.3.3-dist/js/bootstrap.bundle.js"></script>
 </body>
 
