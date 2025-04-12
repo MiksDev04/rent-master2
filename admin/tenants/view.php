@@ -40,6 +40,28 @@ if (isset($_GET['tenant_id'])) {
                     <p><strong>Phone Number:</strong> <?php echo htmlspecialchars($tenant['user_phone_number']); ?></p>
                     <p><strong>Property:</strong> <?php echo htmlspecialchars($tenant['property_name']); ?> (ID: <?php echo $tenant['property_id']; ?>)</p>
                     <p><strong>Tenant ID:</strong> <?php echo $tenant['tenant_id']; ?></p>
+                    <p><strong>Status:</strong> 
+                        <?php 
+                            // Display status with better readability
+                            switch ($tenant['tenant_status']) {
+                                case 'pending':
+                                    echo "<span class='badge bg-warning'>Pending</span>";
+                                    break;
+                                case 'active':
+                                    echo "<span class='badge bg-success'>Active</span>";
+                                    break;
+                                case 'terminated':
+                                    echo "<span class='badge bg-danger'>Terminated</span>";
+                                    break;
+                                default:
+                                    echo "<span class='badge bg-secondary'>Unknown</span>";
+                            }
+                        ?>
+                    </p>
+                    <?php if ($tenant['tenant_status'] == 'terminated'): ?>
+                        <p><strong>Terminated At:</strong> <?php echo htmlspecialchars($tenant['tenant_terminated_at']); ?></p>
+                    <?php endif; ?>
+                    <p><strong>Date Created:</strong> <?php echo htmlspecialchars($tenant['tenant_date_created']); ?></p>
                 </div>
             </div>
             <div class="col-lg-6 p-3 d-flex align-items-center justify-content-center">

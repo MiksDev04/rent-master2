@@ -21,19 +21,22 @@ $users = [];
 while ($row = mysqli_fetch_assoc($usersResult)) {
     $users[] = $row;
 }
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['user_id']) && !empty($_POST['property_id'])) {
         $user_id = mysqli_real_escape_string($conn, $_POST['user_id']);
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
 
-        // Insert tenant
-        $queryInsertTenant = "INSERT INTO tenants (user_id, property_id) VALUES ('$user_id', '$property_id')";
+        // Insert tenant with default status, date_created, and terminated_at
+        $queryInsertTenant = "
+            INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created, tenant_terminated_at) 
+            VALUES ('$user_id', '$property_id', 'active', NOW(), NULL)
+        ";
+
         mysqli_query($conn, $queryInsertTenant);
 
         // Mark user as a tenant
-        $queryUpdateProperty = "UPDATE users SET user_role = 'tenant' WHERE user_id = '$user_id'";
-        mysqli_query($conn, $queryUpdateProperty);
+        $queryUpdateUser = "UPDATE users SET user_role = 'tenant' WHERE user_id = '$user_id'";
+        mysqli_query($conn, $queryUpdateUser);
 
         // Mark property as unavailable
         $queryUpdateProperty = "UPDATE properties SET property_status = 'unavailable' WHERE property_id = '$property_id'";
@@ -45,6 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Both user and property are required.";
     }
 }
+
 
 mysqli_close($conn);
 ?>

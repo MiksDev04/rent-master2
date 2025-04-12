@@ -21,6 +21,7 @@ if (!$tenant) {
 
 $current_user_id = $tenant['user_id'];
 $current_property_id = $tenant['property_id'];
+$current_date_created = $tenant['tenant_date_created']; // Get the tenant's creation date
 
 // Fetch users with 'visitor' status and current assigned user
 $queryUsers = "SELECT user_id, user_name FROM users WHERE user_role = 'visitor' OR user_id = '$current_user_id'";
@@ -41,6 +42,7 @@ while ($row = mysqli_fetch_assoc($propertiesResult)) {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $new_user_id = mysqli_real_escape_string($conn, $_POST['user_id']);
     $new_property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
+    $new_date_created = mysqli_real_escape_string($conn, $_POST['tenant_date_created']); // Get the updated date_created
 
     // Revert old property and user status if changed
     if ($new_property_id !== $current_property_id) {
@@ -64,13 +66,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Update the tenant record
-    $queryUpdateTenant = "UPDATE tenants SET user_id = '$new_user_id', property_id = '$new_property_id' WHERE tenant_id = '$tenant_id'";
+    $queryUpdateTenant = "UPDATE tenants SET user_id = '$new_user_id', property_id = '$new_property_id', tenant_date_created = '$new_date_created' WHERE tenant_id = '$tenant_id'";
     mysqli_query($conn, $queryUpdateTenant);
 
     echo "<meta http-equiv='refresh' content='0;url=/rent-master2/admin/?page=tenants/index'>";
     exit();
 }
-
 
 mysqli_close($conn);
 ?>
@@ -115,6 +116,11 @@ mysqli_close($conn);
             </select>
         </div>
 
+        <div class="mt-3">
+            <label for="tenant_date_created" class="form-label">Created On</label>
+            <input type="date" id="tenant_date_created" name="tenant_date_created" class="form-control" value="<?= htmlspecialchars($current_date_created); ?>" required>
+        </div>
+
         <button type="button" id="submit-btn" class="btn btn-success mt-4 px-4 rounded-5">Update</button>
     </form>
 </div>
@@ -130,6 +136,7 @@ mysqli_close($conn);
             <div class="modal-body">
                 <p><strong>User:</strong> <span id="modal-user-name"></span></p>
                 <p><strong>Property:</strong> <span id="modal-property-name"></span></p>
+                <p><strong>Created On:</strong> <span id="modal-date-created"></span></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -143,19 +150,22 @@ mysqli_close($conn);
 document.getElementById("submit-btn").addEventListener("click", function () {
     const userSelect = document.getElementById("user-id");
     const propertySelect = document.getElementById("property-id");
+    const dateCreatedInput = document.getElementById("tenant_date_created");
 
     const userId = userSelect.value.trim();
     const propertyId = propertySelect.value.trim();
     const userName = userSelect.options[userSelect.selectedIndex]?.getAttribute("data-user-name") || "";
     const propertyName = propertySelect.options[propertySelect.selectedIndex]?.getAttribute("data-property-name") || "";
+    const dateCreated = dateCreatedInput.value.trim();
 
-    if (!userId || !propertyId) {
-        alert("Both user and property must be selected.");
+    if (!userId || !propertyId || !dateCreated) {
+        alert("All fields must be filled.");
         return;
     }
 
     document.getElementById("modal-user-name").innerText = userName;
     document.getElementById("modal-property-name").innerText = propertyName;
+    document.getElementById("modal-date-created").innerText = dateCreated;
 
     const modal = new bootstrap.Modal(document.getElementById("tenantModal"));
     modal.show();

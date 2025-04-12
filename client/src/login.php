@@ -1,71 +1,80 @@
 <?php
-// Database connection settings
+session_start();
+
+// 🔒 Prevent login page from being cached
+header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
+header("Pragma: no-cache"); // HTTP 1.0
+header("Expires: 0"); // Proxies
+
+// // 🔁 Redirect already logged-in users
+// if (isset($_SESSION['user_email'])) {
+//     if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'landlord') {
+//         header("Location: /rent-master2/admin/?page=dashboard/index");
+//         exit();
+//     } else {
+//         header("Location: /rent-master2/client/?page=src/home");
+//         exit();
+//     }
+// }
+
+// DB connection
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "rentsystem"; // Replace with your actual database name
-
-// Establish the connection
+$dbname = "rentsystem";
 $conn = mysqli_connect($servername, $username, $password, $dbname);
-
-// Check connection
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Handle form submission
+// Login logic
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Sanitize user input
     $user_email = mysqli_real_escape_string($conn, $_POST['user_email']);
     $user_password = mysqli_real_escape_string($conn, $_POST['user_password']);
 
-    // Prepare the SQL query to check the email and password
     $sql = "SELECT * FROM users WHERE user_email = '$user_email' AND user_password = '$user_password'";
-
-    // Execute the query
     $result = mysqli_query($conn, $sql);
 
-    // Check if any user matches the credentials
     if (mysqli_num_rows($result) > 0) {
-        // Fetch the user data
         $user_data = mysqli_fetch_assoc($result);
 
-        // Start session
-        session_start();
-
-        // Check user role and redirect accordingly
-        if ($user_data['user_role'] == 'landlord') {
-            echo "<meta http-equiv='refresh' content='0;url=/rent-master2/admin/?page=dashboard/index'>";
-            exit();
-        }
-
-        // For regular users
         $_SESSION['user_email'] = $user_email;
-        echo "<meta http-equiv='refresh' content='0;url=/rent-master2/client/?page=src/home'>";
+        $_SESSION['user_role'] = $user_data['user_role'];
+        $_SESSION['user_id'] = $user_data['user_id']; // ✅ Store user_id for tenant use
+
+        if ($user_data['user_role'] == 'landlord') {
+            header("Location: /rent-master2/admin/?page=dashboard/index");
+        } else {
+            header("Location: /rent-master2/client/?page=src/home");
+        }
         exit();
     } else {
-        // No matching user found
-        echo "<div class='alert alert-danger mt-3'>Invalid email or password. Please try again.</div>";
+        $login_error = "<div class='alert alert-danger mt-3'>Invalid email or password. Please try again.</div>";
     }
 }
 
-// Close the connection
 mysqli_close($conn);
 ?>
 
-<div class="container mt-2">
-    <h2 class="mb-4">Login</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
+        <h2 class="mb-2 mb-md-0">Login</h2>
+        <a href="/rent-master2/client/src/logout.php" class="btn btn-outline-danger">Logout</a>
+    </div>
+
+    <?php if (isset($login_error)) echo $login_error; ?>
+
     <form method="post">
-        <div class="mt-2">
+        <div class="mb-3">
             <label class="form-label" for="user_email">Email:</label>
             <input type="email" class="form-control" id="user_email" name="user_email" required>
         </div>
 
-        <div class="mt-2">
+        <div class="mb-3">
             <label class="form-label" for="user_password">Password:</label>
             <input type="password" class="form-control" id="user_password" name="user_password" required>
         </div>
 
-        <button type="submit" class="btn btn-primary my-2">Login</button>
+        <button type="submit" class="btn btn-primary">Login</button>
     </form>
 </div>

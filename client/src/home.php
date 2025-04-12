@@ -13,6 +13,7 @@ $sql = "SELECT property_name, property_location, property_image, property_rental
         LIMIT 3";
 
 $result = $conn->query($sql);
+
 ?>
 
 <!-- Hero Section -->
@@ -35,15 +36,15 @@ $result = $conn->query($sql);
       <div class="col">
         <div>
           <span class=" rounded-5 px-2 py-1 bg-info-subtle text-primary ">Our Story</span>
-          <h2 class=" fw-bold">About Us</h2>
+          <h2 class=" fw-medium">About Us</h2>
         </div>
         <p class=" fw-medium">RentMaster: Your Trusted Platform for Apartments and Homes</p>
         <p class=" opacity-75">
-        At RentMaster, we specialize in renting apartments and homes across various locations. Our diverse selection is tailored to meet your unique needs, whether you're looking for a cozy apartment or a spacious home. Start your journey today and find the perfect place to call home!
+          At RentMaster, we specialize in renting apartments and homes across various locations. Our diverse selection is tailored to meet your unique needs, whether you're looking for a cozy apartment or a spacious home. Start your journey today and find the perfect place to call home!
         </p>
       </div>
       <div class=" col">
-        <img src="./assets/images/image3.png" alt="About Us" class="img-fluid" >
+        <img src="./assets/images/image3.png" alt="About Us" class="img-fluid">
       </div>
     </div>
   </div>
@@ -52,7 +53,7 @@ $result = $conn->query($sql);
 
 <!-- Features Section -->
 <div class="container mb-5 px-lg-5 px-md-3 py-5">
-  <h2 class="fw-bold text-center">Features</h2>
+  <h2 class="fw-medium text-center">Features</h2>
   <div class="row g-4 text-center">
     <div class="col-md-4">
       <div class="p-3 border rounded shadow-sm bg-light">
@@ -81,7 +82,7 @@ $result = $conn->query($sql);
 
 <!-- Property Cards -->
 <div class="container my-5 px-lg-5 px-md-3">
-  <h2 class=" fw-bold">Our Properties</h2>
+  <h2 class=" fw-medium ">Recent Properties</h2>
   <div class="row row-cols-lg-3 row-cols-sm-2 row-cols-1 g-4">
     <?php while ($row = $result->fetch_assoc()): ?>
       <div class="col">
@@ -99,7 +100,7 @@ $result = $conn->query($sql);
     <?php endwhile; ?>
   </div>
   <div class="d-flex align-items-center justify-content-center">
-    <button class="btn btn-outline-primary mt-3">View More</button>
+    <a href="?page=src/property" class="btn btn-outline-primary mt-3">View More</a>
   </div>
 </div>
 
@@ -124,23 +125,28 @@ $result = $conn->query($sql);
         <small>FB Name: JirehSinsFB</small>
       </div>
     </div>
-    <div class="col-md-6 offset-md-1 contact-card">
+    <div class="col-md-6 offset-md-1">
       <h5>Get in Touch</h5>
-      <form>
-        <div class="mb-2">
-          <label>Name</label>
-          <input type="text" class="form-control" placeholder="Enter your name">
+      <form method="POST" action="https://formsubmit.co/mikogapasan04@gmail.com" class="p-4 border rounded shadow-sm bg-light">
+        <div class="mb-3">
+          <label for="email" class="form-label">Email:</label>
+          <input type="email" class="form-control" name="email" id="email" placeholder="Email address" autocomplete="off" required>
         </div>
-        <div class="mb-2">
-          <label>Email</label>
-          <input type="email" class="form-control" placeholder="Enter your email">
+
+        <div class="mb-3">
+          <label for="message" class="form-label">Message:</label>
+          <textarea class="form-control" name="message" id="message" rows="4" placeholder="Leave your message here" required></textarea>
         </div>
-        <div class="mb-2">
-          <label>Comment</label>
-          <textarea class="form-control" rows="3" placeholder="Enter your message"></textarea>
-        </div>
-        <button type="submit" class="btn btn-pink" style="background-color: #f36; color: white;">SEND MESSAGE</button>
+
+        <!-- Hidden inputs -->
+        <input type="hidden" name="_next" value="http://localhost/rent-master2/client/">
+        <input type="hidden" name="_subject" value="New email!">
+        <input type="hidden" name="_captcha" value="false">
+
+        <button type="submit" class="btn btn-primary w-100">Send Message</button>
       </form>
+
+
     </div>
   </div>
 </div>

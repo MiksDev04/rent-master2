@@ -5,17 +5,17 @@ if (!$conn) {
     echo "Error: cannot connect to database" . mysqli_connect_error();
 }
 
-// Query to get tenant info joined with users and properties
+// Query to get tenant info joined with users and properties, including date created and terminated date
 $query = "
-    SELECT * 
+    SELECT tenants.*, users.*, properties.*, tenants.tenant_date_created, tenants.tenant_terminated_at
     FROM tenants
     JOIN users ON tenants.user_id = users.user_id
-    JOIN properties ON tenants.property_id = properties.property_id;
+    JOIN properties ON tenants.property_id = properties.property_id
+    WHERE tenants.tenant_status = 'active';
 ";
 
 $result = mysqli_query($conn, $query);
 ?>
-
 
 <div class="container px-lg-5">
     <header class="d-flex justify-content-between mt-3">
@@ -69,9 +69,15 @@ $result = mysqli_query($conn, $query);
                                         </tr>
                                         <tr>
                                             <td class="fw-medium d-flex align-items-center gap-2">
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" width="20px" fill="#555555" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg>    
-                                            Phone Number:</td>
-                                            <td class="text-right opacity-75"><?php echo htmlspecialchars($row['user_phone_number']); ?></td>
+                                            <svg xmlns="http://www.w3.org/2000/svg"  height="20px" width="20px" fill="#555555" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M413.6 174.4c6.7 6.7 6.7 17.5 0 24.2c-6.7 6.7-17.5 6.7-24.2 0L256 66.1l-133.4 132.5c-6.7 6.7-17.5 6.7-24.2 0c-6.7-6.7-6.7-17.5 0-24.2L231.8 33.9c6.7-6.7 17.5-6.7 24.2 0L413.6 174.4zM256 128c-35.3 0-64 28.7-64 64c0 8.8 7.2 16 16 16c8.8 0 16-7.2 16-16c0-17.7 14.3-32 32-32c8.8 0 16-7.2 16-16c0-8.8-7.2-16-16-16zm112 160c-44.2 0-80 35.8-80 80c0 8.8 7.2 16 16 16l192 0c8.8 0 16-7.2 16-16c0-44.2-35.8-80-80-80l-64 0z"/></svg>    
+                                            Created On:</td>
+                                            <td class="text-right opacity-75"><?php echo htmlspecialchars($row['tenant_date_created']); ?></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="fw-medium d-flex align-items-center gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg"  height="20px" width="20px" fill="#555555" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17l0 80c0 13.3 10.7 24 24 24l80 0c13.3 0 24-10.7 24-24l0-40 40 0c13.3 0 24-10.7 24-24l0-40 40 0c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"/></svg>    
+                                            Terminated On:</td>
+                                            <td class="text-right opacity-75"><?php echo htmlspecialchars($row['tenant_terminated_at']); ?></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -89,6 +95,4 @@ $result = mysqli_query($conn, $query);
     </div>
 </div>
 
-<?php
-mysqli_close($conn);
-?>
+<?php mysqli_close($conn); ?>
