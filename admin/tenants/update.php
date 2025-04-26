@@ -69,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $queryUpdateTenant = "UPDATE tenants SET user_id = '$new_user_id', property_id = '$new_property_id', tenant_date_created = '$new_date_created' WHERE tenant_id = '$tenant_id'";
     mysqli_query($conn, $queryUpdateTenant);
 
-    echo "<meta http-equiv='refresh' content='0;url=/rent-master2/admin/?page=tenants/index'>";
+    header("Location: /rent-master2/admin/?page=tenants/index");
     exit();
 }
 
@@ -127,24 +127,23 @@ mysqli_close($conn);
 
 <!-- Modal -->
 <div class="modal fade" id="tenantModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Confirm Tenant Update</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p><strong>User:</strong> <span id="modal-user-name"></span></p>
-                <p><strong>Property:</strong> <span id="modal-property-name"></span></p>
-                <p><strong>Created On:</strong> <span id="modal-date-created"></span></p>
+                <p>Are you sure you want to update the tenant?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="confirmed-btn">Confirm</button>
+                <button type="button" class="btn btn-secondary rounded-5" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary rounded-5" id="confirmed-btn">Confirm</button>
             </div>
         </div>
     </div>
 </div>
+
 
 <script>
 document.getElementById("submit-btn").addEventListener("click", function () {
@@ -154,18 +153,12 @@ document.getElementById("submit-btn").addEventListener("click", function () {
 
     const userId = userSelect.value.trim();
     const propertyId = propertySelect.value.trim();
-    const userName = userSelect.options[userSelect.selectedIndex]?.getAttribute("data-user-name") || "";
-    const propertyName = propertySelect.options[propertySelect.selectedIndex]?.getAttribute("data-property-name") || "";
     const dateCreated = dateCreatedInput.value.trim();
 
     if (!userId || !propertyId || !dateCreated) {
         alert("All fields must be filled.");
         return;
     }
-
-    document.getElementById("modal-user-name").innerText = userName;
-    document.getElementById("modal-property-name").innerText = propertyName;
-    document.getElementById("modal-date-created").innerText = dateCreated;
 
     const modal = new bootstrap.Modal(document.getElementById("tenantModal"));
     modal.show();
@@ -174,4 +167,5 @@ document.getElementById("submit-btn").addEventListener("click", function () {
 document.getElementById("confirmed-btn").addEventListener("click", function () {
     document.getElementById("tenant-form").submit();
 });
+
 </script>

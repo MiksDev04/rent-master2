@@ -41,7 +41,13 @@ $result = mysqli_query($conn, $query);
                     <div class="col">
                         <div class="row gy-2">
                             <div class="col col-lg-4 col-md-6 col-12">
-                                <img class="w-100" src="<?php echo htmlspecialchars($row['property_image']); ?>" alt="Property Image">
+                                <?php
+                                $id = $row['property_id'];
+                                $image_query = mysqli_query($conn, "SELECT image1 FROM property_images WHERE property_id = '$id' LIMIT 1;");
+                                $image_row = mysqli_fetch_assoc($image_query);
+                                $image_path = $image_row ? $image_row['image1'] : 'default.jpg'; // fallback if no image
+                                ?>
+                                <img class="w-100" src="<?php echo htmlspecialchars($image_path); ?>" alt="Property Image">
                             </div>
                             <div class="col col-lg-8 col-md-6 col-12">
                                 <div>

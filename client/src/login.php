@@ -67,7 +67,7 @@ mysqli_close($conn);
     <form method="post">
         <div class="mb-3">
             <label class="form-label" for="user_email">Email:</label>
-            <input type="email" class="form-control" id="user_email" name="user_email" required>
+            <input type="email" class="form-control form-control-sm" id="user_email" name="user_email" required>
         </div>
 
         <div class="mb-3">

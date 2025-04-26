@@ -5,7 +5,6 @@ if (!$conn) {
     echo "Error: cannot connect to database" . mysqli_connect_error();
 }
 
-
 // Fetch available properties
 $queryProperties = "SELECT property_id, property_name FROM properties WHERE property_status = 'available'";
 $propertiesResult = mysqli_query($conn, $queryProperties);
@@ -21,18 +20,30 @@ $users = [];
 while ($row = mysqli_fetch_assoc($usersResult)) {
     $users[] = $row;
 }
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['user_id']) && !empty($_POST['property_id'])) {
         $user_id = mysqli_real_escape_string($conn, $_POST['user_id']);
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
 
-        // Insert tenant with default status, date_created, and terminated_at
-        $queryInsertTenant = "
-            INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created, tenant_terminated_at) 
-            VALUES ('$user_id', '$property_id', 'active', NOW(), NULL)
-        ";
+        // Check if the user already exists in tenants table
+        $checkTenantSql = "SELECT * FROM tenants WHERE user_id = '$user_id'";
+        $checkTenantResult = mysqli_query($conn, $checkTenantSql);
 
-        mysqli_query($conn, $queryInsertTenant);
+        if ($checkTenantResult && mysqli_num_rows($checkTenantResult) > 0) {
+            // Update existing tenant status and property
+            $updateTenantSql = "UPDATE tenants 
+                                SET tenant_status = 'active', property_id = '$property_id', tenant_date_created = NOW(), tenant_terminated_at = NULL 
+                                WHERE user_id = '$user_id'";
+            mysqli_query($conn, $updateTenantSql);
+        } else {
+            // Insert new tenant
+            $queryInsertTenant = "
+                INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created, tenant_terminated_at) 
+                VALUES ('$user_id', '$property_id', 'active', NOW(), NULL)
+            ";
+            mysqli_query($conn, $queryInsertTenant);
+        }
 
         // Mark user as a tenant
         $queryUpdateUser = "UPDATE users SET user_role = 'tenant' WHERE user_id = '$user_id'";
@@ -42,17 +53,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $queryUpdateProperty = "UPDATE properties SET property_status = 'unavailable' WHERE property_id = '$property_id'";
         mysqli_query($conn, $queryUpdateProperty);
 
-        echo "<meta http-equiv='refresh' content='0;url=/rent-master2/admin/?page=tenants/index'>";
+        header("Location: /rent-master2/admin/?page=tenants/index");
         exit();
     } else {
         echo "Both user and property are required.";
     }
 }
 
-
 mysqli_close($conn);
 ?>
-
 
 <div class="container px-lg-5 mb-3">
     <header class="d-flex align-items-center mt-3 gap-2">
@@ -93,21 +102,20 @@ mysqli_close($conn);
     </form>
 </div>
 
-<!-- Modal -->
+<!-- Confirmation Modal -->
 <div class="modal fade" id="tenantModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Confirm Tenant Assignment</h5>
+                <h5 class="modal-title">Confirm Tenant Creation</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p><strong>User:</strong> <span id="modal-user-name"></span></p>
-                <p><strong>Property:</strong> <span id="modal-property-name"></span></p>
+                <p>Are you sure you want to assign this user as a new tenant?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary" id="confirmed-btn">Confirm</button>
+                <button type="button" class="btn btn-secondary rounded-5" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary rounded-5" id="confirmed-btn">Confirm</button>
             </div>
         </div>
     </div>
@@ -115,21 +123,13 @@ mysqli_close($conn);
 
 <script>
 document.getElementById("submit-btn").addEventListener("click", function () {
-    const userSelect = document.getElementById("user-id");
-    const propertySelect = document.getElementById("property-id");
-
-    const userId = userSelect.value.trim();
-    const propertyId = propertySelect.value.trim();
-    const userName = userSelect.options[userSelect.selectedIndex]?.getAttribute("data-user-name") || "";
-    const propertyName = propertySelect.options[propertySelect.selectedIndex]?.getAttribute("data-property-name") || "";
+    const userId = document.getElementById("user-id").value.trim();
+    const propertyId = document.getElementById("property-id").value.trim();
 
     if (!userId || !propertyId) {
         alert("Both user and property must be selected.");
         return;
     }
-
-    document.getElementById("modal-user-name").innerText = userName;
-    document.getElementById("modal-property-name").innerText = propertyName;
 
     const modal = new bootstrap.Modal(document.getElementById("tenantModal"));
     modal.show();

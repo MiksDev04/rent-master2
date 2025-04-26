@@ -12,14 +12,16 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         // Approve the tenant
         $sql = "UPDATE tenants SET tenant_status = 'active' WHERE tenant_id = '$tenant_id'";
         if (mysqli_query($conn, $sql)) {
-            // Update property status to unavailable (assuming you have a `property_status` field in `properties`)
+            // Update property status to unavailable
             $property_sql = "UPDATE properties SET property_status = 'unavailable' WHERE property_id = (SELECT property_id FROM tenants WHERE tenant_id = '$tenant_id')";
-            if (mysqli_query($conn, $property_sql)) {
-                echo "<meta http-equiv='refresh' content='0;url=/rent-master2/admin/?page=reports/index'>";
-                exit;
-            } else {
-                echo "Error updating property status: " . mysqli_error($conn);
-            }
+            mysqli_query($conn, $property_sql);
+
+            // Update user status to tenant
+            $user_sql = "UPDATE users SET user_role = 'tenant' WHERE user_id = (SELECT user_id FROM tenants WHERE tenant_id = '$tenant_id')";
+            mysqli_query($conn, $user_sql);
+
+            header("Location: /rent-master2/admin/?page=reports/index");
+            exit;
         } else {
             echo "Error updating tenant: " . mysqli_error($conn);
         }
@@ -27,7 +29,10 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         // Reject the tenant and delete
         $sql = "DELETE FROM tenants WHERE tenant_id = '$tenant_id'";
         if (mysqli_query($conn, $sql)) {
-            echo "<meta http-equiv='refresh' content='0;url=/rent-master2/admin/?page=reports/index'>";
+            // Update user status to tenant
+            $user_sql = "UPDATE users SET user_role = 'visitor' WHERE user_id = (SELECT user_id FROM tenants WHERE tenant_id = '$tenant_id')";
+            mysqli_query($conn, $user_sql);
+            header("Location: /rent-master2/admin/?page=reports/index");
             exit;
         } else {
             echo "Error deleting tenant: " . mysqli_error($conn);

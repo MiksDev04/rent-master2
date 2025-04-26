@@ -7,24 +7,33 @@ if (!$conn) {
 }
 
 
-
 // Handle the deletion after form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['property_id'])) {
         $property_id = $_POST['property_id'];
-        $property_image = $_POST['property_image'];
 
-        // Check if property image exists, and delete it
-        if ($property_image && file_exists($_SERVER['DOCUMENT_ROOT'] . $property_image)) {
-            unlink($_SERVER['DOCUMENT_ROOT'] . $property_image);  // Delete the image from the server
+        // Delete related images from the server
+        $query = "SELECT * FROM property_images WHERE property_id = '$property_id'";
+        $result = mysqli_query($conn, $query);
+        $images = mysqli_fetch_assoc($result);
+
+        // Delete old images from the folder
+        for ($i = 1; $i <= 10; $i++) {
+            $imagePath = $images["image$i"];
+            if (!empty($imagePath) && file_exists($_SERVER['DOCUMENT_ROOT'] . $imagePath)) {
+                unlink($_SERVER['DOCUMENT_ROOT'] . $imagePath);
+            }
         }
+
+        // Delete amenities related to this property
+        mysqli_query($conn, "DELETE FROM property_amenities WHERE property_id = '$property_id'");
 
         // Delete property from the database
         $query = "DELETE FROM properties WHERE property_id = '$property_id'";
 
         if (mysqli_query($conn, $query)) {
             // Redirect to properties list page after successful deletion
-            echo "<meta http-equiv='refresh' content='0;url=/rent-master2/admin/?page=properties/index'>";
+            header("Location: /rent-master2/admin/?page=properties/index");
             exit();
         } else {
             echo "Error deleting record: " . mysqli_error($conn);
@@ -91,21 +100,9 @@ mysqli_close($conn);
         <label class="form-label fw-bold">Description</label>
         <div class="form-control-plaintext"><?php echo htmlspecialchars($property['property_description']); ?></div>
     </div>
-    <div class="mt-2">
-        <label class="form-label fw-bold">Image</label>
-        <?php if (!empty($property['property_image'])): ?>
-            <div class="mt-2">
-                <img src="<?php echo htmlspecialchars($property['property_image']); ?>"
-                    alt="Property Image"
-                    class="img-fluid"
-                    style="max-width: 200px;">
-            </div>
-        <?php endif; ?>
-    </div>
 
     <form action="properties/delete.php" method="POST">
         <input type="hidden" name="property_id" value="<?php echo htmlspecialchars($property['property_id']); ?>">
-        <input type="hidden" name="property_image" value="<?php echo htmlspecialchars($property['property_image']); ?>">
         <div class="mt-3 d-flex gap-3">
             <button type="submit" class="btn btn-danger rounded-5">Delete Property</button>
             <a href="?page=properties/index" class="btn btn-secondary rounded-5">Cancel</a>

@@ -3,21 +3,34 @@ $conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
 
 if (!$conn) {
     echo "Error: cannot connect to database" . mysqli_connect_error();
+    exit;
 }
 
-// Fetch property details if a property_id is provided
 if (isset($_GET['property_id'])) {
     $property_id = $_GET['property_id'];
     $query = "SELECT * FROM properties WHERE property_id = $property_id";
     $result = mysqli_query($conn, $query);
     $property = mysqli_fetch_assoc($result);
+
+    $images_result = mysqli_query($conn, "SELECT * FROM property_images WHERE property_id = $property_id");
+    $images = mysqli_fetch_assoc($images_result);
+
+    $amenities_result = mysqli_query($conn, "
+        SELECT a.amenity_name FROM amenities a
+        JOIN property_amenities pa ON a.amenity_id = pa.amenity_id
+        WHERE pa.property_id = $property_id
+    ");
+    $amenities = [];
+    while ($row = mysqli_fetch_assoc($amenities_result)) {
+        $amenities[] = $row['amenity_name'];
+    }
 } else {
     echo "<div class='text-center text-bg-warning'>Invalid property ID</div>";
     exit;
 }
 ?>
 
-<div class="container px-lg-5 mb-4 px-lg-5 px-md-4 px-sm-3 px-2">
+<div class="container px-lg-5 mb-4 px-md-4 px-sm-3 px-2">
     <header class="d-flex align-items-center mt-3 gap-2">
         <a href="?page=properties/index" class="p-2 rounded-circle bg-dark-subtle">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" width="24px" fill="grey" viewBox="0 0 448 512">
@@ -27,31 +40,49 @@ if (isset($_GET['property_id'])) {
         <h4 class="fw-medium">Property / View Property</h4>
     </header>
 
-    <div class="card mt-3">
-        <div class="row g-0">
-            <!-- Left Column: Property Details -->
-            <div class="col-lg-6">
-                <div class="card-body">
-                
-                    <h5 class="card-title"><strong>Name:</strong> <?php echo htmlspecialchars($property['property_name']); ?></h5>
-                    <p class="card-text"><strong>Location:</strong> <?php echo htmlspecialchars($property['property_location']); ?></p>
-                    <p class="card-text"><strong>Created On:</strong> <?php echo htmlspecialchars($property['property_date_created']); ?></p>
-                    <p class="card-text"><strong>Rental Price:</strong> PHP <?php echo number_format(htmlspecialchars($property['property_rental_price']), 2, '.', ',') ?></p>
-                    <p class="card-text"><strong>Description:</strong> <?php echo htmlspecialchars($property['property_description']); ?></p>
-                    <p class="card-text"><strong>Status:</strong> <?php echo htmlspecialchars(ucfirst($property['property_status'])); ?></p>
-                </div>
-            </div>
+    <div class="card mt-3 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title"><strong>Name:</strong> <?= htmlspecialchars($property['property_name']) ?></h5>
+            <p class="card-text"><strong>Location:</strong> <?= htmlspecialchars($property['property_location']) ?></p>
+            <p class="card-text"><strong>Created On:</strong> <?= htmlspecialchars($property['property_date_created']) ?></p>
+            <p class="card-text"><strong>Rental Price:</strong> PHP <?= number_format($property['property_rental_price'], 2, '.', ',') ?></p>
+            <p class="card-text"><strong>Description:</strong> <?= htmlspecialchars($property['property_description']) ?></p>
+            <p class="card-text"><strong>Status:</strong> <?= ucfirst(htmlspecialchars($property['property_status'])) ?></p>
+        </div>
+    </div>
 
-            <!-- Right Column: Property Image -->
-            <div class="col-lg-6">
-                <div class="card-img p-3">
-                    <img src="<?php echo htmlspecialchars($property['property_image']); ?>" alt="Property Image" class="card-img-top img-fluid">
+    <!-- Amenities -->
+    <div class="card mt-3 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title"><strong>Amenities:</strong></h5>
+            <?php if (!empty($amenities)): ?>
+                <div class=" d-flex gap-2">
+                    <?php foreach ($amenities as $amenity): ?>
+                        <div class="px-3 py-2 bg-body-tertiary rounded-5"><?= htmlspecialchars($amenity) ?></div>
+                    <?php endforeach; ?>
                 </div>
+            <?php else: ?>
+                <p class="text-muted">No amenities listed.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Images -->
+    <div class="card mt-3 shadow-sm">
+        <div class="card-body">
+            <h5 class="card-title"><strong>Images:</strong></h5>
+            <div class="row g-2">
+                <?php
+                for ($i = 1; $i <= 10; $i++) {
+                    $img = $images["image$i"] ?? '';
+                    if (!empty($img)) {
+                        echo "<div class='col-6 col-md-4 col-lg-3'><img src='" . htmlspecialchars($img) . "' class='img-fluid rounded border' style='height: 150px; object-fit: cover; width: 100%;'></div>";
+                    }
+                }
+                ?>
             </div>
         </div>
     </div>
 </div>
 
-<?php
-mysqli_close($conn);
-?>
+<?php mysqli_close($conn); ?>

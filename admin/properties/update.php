@@ -1,128 +1,177 @@
 <?php
 $conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
-
 if (!$conn) {
     echo "Error: cannot connect to database" . mysqli_connect_error();
+    exit;
 }
 
-
-function uploadImage($file, $existingImage = null)
+function deleteOldImages($conn, $property_id)
 {
-    // Use a relative path for deployment
     $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/rent-master2/admin/assets/properties/";
+    $query = "SELECT * FROM property_images WHERE property_id = '$property_id'";
+    $result = mysqli_query($conn, $query);
+    $images = mysqli_fetch_assoc($result);
 
-    // Check if the directory exists and create it if not
+    // Delete old images from the folder
+    for ($i = 1; $i <= 10; $i++) {
+        $imagePath = $images["image$i"];
+        if (!empty($imagePath) && file_exists($_SERVER['DOCUMENT_ROOT'] . $imagePath)) {
+            unlink($_SERVER['DOCUMENT_ROOT'] . $imagePath);
+        }
+    }
+}
+
+function uploadSingleImage($file)
+{
+    $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/rent-master2/admin/assets/properties/";
     if (!is_dir($targetDir)) {
-        mkdir($targetDir, 0777, true); // Ensure the directory exists
+        mkdir($targetDir, 0777, true);
     }
 
-    $fileName = basename($file["name"]);
+    $fileName = time() . '_' . basename($file["name"]);
     $targetFile = $targetDir . $fileName;
-    $uploadOk = 1;
     $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
-    // Check if the file is an actual image
-    if (!getimagesize($file["tmp_name"])) {
-        echo "File is not an image.";
-        $uploadOk = 0;
-    }
-
-    // Check file size (limit to 2MB)
-    if ($file["size"] > 5000000) {
-        echo "File size exceeds 2MB.";
-        $uploadOk = 0;
-    }
-
-    // Allow only certain file formats
     $allowedFormats = ["jpg", "jpeg", "png", "gif"];
-    if (!in_array($imageFileType, $allowedFormats)) {
-        echo "Only JPG, JPEG, PNG, and GIF files are allowed.";
-        $uploadOk = 0;
-    }
 
-    // If there's an existing image, delete it
-    if ($existingImage && file_exists($_SERVER['DOCUMENT_ROOT'] . $existingImage)) {
-        unlink($_SERVER['DOCUMENT_ROOT'] . $existingImage); // Delete the existing image
-    }
-
-    // Attempt to upload the file
-    if ($uploadOk == 1 && move_uploaded_file($file["tmp_name"], $targetFile)) {
-        // Return the full path of the image relative to the root of the web server
-        return "/rent-master2/admin/assets/properties/" . $fileName;
-    } else {
-        echo "Error uploading file.";
+    if (!getimagesize($file["tmp_name"])) {
         return null;
     }
+
+    if ($file["size"] > 5000000 || !in_array($imageFileType, $allowedFormats)) {
+        return null;
+    }
+
+    if (move_uploaded_file($file["tmp_name"], $targetFile)) {
+        return "/rent-master2/admin/assets/properties/" . $fileName;
+    }
+
+    return null;
 }
 
-
-// Update Property
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (!empty($_POST['property_name']) && !empty($_POST['location']) && !empty($_POST['description']) && !empty($_POST['date_created'])) {
+    if (!empty($_POST['property_id']) && !empty($_POST['property_name']) && !empty($_POST['location']) && !empty($_POST['description']) && !empty($_POST['date_created']) && !empty($_POST['property_rental_price'])) {
+
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
         $property_name = mysqli_real_escape_string($conn, $_POST['property_name']);
-        $property_location = mysqli_real_escape_string($conn, $_POST['location']);
-        $property_description = mysqli_real_escape_string($conn, $_POST['description']);
-        $property_date_created = mysqli_real_escape_string($conn, $_POST['date_created']);
-        $existing_image = mysqli_real_escape_string($conn, $_POST['existing_image']); // Existing image path
-        $property_rental_price = mysqli_real_escape_string($conn, $_POST['property_rental_price']);
+        $location = mysqli_real_escape_string($conn, $_POST['location']);
+        $description = mysqli_real_escape_string($conn, $_POST['description']);
+        $date_created = mysqli_real_escape_string($conn, $_POST['date_created']);
+        $rental_price = mysqli_real_escape_string($conn, $_POST['property_rental_price']);
 
-        // Check if a new image is uploaded
-        if ($_FILES['house_image']['name']) {
-            // Upload the new image and get the new image path
-            $property_image = uploadImage($_FILES['house_image'], $existing_image);
-        } else {
-            // If no new image is uploaded, retain the existing image
-            $property_image = $existing_image;
-        }
-
-        // Update property record
-        $queryUpdate = "UPDATE properties
-                        SET property_name = '$property_name', property_location = '$property_location', 
-                            property_date_created = '$property_date_created', 
-                            property_description = '$property_description', 
-                            property_image = '$property_image',
-                            property_rental_price = '$property_rental_price' 
+        // Update main property table
+        $queryUpdate = "UPDATE properties 
+                        SET property_name = '$property_name', property_location = '$location', 
+                            property_date_created = '$date_created', property_description = '$description',
+                            property_rental_price = '$rental_price'
                         WHERE property_id = '$property_id'";
+        mysqli_query($conn, $queryUpdate);
 
-        if (mysqli_query($conn, $queryUpdate)) {
-            // Redirect after successful update
-            echo "<meta http-equiv='refresh' content='0;url=/rent-master2/admin/?page=properties/index'>";
-            exit();
-        } else {
-            echo "Error updating record: " . mysqli_error($conn);
+        // --- Update Images ---
+        if (!empty($_FILES['property_images']['name'][0])) {
+            // Delete previous images in the folder
+            deleteOldImages($conn, $property_id);
+
+            $images = $_FILES['property_images'];
+            $imagePaths = [];
+
+            for ($i = 0; $i < min(10, count($images['name'])); $i++) {
+                $file = [
+                    'name' => $images['name'][$i],
+                    'type' => $images['type'][$i],
+                    'tmp_name' => $images['tmp_name'][$i],
+                    'error' => $images['error'][$i],
+                    'size' => $images['size'][$i]
+                ];
+
+                $imagePath = uploadSingleImage($file);
+                if ($imagePath) {
+                    $imagePaths[] = $imagePath;
+                }
+            }
+
+            while (count($imagePaths) < 10) {
+                $imagePaths[] = null;
+            }
+
+            // Check if entry exists
+            $check = mysqli_query($conn, "SELECT * FROM property_images WHERE property_id = '$property_id'");
+            if (mysqli_num_rows($check) > 0) {
+                // Update
+                $stmt = $conn->prepare("UPDATE property_images 
+                    SET image1=?, image2=?, image3=?, image4=?, image5=?, image6=?, image7=?, image8=?, image9=?, image10=? 
+                    WHERE property_id=?");
+                $stmt->bind_param(
+                    "ssssssssssi",
+                    $imagePaths[0],
+                    $imagePaths[1],
+                    $imagePaths[2],
+                    $imagePaths[3],
+                    $imagePaths[4],
+                    $imagePaths[5],
+                    $imagePaths[6],
+                    $imagePaths[7],
+                    $imagePaths[8],
+                    $imagePaths[9],
+                    $property_id
+                );
+            } else {
+                // Insert (if somehow missing)
+                $stmt = $conn->prepare("INSERT INTO property_images 
+                    (property_id, image1, image2, image3, image4, image5, image6, image7, image8, image9, image10) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param(
+                    "issssssssss",
+                    $property_id,
+                    $imagePaths[0],
+                    $imagePaths[1],
+                    $imagePaths[2],
+                    $imagePaths[3],
+                    $imagePaths[4],
+                    $imagePaths[5],
+                    $imagePaths[6],
+                    $imagePaths[7],
+                    $imagePaths[8],
+                    $imagePaths[9]
+                );
+            }
+            $stmt->execute();
+            $stmt->close();
         }
-    } else {
-        echo "All fields are required.";
-    }
-} else {
-    // Fetch property details for editing
-    if (isset($_GET['property_id'])) {
-        $property_id = $_GET['property_id'];
 
-        // Fetch the property data from the database
-        $query = "SELECT * FROM properties WHERE property_id = '$property_id'";
-        $result = mysqli_query($conn, $query);
-
-        if (mysqli_num_rows($result) > 0) {
-            $property = mysqli_fetch_assoc($result);
-            $property_name = $property['property_name'];
-            $location = $property['property_location'];
-            $description = $property['property_description'];
-            $date_created = $property['property_date_created'];
-            $existing_image = $property['property_image'];
-            $rental_price = $property['property_rental_price'];
-        } else {
-            echo "Property not found.";
-            exit;
+        // --- Update Amenities ---
+        mysqli_query($conn, "DELETE FROM property_amenities WHERE property_id = '$property_id'");
+        if (!empty($_POST['amenities'])) {
+            foreach ($_POST['amenities'] as $amenity_id) {
+                $amenity_id = (int)$amenity_id;
+                mysqli_query($conn, "INSERT INTO property_amenities (property_id, amenity_id) VALUES ($property_id, $amenity_id)");
+            }
         }
+
+        header("Location: /rent-master2/admin/?page=properties/index");
+        exit();
     } else {
-        echo "No property ID provided.";
-        exit;
+        echo "All fields are required";
     }
 }
 
-mysqli_close($conn);
+// Fetch existing property and amenities
+if (isset($_GET['property_id'])) {
+    $property_id = $_GET['property_id'];
+    $query = "SELECT * FROM properties WHERE property_id = '$property_id'";
+    $result = mysqli_query($conn, $query);
+    $property = mysqli_fetch_assoc($result);
+
+    $images_result = mysqli_query($conn, "SELECT * FROM property_images WHERE property_id = '$property_id'");
+    $images = mysqli_fetch_assoc($images_result);
+
+    $amenities_result = mysqli_query($conn, "SELECT amenity_id FROM property_amenities WHERE property_id = '$property_id'");
+    $selected_amenities = [];
+    while ($row = mysqli_fetch_assoc($amenities_result)) {
+        $selected_amenities[] = $row['amenity_id'];
+    }
+
+    $all_amenities = mysqli_query($conn, "SELECT * FROM amenities");
+}
 ?>
 
 
@@ -138,115 +187,91 @@ mysqli_close($conn);
     </header>
 
     <form id="property-form" action="properties/update.php" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="property_id" value="<?php echo $property_id; ?>">
+        <input type="hidden" name="property_id" value="<?= $property['property_id'] ?>">
+
         <div class="mt-2">
             <label for="property-name" class="form-label">Property Name</label>
-            <input type="text" id="property-name" name="property_name" class="form-control" value="<?php echo $property_name; ?>" required>
+            <input type="text" name="property_name" class="form-control" value="<?= $property['property_name'] ?>" required>
         </div>
+
         <div class="mt-2">
             <label for="location" class="form-label">Location</label>
-            <input type="text" id="location" name="location" class="form-control" value="<?php echo $location; ?>" required>
+            <input type="text" name="location" class="form-control" value="<?= $property['property_location'] ?>" required>
         </div>
+
         <div class="mt-2">
             <label for="date-created" class="form-label">Date Created</label>
-            <input type="date" id="date-created" name="date_created" class="form-control" value="<?php echo $date_created; ?>" required>
+            <input type="date" name="date_created" class="form-control" value="<?= $property['property_date_created'] ?>" required>
         </div>
+
         <div class="mt-2">
             <label for="rental-price" class="form-label">Rental Price (PHP)</label>
-            <input type="number" id="rental-price" name="property_rental_price" class="form-control" value="<?php echo $rental_price; ?>" required>
+            <input type="number" name="property_rental_price" class="form-control" value="<?= $property['property_rental_price'] ?>" required>
         </div>
+
         <div class="mt-2">
             <label for="description" class="form-label">Description</label>
-            <textarea id="description" name="description" class="form-control" required><?php echo $description; ?></textarea>
+            <textarea name="description" class="form-control" required><?= $property['property_description'] ?></textarea>
         </div>
-        <div class="mt-2">
-            <label for="house-image">Upload Image</label>
-            <input type="file" id="house-image" name="house_image" class="form-control" accept="image/*">
-            <input type="hidden" name="existing_image" value="<?php echo $existing_image; ?>">
-            <?php if (!empty($existing_image)) : ?>
-                <div class="mt-2">
-                    <label for="current-image-preview" class=" w-100">Current Image</label>
-                    <img id="current-image-preview"
-                        src="<?php echo $existing_image; ?>"
-                        alt="Current Image"
-                        class="img-fluid"
-                        style="max-width: 200px;">
-                </div>
-            <?php endif; ?>
-        </div>
-        <button type="button" id="submit-btn" class="btn btn-primary px-4 rounded-5 mt-3">Update</button>
-    </form>
-</div>
 
-<!-- Modal (Optional Preview) -->
+        <div class="mt-2">
+            <label class="form-label">Upload New Images</label>
+            <input type="file" name="property_images[]" class="form-control" accept="image/*" multiple>
+        </div>
+
+        <?php if ($images): ?>
+            <div class="mt-3">
+                <label class="form-label">Current Images:</label><br>
+                <?php
+                for ($i = 1; $i <= 10; $i++) {
+                    $img = $images["image$i"];
+                    if (!empty($img)) {
+                        echo "<img src='$img' style='max-width: 100px; margin: 5px; border: 1px solid #ccc;'>";
+                    }
+                }
+                ?>
+            </div>
+        <?php endif; ?>
+
+        <div class="mt-2">
+            <label class="form-label">Amenities</label>
+            <div class="d-flex flex-wrap gap-3">
+                <?php while ($row = mysqli_fetch_assoc($all_amenities)): ?>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="amenities[]" value="<?= $row['amenity_id'] ?>"
+                            <?= in_array($row['amenity_id'], $selected_amenities) ? 'checked' : '' ?>>
+                        <label class="form-check-label"><?= $row['amenity_name'] ?></label>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary px-4 rounded-5 mt-3">Update</button>
+    </form>
+
+</div>
+<!-- Confirmation Modal -->
 <div class="modal fade" id="propertyModal" tabindex="-1">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
+    <div class="modal-dialog">
+        <div class="modal-content border-0 shadow">
             <div class="modal-header">
-                <h5 class="modal-title">Property Preview</h5>
+                <h5 class="modal-title fw-semibold">Confirm Update</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p><strong>Property Name:</strong> <span id="modal-property-name"></span></p>
-                <p><strong>Location:</strong> <span id="modal-location"></span></p>
-                <p><strong>Date Created:</strong> <span id="modal-date-created"></span></p>
-                <p><strong>Rental Price:</strong> PHP <span id="modal-rental-price"></span></p>
-                <p><strong>Description:</strong> <span id="modal-description"></span></p>
-                <p><strong>Image Preview:</strong></p>
-                <img id="modal-image-preview" src="" alt="Property Image" class="img-fluid d-none">
+                <p>Are you sure you want to update this property?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" id="confirmed-btn">Confirmed</button>
+                <button type="button" class="btn btn-secondary rounded-5" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary rounded-5">Confirm</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Handle the form data and image preview
-    // Handle the form data and image preview
     document.getElementById("submit-btn").addEventListener("click", function() {
-        let propertyName = document.getElementById("property-name").value.trim();
-        let location = document.getElementById("location").value.trim();
-        let description = document.getElementById("description").value.trim();
-        let dateCreated = document.getElementById("date-created").value;
-        let rentalPrice = document.getElementById("rental-price").value.trim(); // Get the rental price
-        let fileInput = document.getElementById("house-image");
-        let existingImage = document.querySelector("input[name='existing_image']").value;
-
-        if (propertyName === "" || location === "" || description === "" || dateCreated === "" || rentalPrice === "") {
-            alert("All fields are required!");
-            return;
-        }
-
-        // Set modal content
-        document.getElementById("modal-property-name").innerText = propertyName;
-        document.getElementById("modal-location").innerText = location;
-        document.getElementById("modal-description").innerText = description;
-        document.getElementById("modal-date-created").innerText = dateCreated;
-        document.getElementById("modal-rental-price").innerText = rentalPrice; // Set rental price in modal
-
-        let imagePreview = document.getElementById("modal-image-preview");
-
-        if (fileInput.files.length > 0) {
-            let fileReader = new FileReader();
-            fileReader.onload = function(event) {
-                imagePreview.src = event.target.result;
-                imagePreview.classList.remove("d-none");
-            };
-            fileReader.readAsDataURL(fileInput.files[0]);
-        } else {
-            imagePreview.src = existingImage;
-            imagePreview.classList.remove("d-none");
-        }
-
         let modal = new bootstrap.Modal(document.getElementById("propertyModal"));
         modal.show();
-    });
-
-    // Confirm and submit the form
-    document.getElementById("confirmed-btn").addEventListener("click", function() {
-        document.getElementById("property-form").submit();
     });
 </script>

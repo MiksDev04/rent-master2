@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_query($conn, "UPDATE properties SET property_status = 'available' WHERE property_id = '$property_id'");
 
             // Redirect to tenants list
-            echo "<meta http-equiv='refresh' content='0;url=/rent-master2/admin/?page=tenants/index'>";
+            header("Location: /rent-master2/admin/?page=tenants/index");
             exit();
         } else {
             echo "Error terminating tenant: " . mysqli_error($conn);
