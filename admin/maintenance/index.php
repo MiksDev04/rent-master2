@@ -1,6 +1,13 @@
 <?php
-// Database connection 
-require_once '../database/config.php';
+// DB connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "rentsystem";
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 // Handle approval/rejection
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_id'])) {
     $request_id = $_POST['request_id'];

@@ -1,6 +1,13 @@
 <?php
-// Database connection with error handling
-require_once '../database/config.php';
+// DB connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "rentsystem";
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
 $tenant_id = $_GET['tenant_id'] ?? null;
 if (!$tenant_id) {

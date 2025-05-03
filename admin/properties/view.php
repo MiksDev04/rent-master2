@@ -1,6 +1,13 @@
 <?php
-// Database connection 
-require_once '../database/config.php';
+// DB connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "rentsystem";
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
 if (isset($_GET['property_id'])) {
     $property_id = $_GET['property_id'];

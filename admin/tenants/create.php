@@ -1,6 +1,14 @@
 <?php
 // Database connection 
-require_once '../database/config.php';
+// DB connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "rentsystem";
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
 // Fetch available properties
 $queryProperties = "SELECT property_id, property_name FROM properties WHERE property_status = 'available'";
@@ -19,6 +27,7 @@ while ($row = mysqli_fetch_assoc($usersResult)) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
     if (!empty($_POST['user_id']) && !empty($_POST['property_id'])) {
         $user_id = mysqli_real_escape_string($conn, $_POST['user_id']);
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);

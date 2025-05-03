@@ -1,6 +1,13 @@
 <?php
-// Database connection 
-require_once '../database/config.php';
+// DB connection
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "rentsystem";
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
 
 // Fetch payment records with property price
 $sql = "SELECT p.payment_id, p.tenant_id, t.property_id, pr.property_rental_price, p.payment_start_date, p.payment_end_date, p.payment_status 

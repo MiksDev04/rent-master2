@@ -16,7 +16,7 @@ session_start();
 
 <body>
     <!-- Sidebar -->
-    <div class="sidebar z-2 bg-white" id="sidebar">
+    <div class="sidebar z-2 bg-white" id="sidebar" >
         <div class="text-center d-flex align-items-center justify-content-between">
             <div>
                 <img src="./assets/icons/group.png" width="140" height="70" alt="Logo-image">
@@ -97,8 +97,8 @@ session_start();
 
 
     <!-- Main Content -->
-    <main class="content p-0">
-        <header class=" bg-body-tertiary shadow-sm d-flex align-items-center justify-content-between py-1 px-3 position-sticky top-0 z-1">
+    <main class="content p-0" >
+        <header style="z-index: 1111;" class=" bg-body-tertiary shadow-sm d-flex align-items-center justify-content-between py-1 px-3 position-sticky top-0">
             <!-- Toggle Button (Only for Small Screens) -->
             <button class=" btn border-0 toggle-btn d-lg-none py-2 px-3 rounded-2 d-flex align-items-center" id="toggleSidebar">
                 <svg width="1.2rem" fill="#555555" xmlns="http://www.w3.org/2000/svg"
