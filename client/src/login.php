@@ -16,16 +16,7 @@ header("Expires: 0"); // Proxies
 //         exit();
 //     }
 // }
-
-// DB connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "rentsystem";
-$conn = mysqli_connect($servername, $username, $password, $dbname);
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+require_once '../database/config.php';
 
 // Login logic
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -55,26 +46,88 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 mysqli_close($conn);
 ?>
+<!-- Login Page -->
+<div class="container">
+    <div class="row align-items-center min-vh-100">
+        <!-- Illustration Column -->
+        <div class="col-lg-6 d-none d-lg-block p-0">
+            <div class="bg-primary h-100 d-flex align-items-center justify-content-center">
+                <svg width="80%" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#FFFFFF" d="M300,200 C300,89.54 210.46,0 100,0 C-10.46,0 -100,89.54 -100,200 C-100,310.46 -10.46,400 100,400 C210.46,400 300,310.46 300,200 Z" transform="translate(250 50)"/>
+                    <path fill="#FFFFFF" d="M50,0 L450,0 C472.09,0 490,17.91 490,40 L490,360 C490,382.09 472.09,400 450,400 L50,400 C27.91,400 10,382.09 10,360 L10,40 C10,17.91 27.91,0 50,0 Z" transform="translate(50 50)"/>
+                    <circle fill="#1971C2" cx="300" cy="150" r="60"/>
+                    <path fill="#FFFFFF" d="M250,250 L350,250 C375.23,250 395.77,270.54 395.77,295.77 L395.77,345.77 C395.77,370.99 375.23,391.54 350,391.54 L250,391.54 C224.77,391.54 204.23,370.99 204.23,345.77 L204.23,295.77 C204.23,270.54 224.77,250 250,250 Z" transform="translate(0 -50)"/>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Form Column -->
+        <div class="col-lg-6 p-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Welcome Back</h2>
+                <a href="/rent-master2/client/?page=src/register" class="btn btn-outline-primary">Create Account</a>
+            </div>
+            
+            <p class="text-muted mb-4">Sign in to manage your properties and rentals</p>
+            
+            <?php if (isset($login_error)): ?>
+                <div class="alert alert-danger"><?= $login_error ?></div>
+            <?php endif; ?>
+            
+            <form method="post" class="mt-4">
+                <div class="mb-3">
+                    <label class="form-label" for="user_email">Email</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="#6C757D">
+                                <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383l-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z"/>
+                            </svg>
+                        </span>
+                        <input type="email" class="form-control" id="user_email" name="user_email" placeholder="Enter your email" required>
+                    </div>
+                </div>
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap">
-        <h2 class="mb-2 mb-md-0">Login</h2>
-        <a href="/rent-master2/client/src/logout.php" class="btn btn-outline-danger">Logout</a>
+                <div class="mb-4">
+                    <label class="form-label" for="user_password">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="#6C757D">
+                                <path d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/>
+                            </svg>
+                        </span>
+                        <input type="password" class="form-control" id="user_password" name="user_password" placeholder="Enter your password" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Login</button>
+                
+                <div class="text-center">
+                    <p class="text-muted">Don't have an account? <a href="/rent-master2/client/?page=src/register" class="text-decoration-none">Sign up</a></p>
+                </div>
+            </form>
+            <button role="button" type="button" data-bs-toggle="modal" data-bs-target="#logoutModal" class="btn btn-lg btn-outline-warning">
+                Logout Account
+            </button>
+                
+        </div>
     </div>
-
-    <?php if (isset($login_error)) echo $login_error; ?>
-
-    <form method="post">
-        <div class="mb-3">
-            <label class="form-label" for="user_email">Email:</label>
-            <input type="email" class="form-control form-control-sm" id="user_email" name="user_email" required>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label" for="user_password">Password:</label>
-            <input type="password" class="form-control" id="user_password" name="user_password" required>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
 </div>
+
+ <!-- Logout Confirmation Modal -->
+ <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to logout?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <a href="/rent-master2/client/src/logout.php" class="btn btn-danger">Logout</a>
+                </div>
+            </div>
+        </div>
+    </div>

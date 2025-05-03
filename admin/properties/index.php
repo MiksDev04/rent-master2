@@ -1,9 +1,6 @@
 <?php
-$conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
-
-if (!$conn) {
-    echo "Error: cannot connect to database" . mysqli_connect_error();
-}
+// Database connection 
+require_once '../database/config.php';
 
 // Check if a filter is applied via the form submission
 $status_filter = isset($_POST['status']) ? $_POST['status'] : 'available';

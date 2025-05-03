@@ -25,7 +25,8 @@
         'src/logout',
         'src/contact',
         'src/your-property',
-        'src/about'
+        'src/about',
+        'src/rating-property'
     ];
     
     // Get the page from the query string

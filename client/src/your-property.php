@@ -1,11 +1,8 @@
 <?php
 session_start();
 
-// Database connection
-$conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+// Database connection with error handling
+require_once '../database/config.php';
 
 $user_id = $_SESSION['user_id'] ?? null;
 $is_tenant = false;
@@ -22,6 +19,34 @@ if ($user_id) {
     }
 }
 
+// Get payment information for the tenant
+$payment_info = [];
+if ($tenant_id) {
+    // Get the current date
+    $current_date = date('Y-m-d');
+
+    // SQL query to fetch the most recent payment record for the tenant
+    $payment_sql = "SELECT * FROM payments WHERE tenant_id = $tenant_id AND payment_status = 'Pending' ORDER BY payment_date DESC LIMIT 1";
+    $payment_result = mysqli_query($conn, $payment_sql);
+
+    // Check if the query returns any results
+    if ($payment_result && mysqli_num_rows($payment_result) > 0) {
+        // Fetch the payment record
+        $payment_info = mysqli_fetch_assoc($payment_result);
+
+        // Get the payment start and end dates from the fetched record
+        $payment_start_date = $payment_info['payment_start_date'];
+        $payment_end_date = $payment_info['payment_end_date'];
+
+        // Check if the current date is between the payment start and end dates
+        if ($current_date < $payment_start_date || $current_date > $payment_end_date) {
+            // Current date is within the payment period, so load the payment info
+            $payment_info = [];
+        }
+    }
+}
+
+
 // Handle payment submission
 $payment_message = "";
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
@@ -29,7 +54,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
     if (!$method) {
         $payment_message = "Please select a payment method.";
     } else {
-        $payment_message = "Thank you! Your payment via {$method} has been received. Please proceed as instructed.";
+        // Update the most recent pending payment for this tenant
+        $update_payment = "UPDATE payments 
+                          SET payment_status = 'Paid', 
+                              payment_date = CURDATE(), 
+                              payment_method = '$method'
+                          WHERE tenant_id = $tenant_id 
+                          AND payment_status = 'Pending'
+                          ORDER BY payment_date DESC 
+                          LIMIT 1";
+        
+        if (mysqli_query($conn, $update_payment)) {
+            if (mysqli_affected_rows($conn) > 0) {
+                $payment_message = "You paid for this month";
+                // Include the file where the function is defined
+                require_once __DIR__ . '/../includes/functions.php';
+
+                // Make sure you already have $conn (your database connection) and $tenant_id
+                reserveNextMonthPayment($conn, $tenant_id);
+                header("Location: /rent-master2/client/?page=src/rating-property");
+            } else {
+                $payment_message = "No pending payments found to update.";
+            }
+        } else {
+            $payment_message = "Error processing payment: " . mysqli_error($conn);
+        }
     }
 }
 
@@ -186,8 +235,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
             position: absolute;
             opacity: 0;
         }
+        .payment-details {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .payment-details p {
+            margin-bottom: 0.5rem;
+        }
+        .payment-details strong {
+            color: #212529;
+        }
+        .highlight-period {
+            background-color: #fff3bf;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .highlight-amount {
+            background-color: #d3f9d8;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .urgent-payment {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #c92a2a;
+            background-color: #ffc9c9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"> -->
 </head>
 <body>
 <div class="container py-5">
@@ -207,10 +290,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
 
         <div class="row row-cols-1 row-cols-lg-2 g-4">
             <div class="col">
+                <?php  if($payment_info == []): ?>
+                    <div class="card p-4 h-100">
+                        <h2>You'd already pay for this month</h2>
+                        <img src="./assets/icons/undraw_online-payments_p97e.png" alt="">
+                    </div>
+                <?php else : ?>
                 <!-- Payment Section -->
                 <div class="card p-4 h-100">
                     <h2>Make a Payment</h2>
-        
+                    
                     <?php if ($payment_message): ?>
                         <div class="alert alert-success mb-4">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align: -2px; margin-right: 4px;">
@@ -219,13 +308,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
                             <?= $payment_message ?>
                         </div>
                     <?php endif; ?>
-        
+                    
+                    <?php if (!empty($payment_info)): ?>
+                        <div class="payment-details mb-4">
+                            <p><strong>Payment Status:</strong> <?= $payment_info['payment_status'] ?></p>
+                            <p><strong>Period:</strong> <span class="highlight-period"><?= date('M j, Y', strtotime($payment_info['payment_start_date'])) ?> to <?= date('M j, Y', strtotime($payment_info['payment_end_date'])) ?></span></p>
+                            <p><strong>Amount Due:</strong> <span class="highlight-amount">₱5,000.00</span></p>
+                            
+                            <?php 
+                            $due_date = new DateTime($payment_info['payment_end_date']);
+                            $today = new DateTime();
+                            $days_remaining = $due_date->diff($today)->days;
+                            
+                            if ($days_remaining <= 5 && $payment_info['payment_status'] != 'Paid'): ?>
+                                <div class="urgent-payment">
+                                    WARNING: You have <?= $days_remaining ?> day/s left to pay or your contract will be terminated!
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                     <form method="POST">
                         <div class="row g-3 row-cols-lg-2 row-cols-1 mb-4">
                             <div class="col">
                                 <label class="payment-option d-block">
                                     <div class="d-flex align-items-center">
-                                        <svg class="payment-icon" viewBox="0 0 24 24">
+                                        <svg class="payment-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path fill="#00A67E" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/>
                                         </svg>
                                         <span class="payment-label">GCash</span>
@@ -236,7 +343,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
                             <div class="col">
                                 <label class="payment-option d-block">
                                     <div class="d-flex align-items-center">
-                                        <svg class="payment-icon" viewBox="0 0 24 24">
+                                        <svg class="payment-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path fill="#6F2C91" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
                                         </svg>
                                         <span class="payment-label">Maya</span>
@@ -247,18 +354,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
                             <div class="col">
                                 <label class="payment-option d-block">
                                     <div class="d-flex align-items-center">
-                                        <svg class="payment-icon" viewBox="0 0 24 24">
+                                        <svg class="payment-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path fill="#1A1F71" d="M20 4H4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
                                         </svg>
                                         <span class="payment-label">Debit/Credit Card</span>
                                     </div>
-                                    <input class="form-check-input" type="radio" name="payment_method" id="card" value="Debit/Credit Card">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="card" value="Credit/Debit Card">
                                 </label>
                             </div>
                             <div class="col">
                                 <label class="payment-option d-block">
                                     <div class="d-flex align-items-center">
-                                        <svg class="payment-icon" viewBox="0 0 24 24">
+                                        <svg class="payment-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                             <path fill="#0072CE" d="M5 14h14v-2H5v2zm0 4h14v-2H5v2zm0-8h14V8H5v2zm-2-4v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2z"/>
                                         </svg>
                                         <span class="payment-label">Bank Transfer</span>
@@ -269,18 +376,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
                             <div class="col">
                                 <label class="payment-option d-block">
                                     <div class="d-flex align-items-center">
-                                        <svg class="payment-icon" viewBox="0 0 24 24">
-                                            <path fill="#28A745" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/>
+                                        <svg class="payment-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill="#FF9900" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
                                         </svg>
-                                        <span class="payment-label">Cash</span>
+                                        <span class="payment-label">Coins.ph</span>
                                     </div>
-                                    <input class="form-check-input" type="radio" name="payment_method" id="cash" value="Cash">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="coins" value="Coins.ph">
                                 </label>
                             </div>
                         </div>
                         <button type="submit" name="submit_payment" class="btn btn-success btn-custom w-100 mt-2">Submit Payment</button>
                     </form>
                 </div>
+                <?php endif;?>
             </div>
             
             <div class="col">

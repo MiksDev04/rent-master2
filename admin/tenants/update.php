@@ -1,9 +1,6 @@
 <?php
-$conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
-
-if (!$conn) {
-    die("Error: cannot connect to database " . mysqli_connect_error());
-}
+// Database connection with error handling
+require_once '../database/config.php';
 
 $tenant_id = $_GET['tenant_id'] ?? null;
 if (!$tenant_id) {

@@ -1,16 +1,20 @@
 <?php
-// Connect to database
-$conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
-
-if (!$conn) {
-    echo "Error: cannot connect to database" . mysqli_connect_error();
-}
+// Database connection 
+require_once '../database/config.php';
 
 
 // Handle the deletion after form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['property_id'])) {
         $property_id = $_POST['property_id'];
+
+        // Check foreign key constraints (e.g., tenants table)
+        $checkForeignKey = mysqli_query($conn, "SELECT * FROM tenants WHERE property_id = '$property_id'");
+        if (mysqli_num_rows($checkForeignKey) > 0) {
+            // Redirect back to the deletion page with error flag
+            header("Location: /rent-master2/admin/?page=properties/delete&property_id=$property_id&error=1");
+            exit();
+        }
 
         // Delete related images from the server
         $query = "SELECT * FROM property_images WHERE property_id = '$property_id'";
@@ -73,6 +77,13 @@ mysqli_close($conn);
         </a>
         <h4 class="fw-medium ">Property / Delete Property</h4>
     </header>
+    <?php if (isset($_GET['error']) && $_GET['error'] == 1): ?>
+        <div class="alert alert-danger mt-3 alert-dismissible fade show" role="alert">
+            <strong>Warning:</strong> This property is currently assigned to one or more tenants. You must remove these associations before deleting the property.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+    <?php endif; ?>
 
     <p class="text-warning">Are you sure you want to delete the following property? This action cannot be undone.</p>
 
@@ -93,7 +104,7 @@ mysqli_close($conn);
 
     <div class="mt-2">
         <label class="form-label fw-bold">Rental Price</label>
-        <div class="form-control-plaintext">PHP <?php echo number_format(htmlspecialchars($property['property_rental_price']), 2, '.', ',');?></div>
+        <div class="form-control-plaintext">PHP <?php echo number_format(htmlspecialchars($property['property_rental_price']), 2, '.', ','); ?></div>
     </div>
 
     <div class="mt-2">

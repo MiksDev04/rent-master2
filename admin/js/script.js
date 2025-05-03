@@ -32,15 +32,3 @@ window.addEventListener('resize', () => {
     }
 });
 
-
-
-function ChangeNavigationFocus(btnClick) {
-    const navbar_btns = document.querySelectorAll('.sidebar > a');
-    let newBtn = btnClick.split('/');
-    navbar_btns.forEach(btn => {
-        btn.classList.remove('sidebar-btn-focus');
-        if (btn.getAttribute('href').includes(newBtn[0])) {
-            btn.classList.add('sidebar-btn-focus');
-        }
-    });
-}

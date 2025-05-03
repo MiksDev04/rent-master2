@@ -1,10 +1,6 @@
 <?php
-$conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
-
-if (!$conn) {
-    echo "Error: cannot connect to database" . mysqli_connect_error();
-    exit;
-}
+// Database connection 
+require_once '../database/config.php';
 
 if (isset($_GET['property_id'])) {
     $property_id = $_GET['property_id'];
@@ -47,7 +43,7 @@ if (isset($_GET['property_id'])) {
             <p class="card-text"><strong>Created On:</strong> <?= htmlspecialchars($property['property_date_created']) ?></p>
             <p class="card-text"><strong>Rental Price:</strong> PHP <?= number_format($property['property_rental_price'], 2, '.', ',') ?></p>
             <p class="card-text"><strong>Description:</strong> <?= htmlspecialchars($property['property_description']) ?></p>
-            <p class="card-text"><strong>Status:</strong> <?= ucfirst(htmlspecialchars($property['property_status'])) ?></p>
+            <p class="card-text"><strong>Status:</strong><span class=" badge bg-success ms-1"> <?= ucfirst(htmlspecialchars($property['property_status'])) ?></span></p>
         </div>
     </div>
 

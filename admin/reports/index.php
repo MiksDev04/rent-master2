@@ -1,9 +1,6 @@
 <?php
-// Database connection
-$conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+// Database connection 
+require_once '../database/config.php';
 
 // Handle approval or rejection
 if (isset($_GET['action']) && isset($_GET['id'])) {
@@ -19,6 +16,18 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
             // Update user status to tenant
             $user_sql = "UPDATE users SET user_role = 'tenant' WHERE user_id = (SELECT user_id FROM tenants WHERE tenant_id = '$tenant_id')";
             mysqli_query($conn, $user_sql);
+
+            // Insert initial payment record
+            $payment_sql = "INSERT INTO payments (tenant_id, payment_start_date, payment_end_date, payment_status, payment_date, payment_method)
+                          VALUES (
+                              '$tenant_id', 
+                              CURDATE(), 
+                              DATE_ADD(CURDATE(), INTERVAL 1 MONTH), 
+                              'Pending', 
+                              '', 
+                              ''
+                          )";
+            mysqli_query($conn, $payment_sql);
 
             header("Location: /rent-master2/admin/?page=reports/index");
             exit;

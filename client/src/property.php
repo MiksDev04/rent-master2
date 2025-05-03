@@ -1,16 +1,12 @@
 <?php
 // Database connection with error handling
-$conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
-if (!$conn) {
-    die('<div class="database-error">Database connection failed: ' . mysqli_connect_error() . '</div>');
-}
+require_once '../database/config.php';
+
 
 // Fetch available properties with prepared statement for security
-$sql = "SELECT p.property_id, p.property_name, p.property_location, 
-               p.property_rental_price, p.property_description, pi.image1 
+$sql = "SELECT p.*, pi.image1 
         FROM properties p 
         LEFT JOIN property_images pi ON p.property_id = pi.property_id 
-        WHERE p.property_status = 'available' 
         ORDER BY p.property_date_created DESC";
 
 $result = $conn->query($sql);
@@ -53,11 +49,14 @@ $result = $conn->query($sql);
                                 <?php echo substr(htmlspecialchars($row['property_description']), 0, 100); ?>...
                             </p>
                         </div>
-                        <div class="card-footer bg-transparent border-0 pt-0">
+                        <div class="card-footer bg-transparent d-flex justify-content-between align-items-center border-0 pt-0">
                             <a href="?page=src/property-details&property_id=<?php echo htmlspecialchars($row['property_id']); ?>" 
                                class="btn btn-outline-primary rounded-pill px-4 stretched-link">
                                 View Details
                             </a>
+                            <span class="badge bg-<?php echo $row['property_status'] === 'available' ? 'success' : 'secondary'; ?>">
+                                <?= htmlspecialchars($row['property_status'])?>
+                            </span>
                         </div>
                     </div>
                 </div>

@@ -1,9 +1,6 @@
 <?php
-$conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
-
-if (!$conn) {
-    echo "Error: cannot connect to database" . mysqli_connect_error();
-}
+// Database connection 
+require_once '../database/config.php';
 
 // Fetch available properties
 $queryProperties = "SELECT property_id, property_name FROM properties WHERE property_status = 'available'";

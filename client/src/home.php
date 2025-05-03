@@ -1,11 +1,6 @@
 <?php
 // Database connection (update with your credentials)
-$conn = mysqli_connect('127.0.0.1', 'root', '', 'rentsystem');
-
-if (!$conn) {
-    echo "Error: cannot connect to database" . mysqli_connect_error();
-}
-
+require_once '../database/config.php';
 // Fetch 3 latest available properties with image and amenities
 $sql = "SELECT p.property_id, p.property_name, p.property_location, p.property_rental_price, 
             (SELECT image1 FROM property_images WHERE property_images.property_id = p.property_id LIMIT 1) as property_image,
@@ -13,12 +8,37 @@ $sql = "SELECT p.property_id, p.property_name, p.property_location, p.property_r
         FROM properties p
         LEFT JOIN property_amenities pa ON p.property_id = pa.property_id
         LEFT JOIN amenities a ON pa.amenity_id = a.amenity_id
-        WHERE p.property_status = 'available'
         GROUP BY p.property_id
         ORDER BY p.property_date_created DESC 
         LIMIT 3";
 
 $result = $conn->query($sql);
+
+// Fetch testimonials with user info and property info
+$sql2 = " SELECT 
+        tm.testimonial_id,
+        tm.rating,
+        tm.comment,
+        tm.created_at,
+        u.user_name,
+        u.user_image,
+        p.property_name
+    FROM testimonials tm
+    JOIN tenants t ON tm.tenant_id = t.tenant_id
+    JOIN users u ON t.user_id = u.user_id
+    JOIN properties p ON tm.property_id = p.property_id
+    WHERE tm.rating >= 4
+    ORDER BY tm.created_at DESC LIMIT 3 ";
+
+$result2 = mysqli_query($conn, $sql2);
+
+$testimonials = [];
+if ($result2 && mysqli_num_rows($result2) > 0) {
+    while ($row = mysqli_fetch_assoc($result2)) {
+        $testimonials[] = $row;
+    }
+}
+
 ?>
 
 
@@ -62,7 +82,7 @@ $result = $conn->query($sql);
                                 <svg class="svg-icon" viewBox="0 0 24 24">
                                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                                 </svg>
-                                <?php echo htmlspecialchars($row['property_location']); ?>
+                                <?php echo htmlspecialchars(mb_strimwidth($row['property_location'], 0, 40, '...')); ?>
                             </p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="property-price">PHP <?php echo number_format(htmlspecialchars($row['property_rental_price']), 2, '.', ',') ?></span>
@@ -164,7 +184,6 @@ $result = $conn->query($sql);
         </div>
     </div>
 </section>
-
 <!-- Testimonials Section -->
 <section class="section bg-light">
     <div class="container">
@@ -174,86 +193,87 @@ $result = $conn->query($sql);
         </div>
 
         <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <div class="stars">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                        </div>
-                        <p class="testimonial-text">RentMaster made finding my apartment so easy. The process was smooth and the property exceeded my expectations!</p>
-                        <p class="testimonial-author">Sarah Johnson</p>
-                    </div>
+            <?php foreach ($testimonials as $testimonial): ?>
+                <div class="col-md-4 mb-4">
+    <div class="testimonial-card card h-100 border-0 shadow-sm overflow-hidden">
+        <!-- Decorative ribbon for premium testimonials -->
+        <?php if (($testimonial['rating'] ?? 0) >= 4): ?>
+        <div class="position-absolute end-0 top-0 bg-primary text-white px-3 py-1 small" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10px 50%);">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+                <path d="M12 1L15.09 7.26L22 8.27L17 13.14L18.18 20.02L12 16.77L5.82 20.02L7 13.14L2 8.27L8.91 7.26L12 1z"/>
+            </svg>
+            Highly Suggested
+        </div>
+        <?php endif; ?>
+
+        <div class="card-body d-flex flex-column align-items-center text-center p-4">
+            <!-- User avatar with subtle shadow -->
+            <div class="position-relative mb-3">
+                <img src="<?php echo htmlspecialchars($testimonial['user_image'] ?? 'path/to/default-image.jpg'); ?>" 
+                     alt="<?php echo htmlspecialchars($testimonial['user_name'] ?? 'Anonymous'); ?>" 
+                     class="rounded-circle shadow-sm" 
+                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                
+                <!-- Verified badge for trusted users -->
+                <?php if (($testimonial['is_verified'] ?? false)): ?>
+                <div class="position-absolute bottom-0 end-0 bg-success rounded-circle p-1" style="width: 24px; height: 24px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white" class="d-block">
+                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
+                    </svg>
                 </div>
+                <?php endif; ?>
             </div>
 
-            <div class="col-md-4 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <div class="stars">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                        </div>
-                        <p class="testimonial-text">When I had a maintenance issue, it was resolved within hours. This level of service is why I'll keep renting through RentMaster.</p>
-                        <p class="testimonial-author">Michael Chen</p>
-                    </div>
-                </div>
+            <!-- Star rating with animated hover effect -->
+            <div class="stars mb-3" style="letter-spacing: 2px;">
+                <?php 
+                    $rating = $testimonial['rating'] ?? 5;
+                    for ($i = 1; $i <= 5; $i++): 
+                ?>
+                    <svg width="20" height="20" viewBox="0 0 24 24" 
+                         fill="<?= $i <= $rating ? '#ffc107' : '#e9ecef'; ?>" 
+                         class="star-icon" 
+                         style="transition: transform 0.2s, fill 0.2s;">
+                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                    </svg>
+                <?php endfor; ?>
+                <span class="ms-2 small text-muted"><?= $rating ?>.0</span>
             </div>
 
-            <div class="col-md-4 mb-4">
-                <div class="testimonial-card">
-                    <div class="testimonial-content">
-                        <div class="stars">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffc107">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                            </svg>
-                        </div>
-                        <p class="testimonial-text">The quality of homes available through RentMaster is exceptional. I found my dream home faster than I expected!</p>
-                        <p class="testimonial-author">David Rodriguez</p>
-                    </div>
-                </div>
+            <!-- Testimonial text with elegant quote marks -->
+            <div class="position-relative mb-3">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#e9ecef" class="position-absolute top-0 start-0" style="transform: translate(-5px, -5px);">
+                    <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
+                </svg>
+                <p class="testimonial-text mb-0 px-3" style="font-style: italic; line-height: 1.6;">
+                    "<?php echo htmlspecialchars($testimonial['comment'] ?? 'No comment provided.'); ?>"
+                </p>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="#e9ecef" class="position-absolute bottom-0 end-0" style="transform: translate(5px, 5px);">
+                    <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
+                </svg>
+            </div>
+
+            <!-- User info with subtle divider -->
+            <div class="w-100 mt-auto pt-3 border-top">
+                <p class="testimonial-author mb-1 fw-semibold">
+                    <?php echo htmlspecialchars($testimonial['user_name'] ?? 'Anonymous'); ?>
+                </p>
+                <small class="d-block text-muted">
+                    <?php echo htmlspecialchars($testimonial['property_name'] ?? 'Unknown Property'); ?>
+                </small>
+                <small class="text-muted">
+                    <?php echo htmlspecialchars(date('M Y', strtotime($testimonial['created_at'] ?? 'now'))); ?>
+                </small>
             </div>
         </div>
     </div>
+</div>
+
+<?php endforeach; ?>
+</div>
+    </div>
 </section>
+
 
 <!-- Contact Section -->
 <section id="contact" class="section">
@@ -290,7 +310,7 @@ $result = $conn->query($sql);
                         </svg>
                         <div>
                             <h5 class="mb-1">Facebook</h5>
-                            <p class="mb-0 text-muted">JirehSinsFB</p>
+                            <p class="mb-0 text-muted">Rent Master</p>
                         </div>
                     </div>
                 </div>
@@ -335,5 +355,17 @@ $result = $conn->query($sql);
     }
 </script>
 
+<script>
+    // Add subtle animation to stars on hover
+    document.querySelectorAll('.star-icon').forEach(star => {
+        star.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.3)';
+        });
+
+        star.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    });
+</script>
 
 <?php $conn->close(); ?>

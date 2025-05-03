@@ -38,7 +38,7 @@ body{
     filter: drop-shadow(1px 3px 5px grey);
 }
 
-.sidebar-btn-focus{
+.active{
     background-color: #6083f7;
 }
 .sidebar a {

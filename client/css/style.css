@@ -135,7 +135,31 @@
   }
 }
 
+.testimonial-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 12px !important;
+  background: linear-gradient(to bottom, #ffffff, #f8f9fa);
+}
 
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.star-icon:hover {
+  transform: scale(1.2);
+}
+
+.testimonial-text {
+  position: relative;
+  z-index: 1;
+  color: #495057;
+}
+
+.testimonial-author {
+  color: #212529;
+  letter-spacing: 0.5px;
+}
 /* for home page */
 
 :root {
