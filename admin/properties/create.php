@@ -122,7 +122,7 @@ mysqli_close($conn);
 
 
 
-<header>
+<head>
     <!-- Add these in the head section or before your form -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -131,7 +131,7 @@ mysqli_close($conn);
     .leaflet-top { z-index: 999 !important; }
     .map-container { margin-bottom: 1rem; }
 </style>
-</header>
+</head>
 
 
 <div class="container px-lg-5 mb-4">
@@ -156,7 +156,7 @@ mysqli_close($conn);
          <div class="mt-2">
             <label class="form-label">Select Location on Map</label>
             <div class="map-container border rounded">
-                <div id="map"></div>
+                <div id="map" style="z-index:10;"></div>
             </div>
             <small class="text-muted">Click on the map to set the exact location</small>
         </div>
