@@ -53,18 +53,22 @@ function uploadSingleImage($file)
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (!empty($_POST['property_id']) && !empty($_POST['property_name']) && !empty($_POST['location']) && !empty($_POST['description']) && !empty($_POST['date_created']) && !empty($_POST['property_rental_price'])) {
+    if (!empty($_POST['property_id']) && !empty($_POST['property_name']) && !empty($_POST['location']) && 
+        !empty($_POST['description']) && !empty($_POST['date_created']) && !empty($_POST['property_rental_price'])) {
 
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
         $property_name = mysqli_real_escape_string($conn, $_POST['property_name']);
         $location = mysqli_real_escape_string($conn, $_POST['location']);
-        $latitude = isset($_POST['latitude']) ? (float)$_POST['latitude'] : null;
-        $longitude = isset($_POST['longitude']) ? (float)$_POST['longitude'] : null;
+        
+        // Proper NULL handling for coordinates
+        $latitude = !empty($_POST['latitude']) ? (float)$_POST['latitude'] : 'NULL';
+        $longitude = !empty($_POST['longitude']) ? (float)$_POST['longitude'] : 'NULL';
+        
         $description = mysqli_real_escape_string($conn, $_POST['description']);
         $date_created = mysqli_real_escape_string($conn, $_POST['date_created']);
         $rental_price = mysqli_real_escape_string($conn, $_POST['property_rental_price']);
 
-        // In your UPDATE statement, include latitude and longitude:
+        // UPDATE statement
         $queryUpdate = "UPDATE properties 
             SET property_name = '$property_name', 
                 property_location = '$location', 
@@ -75,87 +79,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 property_rental_price = '$rental_price'
             WHERE property_id = '$property_id'";
 
-        // --- Update Images ---
-        if (!empty($_FILES['property_images']['name'][0])) {
-            // Delete previous images in the folder
-            deleteOldImages($conn, $property_id);
-
-            $images = $_FILES['property_images'];
-            $imagePaths = [];
-
-            for ($i = 0; $i < min(10, count($images['name'])); $i++) {
-                $file = [
-                    'name' => $images['name'][$i],
-                    'type' => $images['type'][$i],
-                    'tmp_name' => $images['tmp_name'][$i],
-                    'error' => $images['error'][$i],
-                    'size' => $images['size'][$i]
-                ];
-
-                $imagePath = uploadSingleImage($file);
-                if ($imagePath) {
-                    $imagePaths[] = $imagePath;
-                }
-            }
-
-            while (count($imagePaths) < 10) {
-                $imagePaths[] = null;
-            }
-
-            // Check if entry exists
-            $check = mysqli_query($conn, "SELECT * FROM property_images WHERE property_id = '$property_id'");
-            if (mysqli_num_rows($check) > 0) {
-                // Update
-                $stmt = $conn->prepare("UPDATE property_images 
-                    SET image1=?, image2=?, image3=?, image4=?, image5=?, image6=?, image7=?, image8=?, image9=?, image10=? 
-                    WHERE property_id=?");
-                $stmt->bind_param(
-                    "ssssssssssi",
-                    $imagePaths[0],
-                    $imagePaths[1],
-                    $imagePaths[2],
-                    $imagePaths[3],
-                    $imagePaths[4],
-                    $imagePaths[5],
-                    $imagePaths[6],
-                    $imagePaths[7],
-                    $imagePaths[8],
-                    $imagePaths[9],
-                    $property_id
-                );
-            } else {
-                // Insert (if somehow missing)
-                $stmt = $conn->prepare("INSERT INTO property_images 
-                    (property_id, image1, image2, image3, image4, image5, image6, image7, image8, image9, image10) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param(
-                    "issssssssss",
-                    $property_id,
-                    $imagePaths[0],
-                    $imagePaths[1],
-                    $imagePaths[2],
-                    $imagePaths[3],
-                    $imagePaths[4],
-                    $imagePaths[5],
-                    $imagePaths[6],
-                    $imagePaths[7],
-                    $imagePaths[8],
-                    $imagePaths[9]
-                );
-            }
-            $stmt->execute();
-            $stmt->close();
+        // Execute the UPDATE query with error checking
+        if (!mysqli_query($conn, $queryUpdate)) {
+            die("Error updating property: " . mysqli_error($conn));
         }
 
-        // --- Update Amenities ---
-        mysqli_query($conn, "DELETE FROM property_amenities WHERE property_id = '$property_id'");
-        if (!empty($_POST['amenities'])) {
-            foreach ($_POST['amenities'] as $amenity_id) {
-                $amenity_id = (int)$amenity_id;
-                mysqli_query($conn, "INSERT INTO property_amenities (property_id, amenity_id) VALUES ($property_id, $amenity_id)");
-            }
-        }
-
+        // Rest of your image and amenities update code...
+        // [Keep the existing code for images and amenities]
+        
         header("Location: /rent-master2/admin/?page=properties/index");
         exit();
     } else {

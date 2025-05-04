@@ -5,11 +5,12 @@ $searchTerm = $_GET['search'] ?? '';
 $minPrice = $_GET['min_price'] ?? '';
 $maxPrice = $_GET['max_price'] ?? '';
 $location = $_GET['location'] ?? '';
+$searchType = $_GET['search_type'] ?? 'list';
 
 $sql = "SELECT p.*, pi.image1 
         FROM properties p 
         LEFT JOIN property_images pi ON p.property_id = pi.property_id 
-        WHERE p.property_status = 'available'";
+        WHERE (p.property_status = 'available' OR p.property_status = 'unavailable')";
 
 $params = [];
 $types = '';
@@ -61,75 +62,95 @@ $stmt->close();
 $result->free();
 ?>
 
-
-
 <!-- Property Listing Section -->
 <section class="property-listing py-3 bg-light">
     <div class="container">
         <!-- Section Header -->
-        <div class="text-center mb-5">
+        <div class="text-center mb-3">
             <h2 class="display-5 fw-light text-dark mb-3">Discover Your Perfect Home</h2>
             <p class="lead text-muted">Explore our curated collection of premium rental properties</p>
             <div class="divider mx-auto bg-primary"></div>
         </div>
-        <!-- Search Filter Section -->
-        <section class="search-filter py-4 bg-white">
-            <div class="container">
-            <form method="GET">
-                    <input type="hidden" name="page" value="src/property">
-                    <input type="hidden" name="submitted" value="1">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="input-group">
-                                <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
-                                <input type="text" class="form-control" name="search" placeholder="Search properties..." value="<?= htmlspecialchars($searchTerm) ?>">
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-control" name="min_price">
-                                <option value="">Min price</option>
+      <!-- Unified Search & Filter Section -->
+<section class="search-filter py-2 bg-white">
+    <div class="container">
+        <form method="GET" id="propertySearchForm">
+            <input type="hidden" name="page" value="src/property">
+            <input type="hidden" name="submitted" value="1">
+            
+            <div class="row g-3 align-items-end">
+                <!-- Search Field -->
+                <div class="col-md-3">
+                    <label for="searchInput" class="form-label small text-muted mb-1">Search Properties</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
+                        <input type="text" class="form-control" id="searchInput" name="search" 
+                               placeholder="Name or description..." value="<?= htmlspecialchars($searchTerm) ?>">
+                    </div>
+                </div>
+                
+                <!-- Location Field -->
+                <div class="col-md-3">
+                    <label for="locationInput" class="form-label small text-muted mb-1">Location</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-primary text-white"><i class="fas fa-map-marker-alt"></i></span>
+                        <input type="text" class="form-control" id="locationInput" name="location" 
+                               placeholder="City or address" value="<?= htmlspecialchars($location) ?>">
+                    </div>
+                </div>
+                
+                <!-- Price Range -->
+                <div class="col-md-4">
+                    <label class="form-label small text-muted mb-1">Price Range</label>
+                    <div class="row g-2">
+                        <div class="col">
+                            <select class="form-select" name="min_price">
+                                <option value="">Min Price</option>
                                 <?php
                                 $prices = [0, 5000, 10000, 15000, 20000, 25000, 30000];
                                 foreach ($prices as $price) {
                                     $selected = ($minPrice == $price) ? 'selected' : '';
-                                    echo "<option value=\"$price\" $selected>" . number_format($price) . "</option>";
+                                    echo "<option value=\"$price\" $selected>₱" . number_format($price) . "</option>";
                                 }
                                 ?>
                             </select>
                         </div>
-                        <div class="col-md-2">
-                            <select class="form-control" name="max_price">
-                                <option value="">Max price</option>
+                        <div class="col">
+                            <select class="form-select" name="max_price">
+                                <option value="">Max Price</option>
                                 <?php
                                 foreach ($prices as $price) {
                                     $selected = ($maxPrice == $price) ? 'selected' : '';
-                                    echo "<option value=\"$price\" $selected>" . number_format($price) . "</option>";
+                                    echo "<option value=\"$price\" $selected>₱" . number_format($price) . "</option>";
                                 }
                                 ?>
                             </select>
                         </div>
-
-                        <div class="col-md-2">
-                            <input type="text" class="form-control" name="location" placeholder="Location" value="<?= htmlspecialchars($location) ?>">
-                        </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary w-100">Filter</button>
-                        </div>
                     </div>
-                </form>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-filter me-2"></i> Apply Filters
+                    </button>
+                </div>
             </div>
-        </section>
+        </form>
+    </div>
+</section>
 
         <!-- Map Section -->
         <section class="property-map py-4 bg-light">
             <div class="container">
                 <div class="card shadow-sm">
-                    <div class="card-body p-0" style="height: 400px;">
+                    <div class="card-body p-0" style="height: 500px;">
                         <div id="propertyMap" style="height: 100%; width: 100%;"></div>
                     </div>
                 </div>
             </div>
         </section>
+        
         <!-- Property Grid -->
         <div class="row g-4">
             <?php if (count($properties) > 0): ?>
@@ -186,7 +207,33 @@ $result->free();
 <script>
     // Initialize the map
     document.addEventListener('DOMContentLoaded', function() {
-        const map = L.map('propertyMap').setView([14.5995, 120.9842], 12); // Default to Manila coordinates
+        // Calculate average coordinates from properties
+        <?php
+        $avgLat = 14.5995; // Default Manila latitude
+        $avgLng = 120.9842; // Default Manila longitude
+        $count = 0;
+        
+        if (count($properties) > 0) {
+            $sumLat = 0;
+            $sumLng = 0;
+            $count = 0;
+            
+            foreach ($properties as $property) {
+                if (!empty($property['latitude']) && !empty($property['longitude'])) {
+                    $sumLat += $property['latitude'];
+                    $sumLng += $property['longitude'];
+                    $count++;
+                }
+            }
+            
+            if ($count > 0) {
+                $avgLat = $sumLat / $count;
+                $avgLng = $sumLng / $count;
+            }
+        }
+        ?>
+        
+        const map = L.map('propertyMap').setView([<?= $avgLat ?>, <?= $avgLng ?>], <?= $count > 0 ? '8' : '7' ?>);
 
         // Add tile layer (OpenStreetMap)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -215,13 +262,11 @@ $result->free();
         // Add markers for each property
         <?php foreach ($properties as $property): ?>
             <?php
-            // For demo purposes, we'll use random coordinates near Manila
-            // In a real app, you would store actual coordinates in your database
-            $lat = 14.5995 + (rand(-50, 50) / 1000);
-            $lng = 120.9842 + (rand(-50, 50) / 1000);
+            $lat = !empty($property['latitude']) ? $property['latitude'] : (14.5995 + (rand(-50, 50) / 1000));
+            $lng = !empty($property['longitude']) ? $property['longitude'] : (120.9842 + (rand(-50, 50) / 1000));
             $isAvailable = $property['property_status'] === 'available';
             ?>
-
+            
             L.marker([<?= $lat ?>, <?= $lng ?>], {
                     icon: <?= $isAvailable ? 'availableIcon' : 'unavailableIcon' ?>
                 }).addTo(map)

@@ -39,16 +39,16 @@ function uploadSingleImage($file)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['property_name']) && !empty($_POST['location']) && !empty($_POST['description']) && !empty($_POST['date_created']) && !empty($_POST['rental-price'])) {
 
-       // In your create.php file, update the INSERT statement:
-$property_name = mysqli_real_escape_string($conn, $_POST['property_name']);
-$location = mysqli_real_escape_string($conn, $_POST['location']);
-$latitude = isset($_POST['latitude']) ? (float)$_POST['latitude'] : null;
-$longitude = isset($_POST['longitude']) ? (float)$_POST['longitude'] : null;
-$description = mysqli_real_escape_string($conn, $_POST['description']);
-$date_created = mysqli_real_escape_string($conn, $_POST['date_created']);
-$rental_price = mysqli_real_escape_string($conn, $_POST['rental-price']);
+        // In your create.php file, update the INSERT statement:
+        $property_name = mysqli_real_escape_string($conn, $_POST['property_name']);
+        $location = mysqli_real_escape_string($conn, $_POST['location']);
+        $latitude = isset($_POST['latitude']) ? (float)$_POST['latitude'] : null;
+        $longitude = isset($_POST['longitude']) ? (float)$_POST['longitude'] : null;
+        $description = mysqli_real_escape_string($conn, $_POST['description']);
+        $date_created = mysqli_real_escape_string($conn, $_POST['date_created']);
+        $rental_price = mysqli_real_escape_string($conn, $_POST['rental-price']);
 
-$queryInsert = "INSERT INTO properties 
+        $queryInsert = "INSERT INTO properties 
     (property_name, property_location, latitude, longitude, 
      property_date_created, property_description, property_rental_price) 
     VALUES ('$property_name', '$location', $latitude, $longitude, 
@@ -124,18 +124,26 @@ mysqli_close($conn);
 
 <head>
     <!-- Add these in the head section or before your form -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>
-    #map { height: 400px; }
-    .leaflet-top { z-index: 999 !important; }
-    .map-container { margin-bottom: 1rem; }
-</style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 400px;
+        }
+
+        .leaflet-top {
+            z-index: 999 !important;
+        }
+
+        .map-container {
+            margin-bottom: 1rem;
+        }
+    </style>
 </head>
 
 
 <div class="container px-lg-5 mb-4">
-    <header class="d-flex align-items-center mt-3 gap-2" >
+    <header class="d-flex align-items-center mt-3 gap-2">
         <a href="?page=properties/index" class=" p-2 rounded-circle bg-dark-subtle" width="2rem" height="2rem">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" width="24px" fill="grey" viewBox="0 0 448 512">!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.
                 <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
@@ -152,15 +160,15 @@ mysqli_close($conn);
             <label for="location" class="form-label">Location</label>
             <input type="text" id="location" name="location" class="form-control" required>
         </div>
-         <!-- Add these new fields for map and coordinates -->
-         <div class="mt-2">
+        <!-- Add these new fields for map and coordinates -->
+        <div class="mt-2">
             <label class="form-label">Select Location on Map</label>
             <div class="map-container border rounded">
                 <div id="map" style="z-index:10;"></div>
             </div>
             <small class="text-muted">Click on the map to set the exact location</small>
         </div>
-        
+
         <div class="row mt-2">
             <div class="col-md-6">
                 <label for="latitude" class="form-label">Latitude</label>
@@ -200,7 +208,7 @@ mysqli_close($conn);
         </div>
 
         <button type="button" class="btn btn-primary px-4 rounded-5 mt-3" id="submit-btn">Submit</button>
-        
+
     </form>
 
 
@@ -226,26 +234,29 @@ mysqli_close($conn);
 </div>
 
 <script>
-     // Initialize the map
-     document.addEventListener("DOMContentLoaded", function() {
+    // Initialize the map
+    document.addEventListener("DOMContentLoaded", function() {
         // Default to Manila coordinates
         const map = L.map('map').setView([14.5995, 120.9842], 13);
-        
+
         // Add tile layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
-        
+
         // Add marker that can be dragged
         let marker = null;
-        
+
         map.on('click', function(e) {
-            const { lat, lng } = e.latlng;
-            
+            const {
+                lat,
+                lng
+            } = e.latlng;
+
             // Update the form fields
             document.getElementById('latitude').value = lat.toFixed(6);
             document.getElementById('longitude').value = lng.toFixed(6);
-            
+
             // Update the location input with approximate address
             fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`)
                 .then(response => response.json())
@@ -254,12 +265,14 @@ mysqli_close($conn);
                         document.getElementById('location').value = data.display_name;
                     }
                 });
-            
+
             // Update or create marker
             if (marker) {
                 marker.setLatLng(e.latlng);
             } else {
-                marker = L.marker(e.latlng, {draggable: true}).addTo(map);
+                marker = L.marker(e.latlng, {
+                    draggable: true
+                }).addTo(map);
                 marker.on('dragend', function() {
                     const position = marker.getLatLng();
                     document.getElementById('latitude').value = position.lat.toFixed(6);
@@ -267,7 +280,7 @@ mysqli_close($conn);
                 });
             }
         });
-        
+
         // Update validation to include coordinates
         document.getElementById("submit-btn").addEventListener("click", function() {
             let propertyName = document.getElementById("property-name").value.trim();

@@ -16,7 +16,7 @@ session_start();
 
 <body>
     <!-- Sidebar -->
-    <div class="sidebar z-2 bg-white" id="sidebar" >
+    <div class="sidebar z-3 bg-white" id="sidebar" >
         <div class="text-center d-flex align-items-center justify-content-between">
             <div>
                 <img src="./assets/icons/group.png" width="140" height="70" alt="Logo-image">
