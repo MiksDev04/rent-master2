@@ -16,6 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $payment_id = $_POST['payment_id'];
     $update_sql = "UPDATE payments SET payment_status = 'Paid', payment_date = CURDATE() WHERE payment_id = '$payment_id'";
     mysqli_query($conn, $update_sql);
+    // Get the next month payment
     header("Location: /rent-master2/admin/?page=payments/index");
     exit();
 }

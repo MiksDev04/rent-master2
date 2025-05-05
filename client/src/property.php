@@ -275,7 +275,7 @@ $result->free();
                         <div class="d-flex justify-content-between align-items-start mb-2">
                             <h6 class="mb-0 fw-bold"><?= addslashes($property['property_name']) ?></h6>
                             <span class="badge bg-<?= $isAvailable ? 'success' : 'secondary' ?>">
-                                <?= $isAvailable ? 'Available' : 'Taken' ?>
+                                <?= $isAvailable ? 'Available' : 'Unavailable' ?>
                             </span>
                         </div>
                         <img src="<?= $property['image1'] ?>" style="width: 100%; height: 120px; object-fit: cover;" class="mb-2 rounded">
@@ -285,7 +285,7 @@ $result->free();
                             <p class="mb-2 text-muted small"><?= substr(addslashes($property['property_description']), 0, 60) ?>...</p>
                         </div>
                         <a href="?page=src/property-details&property_id=<?= $property['property_id'] ?>" 
-                           class="btn btn-sm btn-primary w-100">
+                           class="btn btn-sm btn-outline-primary w-100 mb-2">
                             View Details
                         </a>
                     </div>

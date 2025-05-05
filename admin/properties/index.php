@@ -10,10 +10,23 @@ if (!$conn) {
 }
 
 // Check if a filter is applied via the form submission
-$status_filter = isset($_POST['status']) ? $_POST['status'] : 'available';
+$status_filter = 'available'; // Default filter
+$property_id =  null; // Get property_id from GET request if available
+$query = "SELECT * FROM properties WHERE ";
 
+if (isset($_GET['property_id'])) {
+    $property_id = $_GET['property_id'];
+    $status_filter = $_GET['property_status'];
+    $query .= " property_id = '$property_id' AND";
+}
+
+if($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['filter'] == 'changeStatus') {
+    $status_filter = $_POST['status'];
+    $query = "SELECT * FROM properties WHERE ";
+
+}
 // Adjust the query based on the filter
-$query = "SELECT * FROM properties WHERE property_status = '$status_filter' ORDER BY property_date_created DESC";
+$query .= " property_status = '$status_filter' ORDER BY property_date_created DESC"; // Order by date created
 $result = mysqli_query($conn, $query);
 
 
@@ -27,6 +40,7 @@ $result = mysqli_query($conn, $query);
 
     <div class="mt-2">
         <form method="POST">
+            <input type="hidden" name="filter" value="changeStatus">
             <div class="d-flex gap-3">
                 <select name="status" class="form-select" onchange="this.form.submit()">
                     <option value="available" <?php echo ($status_filter == 'available') ? 'selected' : ''; ?>>Available</option>

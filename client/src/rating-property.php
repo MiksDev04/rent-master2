@@ -86,12 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_testimonial'])
             justify-content: center;
             margin: 0 auto 20px;
         }
-        .rating-star {
-            font-size: 2rem;
-            color: #ffc107;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
         .rating-star:hover {
             transform: scale(1.2);
         }
@@ -105,6 +99,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_testimonial'])
             background-color: #e9ecef;
             margin: 2rem 0;
         }
+        .rating-star {
+            font-size: 2rem;
+            color: lightgray; /* Default color (gray) */
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        /* When a star is selected, color all previous stars */
+        input[name="rating"]:checked ~ .rating-star {
+            color: lightgray; /* reset if no radio before label */
+        }
+
+        /* Select stars before and including the selected one */
+        input[name="rating"]:checked + label,
+        input[name="rating"]:checked + label ~ label {
+            color: gold;
+        }
+
     </style>
 </head>
 <body>

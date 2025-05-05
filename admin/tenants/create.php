@@ -27,7 +27,7 @@ while ($row = mysqli_fetch_assoc($usersResult)) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    
+
     if (!empty($_POST['user_id']) && !empty($_POST['property_id'])) {
         $user_id = mysqli_real_escape_string($conn, $_POST['user_id']);
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
@@ -42,13 +42,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 SET tenant_status = 'active', property_id = '$property_id', tenant_date_created = NOW(), tenant_terminated_at = NULL 
                                 WHERE user_id = '$user_id'";
             mysqli_query($conn, $updateTenantSql);
+            $row = mysqli_fetch_assoc($checkTenantResult);
+            $tenant_id = $row['tenant_id'];
+
+            // Include the function and call it with the tenant_id
+             // Insert initial payment record
+             $payment_sql = "INSERT INTO payments (tenant_id, payment_start_date, payment_end_date, payment_status, payment_date, payment_method)
+             VALUES (
+                 '$tenant_id', 
+                 CURDATE(), 
+                 DATE_ADD(CURDATE(), INTERVAL 1 MONTH), 
+                 'Pending', 
+                 NULL, 
+                 NULL
+             )";
+            mysqli_query($conn, $payment_sql);
         } else {
             // Insert new tenant
             $queryInsertTenant = "
                 INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created, tenant_terminated_at) 
                 VALUES ('$user_id', '$property_id', 'active', NOW(), NULL)
-            ";
+                ";
             mysqli_query($conn, $queryInsertTenant);
+
+            // Get the last inserted tenant ID
+            $tenant_id = mysqli_insert_id($conn);
+
+            // Include the function and call it with the tenant_id
+             // Insert initial payment record
+             $payment_sql = "INSERT INTO payments (tenant_id, payment_start_date, payment_end_date, payment_status, payment_date, payment_method)
+             VALUES (
+                 '$tenant_id', 
+                 CURDATE(), 
+                 DATE_ADD(CURDATE(), INTERVAL 1 MONTH), 
+                 'Pending', 
+                 '', 
+                 ''
+             )";
+            mysqli_query($conn, $payment_sql);
         }
 
         // Mark user as a tenant
@@ -73,7 +104,7 @@ mysqli_close($conn);
     <header class="d-flex align-items-center mt-3 gap-2">
         <a href="?page=tenants/index" class="p-2 rounded-circle bg-dark-subtle">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" width="24px" fill="grey" viewBox="0 0 448 512">
-                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/>
+                <path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z" />
             </svg>
         </a>
         <h4 class="fw-medium">Tenants / Assign Tenant</h4>
@@ -128,20 +159,20 @@ mysqli_close($conn);
 </div>
 
 <script>
-document.getElementById("submit-btn").addEventListener("click", function () {
-    const userId = document.getElementById("user-id").value.trim();
-    const propertyId = document.getElementById("property-id").value.trim();
+    document.getElementById("submit-btn").addEventListener("click", function() {
+        const userId = document.getElementById("user-id").value.trim();
+        const propertyId = document.getElementById("property-id").value.trim();
 
-    if (!userId || !propertyId) {
-        alert("Both user and property must be selected.");
-        return;
-    }
+        if (!userId || !propertyId) {
+            alert("Both user and property must be selected.");
+            return;
+        }
 
-    const modal = new bootstrap.Modal(document.getElementById("tenantModal"));
-    modal.show();
-});
+        const modal = new bootstrap.Modal(document.getElementById("tenantModal"));
+        modal.show();
+    });
 
-document.getElementById("confirmed-btn").addEventListener("click", function () {
-    document.getElementById("tenant-form").submit();
-});
+    document.getElementById("confirmed-btn").addEventListener("click", function() {
+        document.getElementById("tenant-form").submit();
+    });
 </script>

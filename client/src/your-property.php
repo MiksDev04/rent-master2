@@ -26,7 +26,13 @@ if ($tenant_id) {
     $current_date = date('Y-m-d');
 
     // SQL query to fetch the most recent payment record for the tenant
-    $payment_sql = "SELECT * FROM payments WHERE tenant_id = $tenant_id AND payment_status = 'Pending' ORDER BY payment_date DESC LIMIT 1";
+    $payment_sql = "SELECT p.*, pr.property_rental_price
+                    FROM payments AS p
+                    JOIN tenants AS t
+                    ON p.tenant_id = t.tenant_id
+                    JOIN properties AS pr
+                    ON t.property_id = pr.property_id
+                    WHERE t.tenant_id = $tenant_id AND p.payment_status = 'Pending' ORDER BY p.payment_date DESC LIMIT 1";
     $payment_result = mysqli_query($conn, $payment_sql);
 
     // Check if the query returns any results
@@ -313,7 +319,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
                         <div class="payment-details mb-4">
                             <p><strong>Payment Status:</strong> <?= $payment_info['payment_status'] ?></p>
                             <p><strong>Period:</strong> <span class="highlight-period"><?= date('M j, Y', strtotime($payment_info['payment_start_date'])) ?> to <?= date('M j, Y', strtotime($payment_info['payment_end_date'])) ?></span></p>
-                            <p><strong>Amount Due:</strong> <span class="highlight-amount">₱5,000.00</span></p>
+                            <p><strong>Amount Due:</strong> <span class="highlight-amount">PHP <?php echo number_format(htmlspecialchars($payment_info['property_rental_price']), 2, '.', ',') ?></span></p>
                             
                             <?php 
                             $due_date = new DateTime($payment_info['payment_end_date']);

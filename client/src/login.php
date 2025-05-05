@@ -65,7 +65,7 @@ mysqli_close($conn);
         <div class="col-lg-6 p-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Welcome Back</h2>
-                <a href="/rent-master2/client/?page=src/register" class="btn btn-outline-primary">Create Account</a>
+                <a href="/rent-master2/client/?page=src/register" role="" class="btn btn-outline-primary">Create Account</a>
             </div>
             
             <p class="text-muted mb-4">Sign in to manage your properties and rentals</p>
@@ -105,7 +105,7 @@ mysqli_close($conn);
                     <p class="text-muted">Don't have an account? <a href="/rent-master2/client/?page=src/register" class="text-decoration-none">Sign up</a></p>
                 </div>
             </form>
-            <button role="button" type="button" data-bs-toggle="modal" data-bs-target="#logoutModal" class="btn btn-lg btn-outline-warning">
+            <button role="button" type="button" data-bs-toggle="modal" data-bs-target="#logoutModal" class="btn btn-outline-warning">
                 Logout Account
             </button>
                 
