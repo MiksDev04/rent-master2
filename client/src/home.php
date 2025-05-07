@@ -69,9 +69,9 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
                 <p class="text-muted">Please check back later</p>
             </div>
         <?php endif; ?>
-        <div class="row g-4">
+        <div class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3">
             <?php while ($row = $result->fetch_assoc()): ?>
-                <div class="col-md-4">
+                <div class="col">
                     <div class="property-card h-100">
                         <div class="overflow-hidden">
                             <img src="<?php echo $row['property_image']; ?>" alt="<?php echo htmlspecialchars($row['property_name']); ?>" class="property-img w-100">
@@ -82,7 +82,7 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
                                 <svg class="svg-icon" viewBox="0 0 24 24">
                                     <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                                 </svg>
-                                <?php echo htmlspecialchars(mb_strimwidth($row['property_location'], 0, 40, '...')); ?>
+                                <?php echo htmlspecialchars(mb_strimwidth($row['property_location'], 0, 30, '...')); ?>
                             </p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="property-price">PHP <?php echo number_format(htmlspecialchars($row['property_rental_price']), 2, '.', ',') ?></span>

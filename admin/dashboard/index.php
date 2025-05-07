@@ -142,9 +142,7 @@ $result->free();
         <section class="search-filter py-2 bg-white">
             <div class="container">
                 <form method="GET" id="propertySearchForm">
-                    <input type="hidden" name="page" value="src/property">
                     <input type="hidden" name="submitted" value="1">
-
                     <div class="row g-3 align-items-end">
                         <!-- Search Field -->
                         <div class="col-md-3">

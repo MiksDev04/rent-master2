@@ -21,6 +21,7 @@
         'src/login',
         'src/register',
         'src/property',
+        'src/profile',
         'src/property-details',
         'src/logout',
         'src/contact',

@@ -71,7 +71,7 @@ $result = $conn->query($sql);
                         <td><?php echo htmlspecialchars($row['category']); ?></td>
                         <td><?php echo htmlspecialchars($row['description']); ?></td>
                         <td><?php echo date('M d, Y', strtotime($row['request_date'])); ?></td>
-                        <td class="<?php echo ($row['status'] == 'approved') ? 'text-success' : (($row['status'] == 'rejected') ? 'text-danger' : 'text-warning'); ?> fw-medium">
+                        <td class="<?php echo ($row['status'] == 'completed') ? 'text-success' : (($row['status'] == 'pending') ? 'text-danger' : 'text-warning'); ?> fw-medium">
                             <?php echo htmlspecialchars($row['status']); ?>
                         </td>
                         <td>
