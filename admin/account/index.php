@@ -21,7 +21,8 @@ if ($user_id) {
 }
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' ) {
+    $id = $_POST['user_id'];
     $name = $_POST['user_name'];
     $email = $_POST['user_email'];
     $phone = $_POST['user_phone_number'];
@@ -56,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
             if (!empty($user['user_image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . $user['user_image'])) {
                 unlink($_SERVER['DOCUMENT_ROOT'] . $user['user_image']);
             }
-
             // Store the relative path to the new image in the database
             $imagePath = $upload_folder . $new_filename; // Update image path to new image
         } else {
@@ -64,17 +64,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
             exit();
         }
     }
-
-
     // Prepare and execute update query
     $stmt = $conn->prepare("UPDATE users SET user_name=?, user_email=?, user_phone_number=?, user_address=?, user_description=?, user_image=? WHERE user_id=?");
-    $stmt->bind_param("ssssssi", $name, $email, $phone, $address, $description, $imagePath, $user_id);
+    $stmt->bind_param("ssssssi", $name, $email, $phone, $address, $description, $imagePath, $id);
     $stmt->execute();
     $_SESSION['user_name'] = $name; // Update session variable
     $_SESSION['user_image'] = $imagePath; // Update session variable
     header("Location: /rent-master2/admin/?page=account/index&success=Profile updated successfully.");
     exit();
+
+
 }
+// Close the connection
+mysqli_close($conn);
 ?>
 
 
@@ -128,6 +130,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         <!-- Edit Form -->
         <form method="POST" action="account/index.php" enctype="multipart/form-data">
             <div class="row row-cols-1 row-cols-lg-2 g-3">
+                <input type="hidden"name="user_id" value="<?= htmlspecialchars($user['user_id'] ?? '') ?>" required>
                 <div class="col">
                     <label for="user_name" class="form-label">Full Name</label>
                     <input type="text" class="form-control" id="user_name" name="user_name" value="<?= htmlspecialchars($user['user_name'] ?? '') ?>" required>
@@ -153,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
                     <input type="file" name="user_image" id="user_image" class="form-control" accept="image/*">
                 </div>
                 <div class="col mt-4">
-                    <button type="submit" name="update_profile" class="btn btn-primary px-4 py-2 rounded-5">
+                    <button type="submit" class="btn btn-primary px-4 py-2 rounded-5">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save me-1" viewBox="0 0 16 16">
                             <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v7.293l2.646-2.647a.5.5 0 0 1 .708.708l-3.5 3.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L7.5 9.293V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z" />
                         </svg>
