@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: /rent-master2/client/?page=src/login-successful");
         exit();
     } else {
-        $login_error = "<div class='alert alert-danger mt-3'>Invalid email or password. Please try again.</div>";
+        $login_error = "Invalid email or password. Please try again";
     }
 }
 
@@ -47,7 +47,9 @@ mysqli_close($conn);
             <p class="text-muted mb-4">Sign in to manage your properties and rentals</p>
 
             <?php if (isset($login_error)): ?>
-                <div class="alert alert-danger"><?= $login_error ?></div>
+            <div class="alert alert-danger alert-dismissible fade show"><?= $login_error ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
             <?php endif; ?>
 
             <form method="post" class="mt-4">
