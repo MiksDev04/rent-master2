@@ -86,16 +86,23 @@ mysqli_close($conn);
 
 <!-- Register Page -->
 <div class="container">
-    <div class="row align-items-center min-vh-100">
-        <!-- Form Column -->
-        <div class="col-lg-6 p-5">
+    <div class="row justify-content-center  min-vh-100">
+
+        <!-- Form Column -->    
+        <div class="col-lg-8 col-12 col-md-10 p-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Create Account</h2>
-                <a href="/rent-master2/client/?page=src/login" class="btn btn-outline-primary">Sign In</a>
+                <a href="/rent-master2/client/?page=src/login" class="btn btn-outline-primary">Log In</a>
             </div>
 
             <p class="text-muted mb-4">Join us to find your perfect rental property</p>
-
+            <div class="mb-3 text-center">
+                <a href="/path-to-your-google-auth-handler" class="btn btn-outline-dark w-100 py-2" style="display: flex; align-items: center; justify-content: center;">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="height: 20px; margin-right: 10px;">
+                    Sign in with Google
+                </a>
+            </div>
+            <p class="text-center">or</p>
             <form method="post" enctype="multipart/form-data" class="mt-4">
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -174,22 +181,10 @@ mysqli_close($conn);
                 <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Create Account</button>
 
                 <div class="text-center">
-                    <p class="text-muted">Already have an account? <a href="/rent-master2/client/?page=src/login" class="text-decoration-none">Sign in</a></p>
+                    <p class="text-muted">Already have an account? <a href="/rent-master2/client/?page=src/login" class="text-decoration-none">Log in</a></p>
                 </div>
             </form>
         </div>
 
-        <!-- Illustration Column -->
-        <div class="col-lg-6 d-none d-lg-block p-0">
-            <div class="bg-primary h-100 d-flex align-items-center justify-content-center">
-                <svg width="80%" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="#FFFFFF" d="M300,200 C300,89.54 210.46,0 100,0 C-10.46,0 -100,89.54 -100,200 C-100,310.46 -10.46,400 100,400 C210.46,400 300,310.46 300,200 Z" transform="translate(250 50)" />
-                    <path fill="#FFFFFF" d="M50,0 L450,0 C472.09,0 490,17.91 490,40 L490,360 C490,382.09 472.09,400 450,400 L50,400 C27.91,400 10,382.09 10,360 L10,40 C10,17.91 27.91,0 50,0 Z" transform="translate(50 50)" />
-                    <path fill="#1971C2" d="M150,100 L450,100 C472.09,100 490,117.91 490,140 L490,240 C490,262.09 472.09,280 450,280 L150,280 C127.91,280 110,262.09 110,240 L110,140 C110,117.91 127.91,100 150,100 Z" transform="translate(0 50)" />
-                    <circle fill="#FFFFFF" cx="300" cy="190" r="40" />
-                    <path fill="#1971C2" d="M250,300 L350,300 C375.23,300 395.77,320.54 395.77,345.77 L395.77,395.77 C395.77,420.99 375.23,441.54 350,441.54 L250,441.54 C224.77,441.54 204.23,420.99 204.23,395.77 L204.23,345.77 C204.23,320.54 224.77,300 250,300 Z" transform="translate(0 -50)" />
-                </svg>
-            </div>
-        </div>
     </div>
 </div>

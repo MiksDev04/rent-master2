@@ -30,6 +30,7 @@
         'src/rating-property',
         'src/login-successful',
         'src/register-successful',
+        'src/about'
     ];
     
     // Get the page from the query string

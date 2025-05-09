@@ -145,7 +145,7 @@
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="me-2">
                             <path d="M20 10.9999C20 5.99992 16.42 2.85992 12 2.85992C7.58 2.85992 4 5.99992 4 10.9999C4 13.4599 5.17 15.6899 7 17.1999V20.9999C7 21.5499 7.45 21.9999 8 21.9999H16C16.55 21.9999 17 21.5499 17 20.9999V17.1999C18.83 15.6899 20 13.4599 20 10.9999ZM8 19.9999V17.9999H16V19.9999H8ZM8 16.9999V15.9999H10V16.9999H8ZM12 15.9999C10.9 15.9999 10 15.0999 10 13.9999C10 12.8999 10.9 11.9999 12 11.9999C13.1 11.9999 14 12.8999 14 13.9999C14 15.0999 13.1 15.9999 12 15.9999ZM15 16.9999H14V15.9999H15V16.9999Z" fill="currentColor"/>
                         </svg>
-                        <span>123 Property Lane, Suite 100<br>San Francisco, CA 94107</span>
+                        <span>Brgy. San Jose, San Pablo City,<br> Philippines 4000</span>
                     </li>
                     <li class="d-flex align-items-center">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" class="me-2">

@@ -76,7 +76,7 @@ $payment = $result->fetch_assoc();
                 <select class="form-select" id="payment_status" name="payment_status">
                     <option value="Pending" <?php echo ($payment['payment_status'] == 'Pending') ? 'selected' : ''; ?>>Pending</option>
                     <option value="Paid" <?php echo ($payment['payment_status'] == 'Paid') ? 'selected' : ''; ?>>Paid</option>
-                    <option value="Failed" <?php echo ($payment['payment_status'] == 'Failed') ? 'selected' : ''; ?>>Failed</option>
+                    <option value="Failed" <?php echo ($payment['payment_status'] == 'Overdue') ? 'selected' : ''; ?>>Overdue</option>
                 </select>
             </div>
             

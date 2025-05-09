@@ -38,7 +38,7 @@ $message = $isRegistration ? 'Registration Successful!' : 'Login Successful!';
                     <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] == 'landlord'): ?>
                         <a href="/rent-master2/admin/?page=dashboard/index" class="btn btn-success w-100">Go to Dashboard</a>
                     <?php else: ?>
-                        <a href="/rent-master2/admin/?page=client/index" class="btn btn-success w-100">Go to Homepage</a>
+                        <a href="/rent-master2/client/?page=src/home" class="btn btn-success w-100">Go to Homepage</a>
                     <?php endif; ?>
                 </div>
             </div>

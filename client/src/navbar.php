@@ -12,7 +12,7 @@ session_start();
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/home">Home</a></li>
                 <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/property">Properties</a></li>
-                <li class="nav-item"><a class="nav-link fw-medium" href="#about">About</a></li>
+                <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/about">About</a></li>
                 <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/home#contact">Contact</a></li>
                 <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/your-property">Your Property</a></li>
             </ul>

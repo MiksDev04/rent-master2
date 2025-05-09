@@ -35,21 +35,10 @@ mysqli_close($conn);
 ?>
 <!-- Login Page -->
 <div class="container">
-    <div class="row align-items-center min-vh-100">
-        <!-- Illustration Column -->
-        <div class="col-lg-6 d-none d-lg-block p-0">
-            <div class="bg-primary h-100 d-flex align-items-center justify-content-center">
-                <svg width="80%" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
-                    <path fill="#FFFFFF" d="M300,200 C300,89.54 210.46,0 100,0 C-10.46,0 -100,89.54 -100,200 C-100,310.46 -10.46,400 100,400 C210.46,400 300,310.46 300,200 Z" transform="translate(250 50)" />
-                    <path fill="#FFFFFF" d="M50,0 L450,0 C472.09,0 490,17.91 490,40 L490,360 C490,382.09 472.09,400 450,400 L50,400 C27.91,400 10,382.09 10,360 L10,40 C10,17.91 27.91,0 50,0 Z" transform="translate(50 50)" />
-                    <circle fill="#1971C2" cx="300" cy="150" r="60" />
-                    <path fill="#FFFFFF" d="M250,250 L350,250 C375.23,250 395.77,270.54 395.77,295.77 L395.77,345.77 C395.77,370.99 375.23,391.54 350,391.54 L250,391.54 C224.77,391.54 204.23,370.99 204.23,345.77 L204.23,295.77 C204.23,270.54 224.77,250 250,250 Z" transform="translate(0 -50)" />
-                </svg>
-            </div>
-        </div>
+    <div class="row justify-content-center  min-vh-100">
 
         <!-- Form Column -->
-        <div class="col-lg-6 p-5">
+        <div class="col-lg-8 col-12 col-md-10 p-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Welcome Back</h2>
                 <a href="/rent-master2/client/?page=src/register" role="" class="btn btn-outline-primary">Create Account</a>
@@ -89,7 +78,7 @@ mysqli_close($conn);
                 <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Login</button>
 
                 <div class="text-center">
-                    <p class="text-muted">Don't have an account? <a href="/rent-master2/client/?page=src/register" class="text-decoration-none">Sign up</a></p>
+                    <p class="text-muted">Don't have an account? <a href="/rent-master2/client/?page=src/register" class="text-decoration-none">Register</a></p>
                 </div>
             </form>
             <button role="button" type="button" data-bs-toggle="modal" data-bs-target="#logoutModal" class="btn btn-outline-warning">
