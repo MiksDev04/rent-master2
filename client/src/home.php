@@ -1,6 +1,7 @@
 <?php
 // Database connection (update with your credentials)
 require_once '../database/config.php';
+
 // Fetch 3 latest available properties with image and amenities
 $sql = "SELECT p.property_id, p.property_name, p.property_location, p.property_rental_price, 
             (SELECT image1 FROM property_images WHERE property_images.property_id = p.property_id LIMIT 1) as property_image,
@@ -15,7 +16,7 @@ $sql = "SELECT p.property_id, p.property_name, p.property_location, p.property_r
 $result = $conn->query($sql);
 
 // Fetch testimonials with user info and property info
-$sql2 = " SELECT 
+$sql2 =  "SELECT 
         tm.testimonial_id,
         tm.rating,
         tm.comment,

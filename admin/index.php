@@ -166,7 +166,9 @@ session_start();
                 'reports/index',
                 'settings/index',
                 'maintenance/index', 
-                'payments/paid'
+                'payments/paid',
+                'payments/update',
+                'payments/delete'
             ];
             if (!in_array($page, $allowed_pages)) {
                 $page = 'dashboard/index';

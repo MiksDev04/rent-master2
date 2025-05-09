@@ -10,9 +10,11 @@ if (!$conn) {
 }
 
 // Handle approval or rejection
-if (isset($_GET['action']) && isset($_GET['id'])) {
-    $tenant_id = $_GET['id'];
-    if ($_GET['action'] == 'approve') {
+if (isset($_POST['action']) && isset($_POST['id'])) {
+    $tenant_id = $_POST['id'];
+    $tenant_email = $_POST['email'] ?? null; // Get email if available
+    $action = $_POST['action'];
+    if ($action == 'approve') {
         // Approve the tenant
         $sql = "UPDATE tenants SET tenant_status = 'active' WHERE tenant_id = '$tenant_id'";
         if (mysqli_query($conn, $sql)) {
@@ -35,27 +37,49 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
                               ''
                           )";
             mysqli_query($conn, $payment_sql);
-
-            header("Location: /rent-master2/admin/?page=reports/index");
+            sendEmail($tenant_email, $action);
             exit;
         } else {
             echo "Error updating tenant: " . mysqli_error($conn);
         }
-    } elseif ($_GET['action'] == 'reject') {
+    } elseif ($action == 'reject') {
         // Reject the tenant and delete
         $sql = "DELETE FROM tenants WHERE tenant_id = '$tenant_id'";
         if (mysqli_query($conn, $sql)) {
             // Update user status to tenant
             $user_sql = "UPDATE users SET user_role = 'visitor' WHERE user_id = (SELECT user_id FROM tenants WHERE tenant_id = '$tenant_id')";
             mysqli_query($conn, $user_sql);
-            header("Location: /rent-master2/admin/?page=reports/index");
+            sendEmail($tenant_email, $action);
             exit;
         } else {
             echo "Error deleting tenant: " . mysqli_error($conn);
         }
     }
+
 }
 
+function sendEmail($tenant_email, $action) {
+    $status = ($action === 'approve') ? 'Approved' : 'Rejected';
+    $admin_message = ($action === 'approve')
+        ? "Congratulations! Your rental request has been approved."
+        : "We're sorry to inform you that your rental request has been rejected.";
+
+    // Redirect to FormSubmit after updating
+    $formSubmitUrl = "https://formsubmit.co/{$tenant_email}";
+
+    echo '<form id="redirectForm" action="' . $formSubmitUrl . '" method="POST">';
+    echo '<input type="hidden" name="_next" value="http://localhost/rent-master2/admin/?page=reports/index">';
+    echo '<input type="hidden" name="_subject" value="Rental Request Update">';
+    echo '<input type="hidden" name="_captcha" value="false">';
+    echo '<input type="hidden" name="Maintenance Status" value="' . htmlspecialchars(ucfirst($status)) . '">';
+    echo '<input type="hidden" name="Message" value="' . htmlspecialchars($admin_message) . '">';
+    // echo '<input type="hidden" name="Request ID" value="'.htmlspecialchars($request_id).'">';
+    echo '<input type="hidden" name="Landlord Email" value="mikogapasan04@gmail.com">';
+    echo '</form>';
+
+    echo '<script>document.getElementById("redirectForm").submit();</script>';
+    exit();
+}
 // Fetch pending rental requests
 $sql = "SELECT *
         FROM tenants
@@ -82,7 +106,7 @@ if (mysqli_num_rows($result) == 0) {
             Send Email
         </button>
     </header>
-    
+
     <?php if ($no_requests): ?>
         <div class="text-center text-bg-warning mt-3">No record found</div>
     <?php else: ?>
@@ -100,8 +124,8 @@ if (mysqli_num_rows($result) == 0) {
                                 <div class="d-flex">
                                     <div class="card-img d-flex align-items-center gap-3">
                                         <img width="70" height="70" class="rounded-circle"
-                                             src="<?php echo htmlspecialchars($row['user_image'] ?? '/rent-master2/admin/reports/images/default.jpg'); ?>" 
-                                             alt="User Image">
+                                            src="<?php echo htmlspecialchars($row['user_image'] ?? '/rent-master2/admin/reports/images/default.jpg'); ?>"
+                                            alt="User Image">
                                         <div>
                                             <h4 class="fw-medium card-title mb-1"><?php echo htmlspecialchars($row['user_name']); ?></h4>
                                             <span class="opacity-75 d-block card-subtitle"><?php echo htmlspecialchars($row['user_email']); ?></span>
@@ -115,7 +139,7 @@ if (mysqli_num_rows($result) == 0) {
                                 <blockquote class="blockquote">
                                     <p class="fs-6 fw-medium lh-1">Dear Mr. Caricot</p>
                                     <p class="opacity-75 fs-6 ps-3">
-                                        I’m interested in renting <?php echo htmlspecialchars($row['property_name']); ?> located at 
+                                        I’m interested in renting <?php echo htmlspecialchars($row['property_name']); ?> located at
                                         <?php echo htmlspecialchars($row['property_location']); ?>. Could we schedule a viewing at your earliest convenience? Please let me know the next steps.
                                     </p>
                                 </blockquote>
@@ -129,11 +153,22 @@ if (mysqli_num_rows($result) == 0) {
                                         </ul>
                                     </div>
                                     <div class="d-flex gap-3 align-self-end">
-                                        <!-- Approve Button -->
-                                        <a href="/rent-master2/admin/reports/index.php?action=approve&id=<?php echo $row['tenant_id']; ?>" class="rounded-5 btn btn-primary px-3 fw-medium">Approve</a>
-                                        <!-- Reject Button -->
-                                        <a href="/rent-master2/admin/reports/index.php?action=reject&id=<?php echo $row['tenant_id']; ?>" class="rounded-5 btn btn-secondary px-3 fw-medium">Reject</a>
+                                        <!-- Approve Form -->
+                                        <form action="/rent-master2/admin/?page=reports/index" method="POST">
+                                            <input type="hidden" name="action" value="approve">
+                                            <input type="hidden" name="id" value="<?php echo $row['tenant_id']; ?>">
+                                            <button type="submit" class="rounded-5 btn btn-primary px-3 fw-medium">Approve</button>
+                                        </form>
+
+                                        <!-- Reject Form -->
+                                        <form action="/rent-master2/admin/?page=reports/index" method="POST">
+                                            <input type="hidden" name="action" value="reject">
+                                            <input type="hidden" name="id" value="<?php echo $row['tenant_id']; ?>">
+                                            <input type="hidden" name="email" value="<?php echo $row['user_email']; ?>">
+                                            <button type="submit" class="rounded-5 btn btn-secondary px-3 fw-medium">Reject</button>
+                                        </form>
                                     </div>
+
                                 </div>
                             </div>
                         </div>
@@ -148,7 +183,7 @@ if (mysqli_num_rows($result) == 0) {
 <script>
     const checkAll = document.getElementById("check-all");
     const rentRequest = document.querySelectorAll(".rental-request");
-    checkAll.addEventListener('input', function (e) {
+    checkAll.addEventListener('input', function(e) {
         rentRequest.forEach(r => {
             r.checked = e.target.checked ? true : false;
         })

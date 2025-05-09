@@ -24,11 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_id'] = $user_data['user_id']; // ✅ Store user_id for tenant use
         $_SESSION['user_image'] = $user_data['user_image']; // ✅ Store user_id for tenant use
 
-        if ($user_data['user_role'] == 'landlord') {
-            header("Location: /rent-master2/admin/?page=dashboard/index");
-        } else {
-            header("Location: /rent-master2/client/?page=src/home");
-        }
+        header("Location: /rent-master2/client/?page=src/login-successful");
         exit();
     } else {
         $login_error = "<div class='alert alert-danger mt-3'>Invalid email or password. Please try again.</div>";
