@@ -27,9 +27,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Get the image file extension
         $image_file_type = strtolower(pathinfo($_FILES['user_image']['name'], PATHINFO_EXTENSION));
 
+         // Sanitize the user name for the filename
+         $sanitized_name = preg_replace("/[^a-zA-Z0-9_-]/", "", strtolower($user_name));
         // Generate unique filename
-        $unique_filename = uniqid() . '.' . $image_file_type;
+        $unique_filename = $sanitized_name . '.' . $image_file_type;
         $target_file = $target_dir . $unique_filename;
+
+        
 
         // Move uploaded file to the target directory
         if (move_uploaded_file($_FILES['user_image']['tmp_name'], $target_file)) {
@@ -50,34 +54,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Execute the query and check for success
     if (mysqli_query($conn, $sql)) {
-        if (mysqli_query($conn, $sql)) {
-            $user_id = mysqli_insert_id($conn); // Get the last inserted ID
+        $user_id = mysqli_insert_id($conn); // Get the last inserted ID
 
-            // (Optional) Fetch user info from DB using the ID if you want to display it
+        // (Optional) Fetch user info from DB using the ID if you want to display it
 
-            // ✅ Fetch newly created user to set session
-            $fetch_sql = "SELECT * FROM users WHERE user_id = $user_id LIMIT 1";
-            $fetch_result = mysqli_query($conn, $fetch_sql);
+        // ✅ Fetch newly created user to set session
+        $fetch_sql = "SELECT * FROM users WHERE user_id = $user_id LIMIT 1";
+        $fetch_result = mysqli_query($conn, $fetch_sql);
 
-            if ($user_data = mysqli_fetch_assoc($fetch_result)) {
-                // ✅ Set session variables to log in user
-                $_SESSION['user_email'] = $user_data['user_email'];
-                $_SESSION['user_role'] = $user_data['user_role'];
-                $_SESSION['user_name'] = $user_data['user_name'];
-                $_SESSION['user_id']   = $user_data['user_id'];
-                $_SESSION['user_image'] = $user_data['user_image'];
-            }
-
-            // Redirect with inserted ID and name
-            header("Location: /rent-master2/client/?page=src/register-successful");
-            exit();
-        } else {
-            echo "<div class='alert alert-danger mt-3'>Error: " . mysqli_error($conn) . "</div>";
+        if ($user_data = mysqli_fetch_assoc($fetch_result)) {
+            // ✅ Set session variables to log in user
+            $_SESSION['user_email'] = $user_data['user_email'];
+            $_SESSION['user_role'] = $user_data['user_role'];
+            $_SESSION['user_name'] = $user_data['user_name'];
+            $_SESSION['user_id']   = $user_data['user_id'];
+            $_SESSION['user_image'] = $user_data['user_image'];
         }
+
+        // Redirect with inserted ID and name
+        header("Location: /rent-master2/client/?page=src/register-successful");
         exit();
     } else {
         echo "<div class='alert alert-danger mt-3'>Error: " . mysqli_error($conn) . "</div>";
     }
+    exit();
 }
 
 // Close the connection
@@ -88,7 +88,7 @@ mysqli_close($conn);
 <div class="container">
     <div class="row justify-content-center  min-vh-100">
 
-        <!-- Form Column -->    
+        <!-- Form Column -->
         <div class="col-lg-8 col-12 col-md-10 p-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Create Account</h2>
