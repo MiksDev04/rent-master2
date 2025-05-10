@@ -20,7 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $address = $_POST['user_address'];
     $description = $_POST['user_description'];
     $imagePath = $user['user_image']; // default to existing image
-
     // Define the target directory
     $upload_folder = "/rent-master2/admin/assets/tenants/";
     $target_dir = $_SERVER['DOCUMENT_ROOT'] . $upload_folder;
@@ -35,12 +34,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
         // Get the image file extension
         $image_file_type = strtolower(pathinfo($_FILES['user_image']['name'], PATHINFO_EXTENSION));
 
-        // Sanitize the user name for the filename
-        $sanitized_name = preg_replace("/[^a-zA-Z0-9_-]/", "", strtolower($name));
-
-        // Generate filename based on the sanitized user name
-        $new_filename = $sanitized_name . '.' . $image_file_type;
-        $target_file = $target_dir . $new_filename;
+        // Generate a unique filename
+        $unique_filename = uniqid() . '.' . $image_file_type;
+        $target_file = $target_dir . $unique_filename;
 
         // Move the uploaded file to the target directory
         if (move_uploaded_file($_FILES['user_image']['tmp_name'], $target_file)) {
@@ -50,9 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
             }
 
             // Store the relative path to the new image in the database
-            $imagePath = $upload_folder . $new_filename; // Update image path to new image
+            $imagePath = $upload_folder . $unique_filename;
         } else {
-            header("Location: ?page=src/profile&error=Sorry, there was an error uploading the file..");
+            header("Location: ?page=src/profile&error=Sorry, there was an error uploading the file.");
             exit();
         }
     }

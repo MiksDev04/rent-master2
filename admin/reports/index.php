@@ -10,7 +10,7 @@ if (!$conn) {
 }
 
 // Handle approval or rejection
-if (isset($_POST['action']) && isset($_POST['id'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tenant_id = $_POST['id'];
     $tenant_email = $_POST['email'] ?? null; // Get email if available
     $action = $_POST['action'];
@@ -38,27 +38,42 @@ if (isset($_POST['action']) && isset($_POST['id'])) {
                           )";
             mysqli_query($conn, $payment_sql);
             sendEmail($tenant_email, $action);
-            exit;
+            header("Location: /rent-master2/admin/?page=reports/index&success=Tenant added successfully.");
+            exit();
         } else {
             echo "Error updating tenant: " . mysqli_error($conn);
         }
     } elseif ($action == 'reject') {
-        // Reject the tenant and delete
-        $sql = "DELETE FROM tenants WHERE tenant_id = '$tenant_id'";
-        if (mysqli_query($conn, $sql)) {
-            // Update user status to tenant
-            $user_sql = "UPDATE users SET user_role = 'visitor' WHERE user_id = (SELECT user_id FROM tenants WHERE tenant_id = '$tenant_id')";
-            mysqli_query($conn, $user_sql);
-            sendEmail($tenant_email, $action);
-            exit;
-        } else {
-            echo "Error deleting tenant: " . mysqli_error($conn);
-        }
-    }
+        // Check if tenant is linked to any payments
+        $check_payment_sql = "SELECT * FROM payments WHERE tenant_id = '$tenant_id'";
+        $check_result = mysqli_query($conn, $check_payment_sql);
 
+        if (mysqli_num_rows($check_result) > 0) {
+            // Approve the tenant
+            $sql = "UPDATE tenants SET tenant_status = 'terminated' WHERE tenant_id = '$tenant_id'";
+            mysqli_query($conn, $sql);
+        } else {
+            // Payment exists, prevent deletion or handle accordingly
+            // Safe to delete tenant
+            $sql = "DELETE FROM tenants WHERE tenant_id = '$tenant_id'";
+            if (mysqli_query($conn, $sql)) {
+                // Update user role to visitor (must fetch user_id before tenant is deleted!)       
+                $user_sql = "UPDATE users SET user_role = 'visitor' WHERE user_id = (
+                            SELECT user_id FROM tenants WHERE tenant_id = '$tenant_id'
+                        )";
+                mysqli_query($conn, $user_sql); // This may now fail since tenant is already deleted
+            } else {
+                echo "Error deleting tenant: " . mysqli_error($conn);
+            }
+        }
+        sendEmail($tenant_email, $action);
+        header("Location: /rent-master2/admin/?page=reports/index&success=Request removed successfully.");
+        exit();
+    }
 }
 
-function sendEmail($tenant_email, $action) {
+function sendEmail($tenant_email, $action)
+{
     $status = ($action === 'approve') ? 'Approved' : 'Rejected';
     $admin_message = ($action === 'approve')
         ? "Congratulations! Your rental request has been approved."
@@ -71,7 +86,7 @@ function sendEmail($tenant_email, $action) {
     echo '<input type="hidden" name="_next" value="http://localhost/rent-master2/admin/?page=reports/index">';
     echo '<input type="hidden" name="_subject" value="Rental Request Update">';
     echo '<input type="hidden" name="_captcha" value="false">';
-    echo '<input type="hidden" name="Maintenance Status" value="' . htmlspecialchars(ucfirst($status)) . '">';
+    echo '<input type="hidden" name="Tenant Status" value="' . htmlspecialchars(ucfirst($status)) . '">';
     echo '<input type="hidden" name="Message" value="' . htmlspecialchars($admin_message) . '">';
     // echo '<input type="hidden" name="Request ID" value="'.htmlspecialchars($request_id).'">';
     echo '<input type="hidden" name="Landlord Email" value="mikogapasan04@gmail.com">';
@@ -102,19 +117,21 @@ if (mysqli_num_rows($result) == 0) {
 <div class="container px-lg-5 mb-4">
     <header class="d-flex justify-content-between mt-3">
         <h4 class="fw-medium">Rental Request/s</h4>
-        <button class="btn btn-primary fw-bold rounded-5 px-4">
-            Send Email
-        </button>
     </header>
+    <!-- Success/Error Messages -->
+    <?php if (isset($_GET['success'])): ?>
+        <div class="alert alert-success alert-dismissible fade show mb-4"><?= $_GET['success'] ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php elseif (isset($_GET['error'])): ?>
+        <div class="alert alert-danger alert-dismissible fade show mb-4"><?= $_GET['error'] ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
 
     <?php if ($no_requests): ?>
         <div class="text-center text-bg-warning mt-3">No record found</div>
     <?php else: ?>
-        <div class="container d-flex align-items-center justify-content-end gap-3 mt-2">
-            <span class="text-black-50">Select All</span>
-            <input type="checkbox" name="all-rental-request" class="form-check-input" id="check-all">
-        </div>
-
         <div class="container mt-3">
             <div class="row gap-3">
                 <?php while ($row = mysqli_fetch_assoc($result)): ?>
@@ -154,14 +171,14 @@ if (mysqli_num_rows($result) == 0) {
                                     </div>
                                     <div class="d-flex gap-3 align-self-end">
                                         <!-- Approve Form -->
-                                        <form action="/rent-master2/admin/?page=reports/index" method="POST">
+                                        <form action="reports/index.php" method="POST">
                                             <input type="hidden" name="action" value="approve">
                                             <input type="hidden" name="id" value="<?php echo $row['tenant_id']; ?>">
                                             <button type="submit" class="rounded-5 btn btn-primary px-3 fw-medium">Approve</button>
                                         </form>
 
                                         <!-- Reject Form -->
-                                        <form action="/rent-master2/admin/?page=reports/index" method="POST">
+                                        <form action="reports/index.php" method="POST">
                                             <input type="hidden" name="action" value="reject">
                                             <input type="hidden" name="id" value="<?php echo $row['tenant_id']; ?>">
                                             <input type="hidden" name="email" value="<?php echo $row['user_email']; ?>">
@@ -172,7 +189,6 @@ if (mysqli_num_rows($result) == 0) {
                                 </div>
                             </div>
                         </div>
-                        <input type="checkbox" name="rental-request" class="rental-request form-check-input">
                     </div>
                 <?php endwhile; ?>
             </div>

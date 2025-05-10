@@ -27,12 +27,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Get the image file extension
         $image_file_type = strtolower(pathinfo($_FILES['user_image']['name'], PATHINFO_EXTENSION));
 
-         // Sanitize the user name for the filename
-         $sanitized_name = preg_replace("/[^a-zA-Z0-9_-]/", "", strtolower($user_name));
-        // Generate unique filename
-        $unique_filename = $sanitized_name . '.' . $image_file_type;
+        // Generate a unique filename
+        $unique_filename = uniqid() . '.' . $image_file_type;
         $target_file = $target_dir . $unique_filename;
-
         
 
         // Move uploaded file to the target directory
