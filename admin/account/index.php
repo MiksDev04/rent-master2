@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $result = $stmt->get_result();
     $currentUser = $result->fetch_assoc();
-    
+
     // Default image path = existing image
     $imagePath = $currentUser['user_image'];
 
@@ -77,11 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt = $conn->prepare("UPDATE users SET user_name=?, user_email=?, user_phone_number=?, user_address=?, user_description=?, user_image=? WHERE user_id=?");
     $stmt->bind_param("ssssssi", $name, $email, $phone, $address, $description, $imagePath, $id);
     $stmt->execute();
-
     // Update session info
     $_SESSION['user_id'] = $id;
     $_SESSION['user_name'] = $name;
     $_SESSION['user_image'] = $imagePath;
+
 
     header("Location: /rent-master2/admin/?page=account/index&success=Profile updated successfully.");
     exit();

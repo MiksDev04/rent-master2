@@ -1,3 +1,22 @@
+<?php
+    // DB connection
+    $servername = "localhost";
+    $username = "root";
+    $password = "";
+    $dbname = "rentsystem";
+    $conn = mysqli_connect($servername, $username, $password, $dbname);
+    if (!$conn) {
+        die("Connection failed: " . mysqli_connect_error());
+    }
+
+    $id = $_SESSION['user_id'];
+    $sql = "SELECT * FROM users WHERE user_id = $id";
+    $result = mysqli_query($conn, $sql);
+    $user = mysqli_fetch_assoc($result);
+    $name = $user['user_name'];
+    $imagePath = $user['user_image'];
+?>
+            
 <header style="z-index: 111;" class=" bg-body-tertiary shadow-sm d-flex align-items-center justify-content-between py-1 px-3 position-sticky top-0">
     <!-- Toggle Button (Only for Small Screens) -->
     <button class=" btn border-0 toggle-btn d-lg-none py-2 px-3 rounded-2 d-flex align-items-center" id="toggleSidebar">
@@ -36,15 +55,16 @@
         </details>
         |<a href="?page=account/index" class="btn d-flex align-items-center gx-2 <?= (strpos($_SERVER['REQUEST_URI'], 'account') !== false) ? 'active' : '' ?> ">
             <!-- Profile image -->
-            <?php if (isset($_SESSION['user_image'])): ?>
-                <img src="<?php echo $_SESSION['user_image'] ?>" alt="Profile" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+
+            <?php if (!empty($imagePath)): ?>
+                <img src="<?php echo $imagePath ?>" alt="Profile" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
             <?php else: ?>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
                     <path d="M399 384.2C376.9 345.8 335.4 320 288 320l-64 0c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z" />
                 </svg>
             <?php endif; ?>
             <!-- Display name or username -->
-            <span class=" d-md-block d-none"><?= isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'admin' ?></span>
+            <span class=" d-md-block d-none"><?= !empty($name) ? $name : 'admin' ?></span>
         </a>
     </div>
 </header>
