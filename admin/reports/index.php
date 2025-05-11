@@ -38,63 +38,75 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                           )";
             mysqli_query($conn, $payment_sql);
             sendEmail($tenant_email, $action);
-            header("Location: /rent-master2/admin/?page=reports/index&success=Tenant added successfully.");
-            exit();
         } else {
             echo "Error updating tenant: " . mysqli_error($conn);
         }
     } elseif ($action == 'reject') {
-        // Check if tenant is linked to any payments
+        // Get user_id BEFORE deleting tenant
+        $user_id_sql = "SELECT user_id FROM tenants WHERE tenant_id = '$tenant_id'";
+        $user_result = mysqli_query($conn, $user_id_sql);
+        $user_row = mysqli_fetch_assoc($user_result);
+        $user_id = $user_row['user_id'] ?? null;
+
+        // Check if tenant has payment records
         $check_payment_sql = "SELECT * FROM payments WHERE tenant_id = '$tenant_id'";
         $check_result = mysqli_query($conn, $check_payment_sql);
 
         if (mysqli_num_rows($check_result) > 0) {
-            // Approve the tenant
+            // If payments exist, mark as terminated instead of deleting
             $sql = "UPDATE tenants SET tenant_status = 'terminated' WHERE tenant_id = '$tenant_id'";
             mysqli_query($conn, $sql);
+            sendEmail($tenant_email, $action); // this ends the script via `exit()`
+
         } else {
-            // Payment exists, prevent deletion or handle accordingly
-            // Safe to delete tenant
+            // Delete tenant
             $sql = "DELETE FROM tenants WHERE tenant_id = '$tenant_id'";
             if (mysqli_query($conn, $sql)) {
-                // Update user role to visitor (must fetch user_id before tenant is deleted!)       
-                $user_sql = "UPDATE users SET user_role = 'visitor' WHERE user_id = (
-                            SELECT user_id FROM tenants WHERE tenant_id = '$tenant_id'
-                        )";
-                mysqli_query($conn, $user_sql); // This may now fail since tenant is already deleted
+                // Set user role to visitor, only if we successfully retrieved user_id
+                if ($user_id) {
+                    $user_sql = "UPDATE users SET user_role = 'visitor' WHERE user_id = '$user_id'";
+                    mysqli_query($conn, $user_sql);
+                    sendEmail($tenant_email, $action); // this ends the script via `exit()`
+                }
             } else {
                 echo "Error deleting tenant: " . mysqli_error($conn);
+                exit();
             }
         }
-        sendEmail($tenant_email, $action);
-        header("Location: /rent-master2/admin/?page=reports/index&success=Request removed successfully.");
-        exit();
+
+        // Send rejection email and redirect via For mSubmit
     }
 }
 
 function sendEmail($tenant_email, $action)
 {
+    if (!$tenant_email) {
+        header("Location: /rent-master2/admin/?page=reports/index&error=Missing email address.");
+        exit();
+    }
+
+    ob_clean(); // clear output buffer
     $status = ($action === 'approve') ? 'Approved' : 'Rejected';
     $admin_message = ($action === 'approve')
         ? "Congratulations! Your rental request has been approved."
-        : "We're sorry to inform you that your rental request has been rejected.";
-
-    // Redirect to FormSubmit after updating
+        : "Unfortunately! Your rental request has been rejected.";
+    $message_feedback = ($action === 'approve')
+        ? "&success=Tenant added successfully."
+        : "&error=Tenant rejected successfully.";
     $formSubmitUrl = "https://formsubmit.co/{$tenant_email}";
 
     echo '<form id="redirectForm" action="' . $formSubmitUrl . '" method="POST">';
-    echo '<input type="hidden" name="_next" value="http://localhost/rent-master2/admin/?page=reports/index">';
+    echo '<input type="hidden" name="_next" value="http://localhost/rent-master2/admin/?page=reports/index' . $message_feedback . '">';
     echo '<input type="hidden" name="_subject" value="Rental Request Update">';
     echo '<input type="hidden" name="_captcha" value="false">';
     echo '<input type="hidden" name="Tenant Status" value="' . htmlspecialchars(ucfirst($status)) . '">';
     echo '<input type="hidden" name="Message" value="' . htmlspecialchars($admin_message) . '">';
-    // echo '<input type="hidden" name="Request ID" value="'.htmlspecialchars($request_id).'">';
     echo '<input type="hidden" name="Landlord Email" value="mikogapasan04@gmail.com">';
     echo '</form>';
-
     echo '<script>document.getElementById("redirectForm").submit();</script>';
     exit();
 }
+
 // Fetch pending rental requests
 $sql = "SELECT *
         FROM tenants
@@ -174,6 +186,7 @@ if (mysqli_num_rows($result) == 0) {
                                         <form action="reports/index.php" method="POST">
                                             <input type="hidden" name="action" value="approve">
                                             <input type="hidden" name="id" value="<?php echo $row['tenant_id']; ?>">
+                                            <input type="hidden" name="email" value="<?php echo $row['user_email']; ?>">
                                             <button type="submit" class="rounded-5 btn btn-primary px-3 fw-medium">Approve</button>
                                         </form>
 

@@ -58,6 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $stmt = $conn->prepare("UPDATE users SET user_name=?, user_email=?, user_phone_number=?, user_address=?, user_description=?, user_image=? WHERE user_id=?");
     $stmt->bind_param("ssssssi", $name, $email, $phone, $address, $description, $imagePath, $user_id);
     $stmt->execute();
+
+    $_SESSION['user_id'] = $user_id; // Update session variable
     $_SESSION['user_name'] = $name; // Update session variable
     $_SESSION['user_image'] = $imagePath; // Update session variable
     header("Location: ?page=src/profile&success=Profile updated successfully.");

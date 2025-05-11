@@ -1,6 +1,6 @@
 <?php
 require_once '../database/config.php';
-
+// Start session
 $searchTerm = $_GET['search'] ?? '';
 $minPrice = $_GET['min_price'] ?? '';
 $maxPrice = $_GET['max_price'] ?? '';

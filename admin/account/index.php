@@ -9,9 +9,11 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Fetch user data (assuming user is logged in and ID is in session)
+
+// Fetch logged-in user
 $user_id = $_SESSION['user_id'] ?? null;
 $user = null;
+
 if ($user_id) {
     $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
     $stmt->bind_param("i", $user_id);
@@ -21,20 +23,29 @@ if ($user_id) {
 }
 
 // Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' ) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $id = $_POST['user_id'];
     $name = $_POST['user_name'];
     $email = $_POST['user_email'];
     $phone = $_POST['user_phone_number'];
     $address = $_POST['user_address'];
     $description = $_POST['user_description'];
-    $imagePath = $user['user_image']; // default to existing image
 
-    // Define the target directory
+    // Get the current user data first
+    $stmt = $conn->prepare("SELECT user_image FROM users WHERE user_id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $currentUser = $result->fetch_assoc();
+    
+    // Default image path = existing image
+    $imagePath = $currentUser['user_image'];
+
+    // Upload config
     $upload_folder = "/rent-master2/admin/assets/tenants/";
     $target_dir = $_SERVER['DOCUMENT_ROOT'] . $upload_folder;
 
-      // If a new image is uploaded
+    // If a new image is uploaded
     if (isset($_FILES['user_image']) && $_FILES['user_image']['error'] == 0) {
         // Ensure the target directory exists
         if (!is_dir($target_dir)) {
@@ -51,31 +62,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' ) {
         // Move the uploaded file to the target directory
         if (move_uploaded_file($_FILES['user_image']['tmp_name'], $target_file)) {
             // If there's an old image, delete it
-            if (!empty($user['user_image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . $user['user_image'])) {
-                unlink($_SERVER['DOCUMENT_ROOT'] . $user['user_image']);
+            if (!empty($currentUser['user_image']) && file_exists($_SERVER['DOCUMENT_ROOT'] . $currentUser['user_image'])) {
+                unlink($_SERVER['DOCUMENT_ROOT'] . $currentUser['user_image']);
             }
 
             // Store the relative path to the new image in the database
             $imagePath = $upload_folder . $unique_filename;
         } else {
-            header("Location: ?page=account/index&error=Sorry, there was an error uploading the file.");
+            header("Location: /rent-master2/admin/?page=account/index&error=Sorry, there was an error uploading the file.");
             exit();
         }
     }
-    // Prepare and execute update query
+    // Update user info
     $stmt = $conn->prepare("UPDATE users SET user_name=?, user_email=?, user_phone_number=?, user_address=?, user_description=?, user_image=? WHERE user_id=?");
     $stmt->bind_param("ssssssi", $name, $email, $phone, $address, $description, $imagePath, $id);
     $stmt->execute();
-    $_SESSION['user_name'] = $name; // Update session variable
-    $_SESSION['user_image'] = $imagePath; // Update session variable
+
+    // Update session info
+    $_SESSION['user_id'] = $id;
+    $_SESSION['user_name'] = $name;
+    $_SESSION['user_image'] = $imagePath;
+
     header("Location: /rent-master2/admin/?page=account/index&success=Profile updated successfully.");
     exit();
-
-
 }
-// Close the connection
+
 mysqli_close($conn);
 ?>
+
 
 
 <div class="container  px-lg-5">
@@ -128,7 +142,7 @@ mysqli_close($conn);
         <!-- Edit Form -->
         <form method="POST" action="account/index.php" enctype="multipart/form-data">
             <div class="row row-cols-1 row-cols-lg-2 g-3">
-                <input type="hidden"name="user_id" value="<?= htmlspecialchars($user['user_id'] ?? '') ?>" required>
+                <input type="hidden" name="user_id" value="<?= htmlspecialchars($user['user_id'] ?? '') ?>" required>
                 <div class="col">
                     <label for="user_name" class="form-label">Full Name</label>
                     <input type="text" class="form-control" id="user_name" name="user_name" value="<?= htmlspecialchars($user['user_name'] ?? '') ?>" required>

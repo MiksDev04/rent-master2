@@ -14,7 +14,7 @@ $sql = "SELECT p.payment_id, p.tenant_id, t.property_id, pr.property_rental_pric
         FROM payments p
         INNER JOIN tenants t ON p.tenant_id = t.tenant_id
         INNER JOIN properties pr ON t.property_id = pr.property_id
-        ORDER BY p.payment_id ASC";
+        ORDER BY p.payment_id DESC";
 $result = $conn->query($sql);
 ?>
 

@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_id'])) {
     $formSubmitUrl = "https://formsubmit.co/{$tenant_email}";
     
     echo '<form id="redirectForm" action="'.$formSubmitUrl.'" method="POST">';
-    echo '<input type="hidden" name="_next" value="http://localhost/rent-master2/admin/?page=maintenance/index">';
+    echo '<input type="hidden" name="_next" value="http://localhost/rent-master2/admin/?page=maintenance/index&message=Response sent successfully">';
     echo '<input type="hidden" name="_subject" value="Maintenance Request Update">';
     echo '<input type="hidden" name="_captcha" value="false">';
     echo '<input type="hidden" name="Maintenance Status" value="'.htmlspecialchars(ucfirst($status)).'">';
@@ -49,6 +49,11 @@ $result = $conn->query($sql);
     <header class="d-flex justify-content-between mt-3">
         <h4 class="fw-medium">Maintenance Requests</h4>
     </header>
+    <?php if (isset($_GET['message'])): ?>
+        <div class="alert alert-success alert-dismissible fade show mb-4"><?= $_GET['message'] ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
     <?php if ($result->num_rows > 0): ?>
     <div class="table-responsive">
         <table class="table">
