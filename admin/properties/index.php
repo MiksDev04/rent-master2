@@ -16,7 +16,7 @@ $query = "SELECT * FROM properties WHERE ";
 
 if (isset($_GET['property_id'])) {
     $property_id = $_GET['property_id'];
-    $status_filter = $_GET['property_status'];
+    $status_filter = $_GET['property_status'] ?? 'available'; // Default to 'available' if not set
     $query .= " property_id = '$property_id' AND";
 }
 

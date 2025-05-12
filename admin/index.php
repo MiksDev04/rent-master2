@@ -66,7 +66,8 @@ session_start();
                 'payments/paid',
                 'payments/update',
                 'payments/delete',
-                'account/index'
+                'account/index',
+                'notification-link'
             ];
             if (!in_array($page, $allowed_pages)) {
                 $page = 'dashboard/index';

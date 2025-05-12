@@ -117,6 +117,11 @@ $sql = "SELECT *
 
 $result = mysqli_query($conn, $sql);
 
+$property_id = null;
+if (isset($_GET['property_id'])) {
+    $property_id = $_GET['property_id'];
+}
+
 // Check if there are any rental requests
 if (mysqli_num_rows($result) == 0) {
     $no_requests = true;
@@ -147,8 +152,14 @@ if (mysqli_num_rows($result) == 0) {
         <div class="container mt-3">
             <div class="row gap-3">
                 <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                    <div class="col-12 d-flex justify-content-between align-items-center gap-3">
-                        <div class="card">
+                    <?php if ($row['property_id'] == $property_id): ?>
+
+                        <div class="col-12 d-flex justify-content-between align-items-center gap-3">
+                            <div class="card shadow border-primary">
+                                <?php else: ?>
+                                    <div class="col-12 d-flex justify-content-between align-items-center gap-3">
+                                    <div class="card">
+                            <?php endif; ?>
                             <div class="card-header d-sm-flex d-grid gap-2 justify-content-between">
                                 <div class="d-flex">
                                     <div class="card-img d-flex align-items-center gap-3">
@@ -201,9 +212,9 @@ if (mysqli_num_rows($result) == 0) {
 
                                 </div>
                             </div>
+                            </div>
                         </div>
-                    </div>
-                <?php endwhile; ?>
+                    <?php endwhile; ?>
             </div>
         </div>
     <?php endif; ?>

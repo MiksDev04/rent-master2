@@ -9,12 +9,12 @@ $success_message_status = "alert-success";
 if (isset($_GET['property_id'])) {
     $property_id = intval($_GET['property_id']);
     // Get testimonials for this property
-    $testimonialsQuery = "SELECT ts.*, u.user_name, p.property_name
+    $testimonialsQuery = "SELECT ts.*, u.*
                          FROM testimonials AS ts 
                          JOIN tenants AS te ON te.tenant_id = ts.tenant_id 
                          JOIN properties AS p ON ts.property_id = p.property_id
                          JOIN users AS u ON te.user_id = u.user_id
-                         WHERE ts.property_id = '$property_id'";
+                         WHERE ts.property_id = '$property_id' LIMIT 5";
     $testimonialsResult = mysqli_query($conn, $testimonialsQuery);
     $testimonials = mysqli_fetch_all($testimonialsResult, MYSQLI_ASSOC);
     // Get property info
@@ -77,6 +77,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
             if (mysqli_query($conn, $update_sql)) {
                 $success_message = "Your existing tenant status has been updated to pending.";
                 $success_message_status = "alert-info";
+                
+                // Add notification for property owner
+                $message = "Tenant request received for property: {$property['property_name']}. Status: Pending";
+                $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
+                                    VALUES ($user_id, 'property', '$message', $property_id)";
+                mysqli_query($conn, $notification_sql);
             } else {
                 echo "<p>Error updating tenant: " . mysqli_error($conn) . "</p>";
             }
@@ -87,6 +93,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
             if (mysqli_query($conn, $insert_sql)) {
                 $success_message = "Rent request sent successfully! Your status is now pending.";
                 $success_message_status = "alert-success";
+                
+                // Add notification for property owner
+                $message = "New tenant request received for property: {$property['property_name']}. Status: Pending";
+                $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
+                                    VALUES ($user_id, 'property', '$message', $property_id)";
+                mysqli_query($conn, $notification_sql);
             } else {
                 echo "<p>Error inserting tenant: " . mysqli_error($conn) . "</p>";
             }
@@ -284,9 +296,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                                     <div class="d-flex align-items-center mb-2">
                                         <div class="bg-light rounded-circle d-flex align-items-center justify-content-center"
                                             style="width: 40px; height: 40px;">
-                                            <span class="text-muted">
+                                            <?php if (!empty($review['user_image'])): ?>
+                                                <img src="<?php echo htmlspecialchars($review['user_image']); ?>" alt="User Image" class="rounded-circle" style="width: 40px; height: 40px;">
+                                            <?php else: ?>
+                                                <span class="text-muted">
                                                 <?php echo strtoupper(substr($review['user_name'] ?? 'A', 0, 1)); ?>
                                             </span>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="ms-3">
                                             <h6 class="mb-0 fw-semibold"><?php echo htmlspecialchars($review['user_name'] ?? 'Anonymous'); ?></h6>

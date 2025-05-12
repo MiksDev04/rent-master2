@@ -52,15 +52,24 @@ $result = $conn->query($sql);
                                 <?php echo htmlspecialchars($row['payment_status']); ?>
                             </td>
                             <td>
-                                <a href="?page=payments/paid&payment_id=<?php echo htmlspecialchars($row['payment_id']); ?>" class="d-flex align-items-center gap-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
-                                        <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM8 13c-3.866 0-7-4.03-7-5s3.134-5 7-5 7 4.03 7 5-3.134 5-7 5z" />
-                                        <path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM8 9a1 1 0 1 1 0-2 1 1 0 0 1 0 2z" />
+                                <a href="?page=payments/paid&payment_id=<?php echo htmlspecialchars($row['payment_id']); ?>" class="btn btn-sm btn-secondary" title="View">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" fill="currentColor" viewBox="0 0 576 512">
+                                        <path d="M572.5 241.4C518.4 135.5 407.5 64 288 64S57.6 135.5 3.5 241.4a48.1 48.1 0 0 0 0 29.2C57.6 376.5 168.5 448 288 448s230.4-71.5 284.5-177.4a48.1 48.1 0 0 0 0-29.2zM288 400c-97 0-189.6-56.1-238.5-144C98.4 168.1 191 112 288 112s189.6 56.1 238.5 144C477.6 343.9 385 400 288 400zm0-240a96 96 0 1 0 96 96 96 96 0 0 0-96-96z" />
                                     </svg>
-                                    View Payment
                                 </a>
-                                <a href="?page=payments/update&payment_id=<?php echo $row['payment_id']; ?>" class="btn btn-sm btn-primary">Edit</a>
-                                <a href="?page=payments/delete&payment_id=<?php echo $row['payment_id']; ?>" class="btn btn-sm btn-danger">Delete</a>
+
+                                <a href="?page=payments/update&payment_id=<?php echo $row['payment_id']; ?>" class="btn btn-sm btn-primary" title="Edit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" fill="currentColor" viewBox="0 0 512 512">
+                                        <path d="M362.7 19.3c-12.5-12.5-32.8-12.5-45.3 0l-36.7 36.7 90.5 90.5 36.7-36.7c12.5-12.5 12.5-32.8 0-45.3L362.7 19.3zM237.5 138.7L45.3 330.9c-6 6-10.6 13.5-13.1 21.7L.5 478.1c-2.8 9.4-.1 19.5 7.1 26.6s17.2 9.9 26.6 7.1l125.6-31.6c8.2-2.1 15.7-6.7 21.7-13.1l192.2-192.2-90.5-90.5z" />
+                                    </svg>
+                                </a>
+
+                                <a href="?page=payments/delete&payment_id=<?php echo $row['payment_id']; ?>" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this payment?')">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" fill="currentColor" viewBox="0 0 448 512">
+                                        <path d="M135.2 17.7C140.2 7.1 150.9 0 162.7 0h122.6c11.8 0 22.5 7.1 27.5 17.7L328 32h88c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8l-20.2 363.6c-1.5 26.6-23.5 46.4-50.1 46.4H110.3c-26.6 0-48.6-19.8-50.1-46.4L40 80h-8c-13.3 0-24-10.7-24-24S18.7 32 32 32h88l15.2-14.3zM176 432c13.3 0 24-10.7 24-24V208c0-13.3-10.7-24-24-24s-24 10.7-24 24v200c0 13.3 10.7 24 24 24zm96 0c13.3 0 24-10.7 24-24V208c0-13.3-10.7-24-24-24s-24 10.7-24 24v200c0 13.3 10.7 24 24 24z" />
+                                    </svg>
+                                </a>
+
                             </td>
                         </tr>
                     <?php endwhile; ?>

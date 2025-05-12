@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 // Database connection with error handling
 require_once '../database/config.php';
