@@ -31,4 +31,3 @@ window.addEventListener('resize', () => {
         sidebar.style.left = '-230px';
     }
 });
-

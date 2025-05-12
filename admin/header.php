@@ -29,7 +29,7 @@ $notifCountResult = mysqli_query($conn, $notifCountQuery);
 $notifCount = $notifCountResult ? mysqli_fetch_assoc($notifCountResult)['count'] : 0;
 
 // ADMIN-SPECIFIC: Get all recent notifications
-$notifQuery = "SELECT * FROM notifications ORDER BY created_at DESC LIMIT 5";
+$notifQuery = "SELECT * FROM notifications ORDER BY created_at DESC LIMIT 20";
 $notifResult = mysqli_query($conn, $notifQuery);
 $notifications = [];
 if ($notifResult) {
@@ -77,7 +77,6 @@ if ($notifResult) {
             <div class="dropdown-menu dropdown-menu-end p-0" aria-labelledby="notificationDropdown" style="width: 350px; max-height: 400px; overflow-y: auto;">
                 <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
                     <h6 class="mb-0 fw-bold">Notifications</h6>
-                    <small><a href="?page=notifications" class="text-decoration-none">View All</a></small>
                 </div>
 
                 <?php if (empty($notifications)): ?>
@@ -89,7 +88,7 @@ if ($notifResult) {
                         <?php foreach ($notifications as $notification): ?>
                             <?php
                             $linkMap = [
-                                'payment' => "payments/index&id={$notification['related_id']}",
+                                'payment' => "payments/index&payment_id={$notification['related_id']}",
                                 'maintenance' => "maintenance/index&request_id={$notification['related_id']}",
                                 'property' => "reports/index&property_id={$notification['related_id']}",
                                 'general' => "dashboard/index"
@@ -119,7 +118,7 @@ if ($notifResult) {
                                     </div>
                                     <div class="flex-grow-1">
                                         <div class="d-flex justify-content-between">
-                                            <strong><?= ucfirst($notification['type']) ?> Notification</strong>
+                                            <strong><?= ucfirst($notification['type']) ?></strong>
                                             <small class="text-muted"><?= date('M j, g:i a', strtotime($notification['created_at'])) ?></small>
                                         </div>
                                         <div class="text-muted"><?= htmlspecialchars($notification['message']) ?></div>

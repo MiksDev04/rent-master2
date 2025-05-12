@@ -16,6 +16,12 @@ $sql = "SELECT p.payment_id, p.tenant_id, t.property_id, pr.property_rental_pric
         INNER JOIN properties pr ON t.property_id = pr.property_id
         ORDER BY p.payment_id DESC";
 $result = $conn->query($sql);
+
+$payment_id = null; 
+if (isset($_GET['payment_id'])) {
+    $payment_id = $_GET['payment_id'];
+}
+
 ?>
 
 <div class="container px-lg-5">
@@ -38,7 +44,11 @@ $result = $conn->query($sql);
                 </thead>
                 <tbody>
                     <?php while ($row = $result->fetch_assoc()): ?>
-                        <tr>
+                        <?php if ($row['payment_id'] == $payment_id): ?>
+                            <tr class=" table-primary">
+                            <?php else: ?>
+                                <tr>
+                            <?php endif; ?>
                             <td><?php echo 'Pay_' . str_pad($row['payment_id'], 6, '0', STR_PAD_LEFT); ?></td>
                             <td><?php echo htmlspecialchars($row['property_id']); ?></td>
                             <td><?php echo htmlspecialchars($row['tenant_id']); ?></td>

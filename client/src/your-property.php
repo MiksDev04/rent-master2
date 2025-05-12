@@ -6,6 +6,7 @@ $user_id = $_SESSION['user_id'] ?? null;
 $is_tenant = false;
 $tenant_id = null;
 
+
 // Check if user is a tenant
 if ($user_id) {
     $tenant_check_sql = "SELECT * FROM tenants WHERE user_id = $user_id AND tenant_status = 'active'";
@@ -24,7 +25,7 @@ if ($tenant_id) {
     $current_date = date('Y-m-d');
 
     // SQL query to fetch the most recent payment record for the tenant
-    $payment_sql = "SELECT p.*, pr.property_rental_price
+    $payment_sql = "SELECT p.*, pr.*
                     FROM payments AS p
                     JOIN tenants AS t
                     ON p.tenant_id = t.tenant_id
@@ -70,13 +71,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
 
         if (mysqli_query($conn, $update_payment)) {
             if (mysqli_affected_rows($conn) > 0) {
-                $payment_message = "You paid for this month";
-                // Include the file where the function is defined
-                require_once __DIR__ . '/../includes/functions.php';
+                // Use payment_id from earlier fetched $payment_info
+                $payment_id = $payment_info['payment_id'];
 
-                // Make sure you already have $conn (your database connection) and $tenant_id
+                $message = "Payment received for property: {$payment_info['property_name']}. Status: Paid.";
+
+                $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
+                             VALUES ($user_id, 'payment', '$message', $payment_id)";
+                mysqli_query($conn, $notification_sql);
+
+                $payment_message = "You paid for this month";
+
+                require_once __DIR__ . '/../includes/functions.php';
                 reserveNextMonthPayment($conn, $tenant_id);
+
                 header("Location: /rent-master2/client/?page=src/rating-property");
+                exit;
             } else {
                 $payment_message = "No pending payments found to update.";
             }
