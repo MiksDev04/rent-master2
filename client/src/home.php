@@ -263,7 +263,7 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
                     <?php echo htmlspecialchars($testimonial['property_name'] ?? 'Unknown Property'); ?>
                 </small>
                 <small class="text-muted">
-                    <?php echo htmlspecialchars(date('M Y', strtotime($testimonial['created_at'] ?? 'now'))); ?>
+                    <?php echo htmlspecialchars(date('M d, Y ', strtotime($testimonial['created_at'] ?? 'now'))); ?>
                 </small>
             </div>
         </div>

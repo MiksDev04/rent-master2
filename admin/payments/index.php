@@ -74,7 +74,7 @@ if (isset($_GET['payment_id'])) {
                                     </svg>
                                 </a>
 
-                                <a href="?page=payments/delete&payment_id=<?php echo $row['payment_id']; ?>" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this payment?')">
+                                <a href="?page=payments/delete&payment_id=<?php echo $row['payment_id']; ?>" class="btn btn-sm btn-danger" title="Delete" >
                                     <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" fill="currentColor" viewBox="0 0 448 512">
                                         <path d="M135.2 17.7C140.2 7.1 150.9 0 162.7 0h122.6c11.8 0 22.5 7.1 27.5 17.7L328 32h88c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8l-20.2 363.6c-1.5 26.6-23.5 46.4-50.1 46.4H110.3c-26.6 0-48.6-19.8-50.1-46.4L40 80h-8c-13.3 0-24-10.7-24-24S18.7 32 32 32h88l15.2-14.3zM176 432c13.3 0 24-10.7 24-24V208c0-13.3-10.7-24-24-24s-24 10.7-24 24v200c0 13.3 10.7 24 24 24zm96 0c13.3 0 24-10.7 24-24V208c0-13.3-10.7-24-24-24s-24 10.7-24 24v200c0 13.3 10.7 24 24 24z" />
                                     </svg>

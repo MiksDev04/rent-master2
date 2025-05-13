@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<div class="sidebar z-3 bg-white" id="sidebar">
+<div class="sidebar bg-white" id="sidebar" style="z-index: 222;">
     <div class="text-center d-flex align-items-center justify-content-between">
         <div>
             <img src="./assets/icons/group.png" width="140" height="70" alt="Logo-image">
