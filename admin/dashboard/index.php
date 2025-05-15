@@ -145,12 +145,18 @@ $maxIncome = max($incomeByMonth) ?: 1; // Avoid division by zero
 $stmt->close();
 $result->free();
 ?>
+
+<header>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+</header>
 <div class="container">
     <h4 class="text-center fw-medium mt-3">Welcome Admin</h4>
 
 
     <div class="container ">
-        <h5 class="text-black-50 mt-4">Overview this Month</h5>
+        <h5 class=" mt-4">Overview this Month</h5>
         <hr>
         <div class="px-lg-5 row row-cols-1 row-cols-md-2 row-cols-lg-3 gx-lg-5 gy-3 overviews">
             <div class="col">
@@ -160,7 +166,7 @@ $result->free();
                             <img src="/rent-master/admin/assets/icons/Neighborhood.png" alt="">
                             <div class="d-flex flex-column align-items-center">
                                 <h1 class="fw-bolder fs-1"><?= htmlspecialchars($propertyTotal) ?></h1>
-                                <span class="fw-bold">Houses</span>
+                                <span class="fw-bold">House/s</span>
                                 <span>Available</span>
                             </div>
                         </div>
@@ -182,7 +188,7 @@ $result->free();
                             <img src="/rent-master/admin/assets/icons/Tenant.png" alt="">
                             <div class="d-flex flex-column align-items-center">
                                 <h1 class="fw-bolder fs-1"><?= htmlspecialchars($tenantTotal) ?></h1>
-                                <span class="fw-bold">Tenants</span>
+                                <span class="fw-bold">Tenant/s</span>
                                 <span>Active</span>
                             </div>
                         </div>
@@ -223,7 +229,7 @@ $result->free();
 
     </div>
     <div class="container py-4">
-        <h5 class="text-black-50 mt-4">Income Report</h5>
+        <h5 class=" mt-4">Income Report</h5>
         <hr>
         <div class="container">
             <div class="row">
@@ -273,11 +279,11 @@ $result->free();
         </div>
     </div>
     <div class="container">
-        <h5 class="text-black-50 mt-4">Properties Map</h5>
+        <h5 class=" mt-4">Properties Map</h5>
         <hr>
-        <section class="search-filter py-2 bg-white">
+        <section class="search-filter py-2 bg-body-tertiary shadow-sm border-5">
             <div class="container">
-                <form method="GET" id="propertySearchForm">
+                <form method="GET"  id="propertySearchForm">
                     <input type="hidden" name="submitted" value="1">
                     <div class="row g-3 align-items-end">
                         <!-- Search Field -->
@@ -341,7 +347,7 @@ $result->free();
             </div>
         </section>
         <!-- Map Section -->
-        <section class="property-map py-4 bg-light ">
+        <section class="property-map py-4">
             <div class="container">
                 <div class="card shadow-sm">
                     <div class="card-body p-0" style="height: 500px;">
@@ -454,7 +460,7 @@ $result->free();
             position: 'bottomright'
         });
         legend.onAdd = function(map) {
-            const div = L.DomUtil.create('div', 'info legend bg-white p-2 rounded shadow-sm');
+            const div = L.DomUtil.create('div', 'info legend bg-body-tertiary p-2 rounded shadow-sm');
             div.innerHTML = `
                 <h6 class="mb-2 fw-bold">Property Status</h6>
                 <div class="d-flex align-items-center mb-1">
@@ -569,115 +575,6 @@ $result->free();
     });
 </script>
 
-<!-- CSS Styling -->
-<style>
-    .property-listing {
-        background-color: #f8f9fa;
-    }
-
-    .divider {
-        width: 80px;
-        height: 3px;
-        opacity: 0.7;
-    }
-
-    .property-card {
-        border-radius: 12px;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .property-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    }
-
-    .property-image-container {
-        height: 220px;
-        background: #f0f0f0;
-    }
-
-    .property-image {
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-
-    .property-card:hover .property-image {
-        transform: scale(1.05);
-    }
-
-    .property-price-badge {
-        bottom: 15px;
-        left: 15px;
-        font-weight: 500;
-    }
-
-    .transition-all {
-        transition: all 0.3s ease;
-    }
-
-    .hover-shadow:hover {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .svg-icon {
-        width: 16px;
-        height: 16px;
-        fill: currentColor;
-        vertical-align: middle;
-        margin-right: 5px;
-    }
-
-    /* Map styling */
-    .property-map {
-        background-color: #f8f9fa;
-    }
-
-    /* Search filter styling */
-    .search-filter {
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .input-group-text {
-        border-right: none;
-    }
-
-    .form-control:focus {
-        box-shadow: none;
-        border-color: #0d6efd;
-    }
-
-    /* Map popup styling */
-    .leaflet-popup-content {
-        margin: 8px 12px;
-    }
-
-    .leaflet-popup-content-wrapper {
-        border-radius: 8px;
-    }
-
-    .property-info p {
-        margin-bottom: 0.3rem;
-        line-height: 1.3;
-    }
-
-    /* Legend styling */
-    .info.legend {
-        padding: 8px 12px;
-        font-size: 14px;
-        line-height: 1.4;
-    }
-
-    .info.legend h6 {
-        font-size: 14px;
-        margin-bottom: 8px;
-        color: #333;
-    }
-</style>
-
-<!-- Leaflet CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
 
 <?php
 $conn->close();

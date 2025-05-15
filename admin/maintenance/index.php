@@ -86,8 +86,10 @@ if (isset($_GET['request_id'])) {
                                 <td><?php echo htmlspecialchars($row['category']); ?></td>
                                 <td><?php echo htmlspecialchars($row['description']); ?></td>
                                 <td><?php echo date('M d, Y', strtotime($row['request_date'])); ?></td>
-                                <td class="<?php echo ($row['status'] == 'completed') ? 'text-success' : (($row['status'] == 'pending') ? 'text-danger' : 'text-warning'); ?> fw-medium">
-                                    <?php echo htmlspecialchars($row['status']); ?>
+                                <td class="fw-medium">
+                                    <span class="badge <?php echo ($row['status'] == 'completed') ? 'bg-success' : (($row['status'] == 'pending') ? 'bg-danger' : 'bg-warning'); ?> ">
+                                        <?php echo htmlspecialchars($row['status']); ?>
+                                    </span>    
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#responseModal<?php echo $row['request_id']; ?>">

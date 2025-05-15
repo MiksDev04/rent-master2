@@ -107,7 +107,7 @@ mysqli_close($conn);
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
-        <div class="d-flex align-items-center p-3 bg-light rounded mb-3">
+        <div class="d-flex align-items-center p-3 bg-body-tertiary rounded mb-3">
             <!-- Profile Image -->
             <div class="me-4">
                 <div class="border border-4 border-white rounded-circle bg-secondary overflow-hidden" style="width: 100px; height: 100px;">

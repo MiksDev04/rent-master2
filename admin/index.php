@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 ?>
 <!DOCTYPE html>
@@ -11,20 +11,36 @@ session_start();
     <link rel="stylesheet" href="./css/style.css?v=<?php echo time(); ?>">
     <!-- <link rel="stylesheet" href="./css/style.css"> -->
     <link rel="stylesheet" href="/rent-master/bootstrap-5.3.3-dist/css/bootstrap.min.css">
-     <!-- Set theme early -->
+    <!-- Set theme early -->
     <script>
         (function() {
+            const html = document.documentElement;
             const theme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-bs-theme', theme);
+            const fontSize = localStorage.getItem('fontSize') || 'medium';
+            const fontFamily = localStorage.getItem('fontFamily') || 'sans-serif';
+
+            const fontSizes = {
+                small: '14px',
+                medium: '16px',
+                large: '18px'
+            };
+
+            html.setAttribute('data-bs-theme', theme);
+            html.style.fontSize = fontSizes[fontSize] || '16px';
+            html.style.fontFamily = fontFamily || 'sans-serif';
+            document.documentElement.style.setProperty('--bs-body-font-family', fontFamily);
+
         })();
     </script>
+
+
 </head>
 
 <body>
     <!-- Sidebar -->
-     <?php 
-        include('sidebar.php'); // Include the sidebar file
-     ?>
+    <?php
+    include('sidebar.php'); // Include the sidebar file
+    ?>
 
     <!-- Logout Confirmation Modal -->
     <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
@@ -47,8 +63,8 @@ session_start();
 
 
     <!-- Main Content -->
-    <main class="content p-0" >
-        <?php include('header.php');?>
+    <main class="content p-0">
+        <?php include('header.php'); ?>
         <div class=" main-content">
             <!-- Content Goes Here -->
             <?php
@@ -69,7 +85,7 @@ session_start();
                 'payments/index',
                 'reports/index',
                 'settings/index',
-                'maintenance/index', 
+                'maintenance/index',
                 'payments/paid',
                 'payments/update',
                 'payments/delete',

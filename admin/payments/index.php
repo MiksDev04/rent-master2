@@ -58,8 +58,8 @@ if (isset($_GET['payment_id'])) {
                                 ?>
                             </td>
                             <td>PHP <?php echo number_format($row['property_rental_price'], 2); ?></td>
-                            <td class="<?php echo ($row['payment_status'] == 'Paid') ? 'text-success' : 'text-danger'; ?> fw-medium">
-                                <?php echo htmlspecialchars($row['payment_status']); ?>
+                            <td class="fw-medium">
+                                <span class="<?php echo ($row['payment_status'] == 'Paid') ? 'bg-success' : 'bg-danger'; ?>  badge "><?php echo htmlspecialchars($row['payment_status']); ?></span>
                             </td>
                             <td>
                                 <a href="?page=payments/paid&payment_id=<?php echo htmlspecialchars($row['payment_id']); ?>" class="btn btn-sm btn-secondary" title="View">

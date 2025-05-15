@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $property_id = $_POST['property_id'];
 
         // Check foreign key constraints (e.g., tenants table)
-        $checkForeignKey = mysqli_query($conn, "SELECT * FROM tenants WHERE property_id = '$property_id'");
+        $checkForeignKey = mysqli_query($conn, "SELECT * FROM tenants WHERE tenant_status = 'active' AND property_id = '$property_id'");
         if (mysqli_num_rows($checkForeignKey) > 0) {
             // Redirect back to the deletion page with error flag
             header("Location: /rent-master2/admin/?page=properties/delete&property_id=$property_id&error=1");

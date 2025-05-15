@@ -14,14 +14,26 @@ function deleteOldImages($conn, $property_id)
     $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/rent-master2/admin/assets/properties/";
     $query = "SELECT * FROM property_images WHERE property_id = '$property_id'";
     $result = mysqli_query($conn, $query);
-    $images = mysqli_fetch_assoc($result);
-
-    // Delete old images from the folder
-    for ($i = 1; $i <= 10; $i++) {
-        $imagePath = $images["image$i"];
-        if (!empty($imagePath) && file_exists($_SERVER['DOCUMENT_ROOT'] . $imagePath)) {
-            unlink($_SERVER['DOCUMENT_ROOT'] . $imagePath);
+    
+    if (mysqli_num_rows($result) > 0) {
+        $images = mysqli_fetch_assoc($result);
+        
+        // Delete old images from the folder
+        for ($i = 1; $i <= 10; $i++) {
+            $imagePath = $images["image$i"];
+            if (!empty($imagePath) && file_exists($_SERVER['DOCUMENT_ROOT'] . $imagePath)) {
+                unlink($_SERVER['DOCUMENT_ROOT'] . $imagePath);
+            }
         }
+        
+        // Clear all image references from database
+        $clearQuery = "UPDATE property_images SET ";
+        $updates = [];
+        for ($i = 1; $i <= 10; $i++) {
+            $updates[] = "image$i = NULL";
+        }
+        $clearQuery .= implode(", ", $updates) . " WHERE property_id = '$property_id'";
+        mysqli_query($conn, $clearQuery);
     }
 }
 
@@ -84,8 +96,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             die("Error updating property: " . mysqli_error($conn));
         }
 
-        // Rest of your image and amenities update code...
-        // [Keep the existing code for images and amenities]
+        // Handle image uploads if new images were provided
+        if (!empty($_FILES['property_images']['name'][0])) {
+            // Delete all old images and clear database references
+            deleteOldImages($conn, $property_id);
+            
+            // Prepare image paths for database
+            $imagePaths = array_fill(1, 10, NULL);
+            
+            // Upload new images (up to 10)
+            $uploadCount = min(count($_FILES['property_images']['name']), 10);
+            for ($i = 0; $i < $uploadCount; $i++) {
+                $file = [
+                    'name' => $_FILES['property_images']['name'][$i],
+                    'type' => $_FILES['property_images']['type'][$i],
+                    'tmp_name' => $_FILES['property_images']['tmp_name'][$i],
+                    'error' => $_FILES['property_images']['error'][$i],
+                    'size' => $_FILES['property_images']['size'][$i]
+                ];
+                
+                $imagePath = uploadSingleImage($file);
+                if ($imagePath) {
+                    $imagePaths[$i+1] = $imagePath;
+                }
+            }
+            
+            // Update image paths in database
+            $query = "SELECT * FROM property_images WHERE property_id = '$property_id'";
+            $result = mysqli_query($conn, $query);
+            
+            if (mysqli_num_rows($result) > 0) {
+                // Update existing record with new images
+                $updateQuery = "UPDATE property_images SET ";
+                $updates = [];
+                for ($i = 1; $i <= 10; $i++) {
+                    $updates[] = "image$i = " . ($imagePaths[$i] !== NULL ? "'" . mysqli_real_escape_string($conn, $imagePaths[$i]) . "'" : "NULL");
+                }
+                $updateQuery .= implode(", ", $updates) . " WHERE property_id = '$property_id'";
+                mysqli_query($conn, $updateQuery);
+            } else {
+                // Insert new record with images
+                $insertQuery = "INSERT INTO property_images (property_id, image1, image2, image3, image4, image5, image6, image7, image8, image9, image10) 
+                                VALUES ('$property_id', ";
+                $values = [];
+                for ($i = 1; $i <= 10; $i++) {
+                    $values[] = $imagePaths[$i] !== NULL ? "'" . mysqli_real_escape_string($conn, $imagePaths[$i]) . "'" : "NULL";
+                }
+                $insertQuery .= implode(", ", $values) . ")";
+                mysqli_query($conn, $insertQuery);
+            }
+        }
+
+        // Handle amenities
+        if (isset($_POST['amenities'])) {
+            // First delete existing amenities for this property
+            mysqli_query($conn, "DELETE FROM property_amenities WHERE property_id = '$property_id'");
+            
+            // Insert the new selected amenities
+            foreach ($_POST['amenities'] as $amenity_id) {
+                $amenity_id = mysqli_real_escape_string($conn, $amenity_id);
+                mysqli_query($conn, "INSERT INTO property_amenities (property_id, amenity_id) VALUES ('$property_id', '$amenity_id')");
+            }
+        } else {
+            // If no amenities selected, remove all for this property
+            mysqli_query($conn, "DELETE FROM property_amenities WHERE property_id = '$property_id'");
+        }
         
         header("Location: /rent-master2/admin/?page=properties/index");
         exit();
@@ -113,6 +188,7 @@ if (isset($_GET['property_id'])) {
     $all_amenities = mysqli_query($conn, "SELECT * FROM amenities");
 }
 ?>
+
 
 <head>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -158,9 +234,9 @@ if (isset($_GET['property_id'])) {
     </header>
 
     <form id="property-form" action="properties/update.php" method="post" enctype="multipart/form-data">
-        <?php if (isset($property)): ?>
+        <!-- <?php if (isset($property)): ?> -->
             <input type="hidden" name="property_id" value="<?= $property['property_id'] ?>">
-        <?php endif; ?>
+        <!-- <?php endif; ?> -->
 
         <div class="mt-2">
             <label for="property-name" class="form-label">Property Name</label>
