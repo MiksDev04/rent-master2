@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_id'] = $user_data['user_id']; // ✅ Store user_id for tenant use
         $_SESSION['user_image'] = $user_data['user_image']; // ✅ Store user_id for tenant use
 
-        header("Location: /rent-master2/client/?page=src/login-successful");
+        header("Location: ?page=src/login-successful");
         exit();
     } else {
         $login_error = "Invalid email or password. Please try again";
@@ -38,9 +38,9 @@ mysqli_close($conn);
     <div class="row justify-content-center  min-vh-100">
 
         <!-- Form Column -->
-        <div class="col-lg-8 col-12 col-md-10 p-5">
+        <div class="col-lg-8 col-12 col-md-10 py-3">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">Welcome Back</h2>
+                <h2 class="mb-0">Welcome</h2>
                 <a href="/rent-master2/client/?page=src/register" role="" class="btn btn-outline-primary">Create Account</a>
             </div>
 

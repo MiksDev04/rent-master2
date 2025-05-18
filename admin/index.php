@@ -55,7 +55,7 @@ session_start();
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <a href="/rent-master2/client/src/logout.php" class="btn btn-danger">Logout</a>
+                    <a href="../client/src/logout.php" class="btn btn-danger">Logout</a>
                 </div>
             </div>
         </div>

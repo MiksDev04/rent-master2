@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (isset($_FILES['user_image']) && $_FILES['user_image']['error'] == 0) {
         // Define the target directory
-        $upload_folder = "/rent-master2/admin/assets/tenants/";
+        $upload_folder = "../admin/assets/tenants/";
         $target_dir = $_SERVER['DOCUMENT_ROOT'] . $upload_folder;
 
         // Get the image file extension
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         // Redirect with inserted ID and name
-        header("Location: /rent-master2/client/?page=src/register-successful");
+        header("Location: ?page=src/register-successful");
         exit();
     } else {
         echo "<div class='alert alert-danger mt-3'>Error: " . mysqli_error($conn) . "</div>";
@@ -86,10 +86,10 @@ mysqli_close($conn);
     <div class="row justify-content-center  min-vh-100">
 
         <!-- Form Column -->
-        <div class="col-lg-8 col-12 col-md-10 p-5">
+        <div class="col-lg-8 col-12 col-md-10 py-3">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Create Account</h2>
-                <a href="/rent-master2/client/?page=src/login" class="btn btn-outline-primary">Log In</a>
+                <a href="?page=src/login" class="btn btn-outline-primary">Log In</a>
             </div>
 
             <p class="text-muted mb-4">Join us to find your perfect rental property</p>
@@ -178,7 +178,7 @@ mysqli_close($conn);
                 <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Create Account</button>
 
                 <div class="text-center">
-                    <p class="text-muted">Already have an account? <a href="/rent-master2/client/?page=src/login" class="text-decoration-none">Log in</a></p>
+                    <p class="text-muted">Already have an account? <a href="?page=src/login" class="text-decoration-none">Log in</a></p>
                 </div>
             </form>
         </div>
