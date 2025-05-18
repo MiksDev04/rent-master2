@@ -10,17 +10,17 @@ session_start();
         </button>
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/home">Home</a></li>
-                <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/property">Properties</a></li>
-                <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/about">About</a></li>
-                <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/home#contact">Contact</a></li>
-                <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/your-property">Your Property</a></li>
+                <li class="nav-item"><a class="nav-link fw-medium <?= (strpos($_SERVER['REQUEST_URI'], 'home') !== false) ? 'active' : '' ?>" href="?page=src/home">Home</a></li>
+                <li class="nav-item"><a class="nav-link fw-medium <?= (strpos($_SERVER['REQUEST_URI'], 'properties') !== false) ? 'active' : '' ?>" href="?page=src/properties">Properties</a></li>
+                <li class="nav-item"><a class="nav-link fw-medium <?= (strpos($_SERVER['REQUEST_URI'], 'about') !== false) ? 'active' : '' ?>" href="?page=src/about">About</a></li>
+                <!-- <li class="nav-item"><a class="nav-link fw-medium <?= (strpos($_SERVER['REQUEST_URI'], 'contact') !== false) ? 'active' : '' ?>" href="?page=src/home#contact">Contact</a></li> -->
+                <li class="nav-item"><a class="nav-link fw-medium <?= (strpos($_SERVER['REQUEST_URI'], 'your') !== false) ? 'active' : '' ?>" href="?page=src/your-property">Your Property</a></li>
             </ul>
             <ul class="navbar-nav">
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <!-- If user is logged in -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center <?= (strpos($_SERVER['REQUEST_URI'], 'account') !== false) ? 'active' : '' ?>" href="#" role="button" data-bs-toggle="dropdown">
                             <!-- Profile image -->
                             <?php if(!empty($_SESSION['user_image'])): ?>
                                 <img src="<?php echo $_SESSION['user_image'] ?>" alt="Profile" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
@@ -37,8 +37,8 @@ session_start();
                     </li>
                 <?php else: ?>
                     <!-- If not logged in -->
-                    <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/login">Login</a></li>
-                    <li class="nav-item"><a class="nav-link fw-medium" href="?page=src/register">Register</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium <?= (strpos($_SERVER['REQUEST_URI'], 'login') !== false) ? 'active' : '' ?>" href="?page=src/login">Login</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium <?= (strpos($_SERVER['REQUEST_URI'], 'register') !== false) ? 'active' : '' ?>" href="?page=src/register">Register</a></li>
                 <?php endif; ?>
             </ul>
         </div>

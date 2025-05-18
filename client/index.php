@@ -2,12 +2,14 @@
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/rent-master2/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css?v=<?php echo time(); ?>">
 </head>
 
 <body>
-    
+
 
     <?php
     include('src/navbar.php'); // Include the navbar file
@@ -17,9 +19,9 @@
         'src/home',
         'src/login',
         'src/register',
-        'src/property',
+        'src/properties',
         'src/profile',
-        'src/property-details',
+        'src/properties-details',
         'src/logout',
         'src/contact',
         'src/your-property',
@@ -29,7 +31,7 @@
         'src/register-successful',
         'src/about'
     ];
-    
+
     // Get the page from the query string
     $page = isset($_GET['page']) ? $_GET['page'] : 'src/home'; // Default to 'home' if not set
 
@@ -41,9 +43,9 @@
     }
     include('src/footer.php'); // Include the footer file
     ?>
-    
+
     <!-- Bootstrap 4 JS and dependencies -->
-     <script src="./js/script.js"></script>
+    <script src="./js/script.js"></script>
     <script src="/rent-master2/bootstrap-5.3.3-dist/js/bootstrap.bundle.js"></script>
 </body>
 

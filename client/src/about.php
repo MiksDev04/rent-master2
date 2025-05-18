@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .system-hero {
             background-color: #f0f8ff;
@@ -53,7 +52,7 @@
                 <p>Built with security and efficiency in mind, Rent Master helps property owners maintain compliance while reducing administrative overhead.</p>
             </div>
             <div class="col-lg-6">
-                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3" alt="System Overview" class="img-fluid rounded shadow">
+                <img src="assets/images/about-house.jpg" alt="System Overview" class="img-fluid rounded shadow">
             </div>
         </div>
     </section>

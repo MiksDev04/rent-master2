@@ -86,6 +86,8 @@ session_start();
                 'reports/index',
                 'settings/index',
                 'maintenance/index',
+                'maintenance/view',
+                'maintenance/respond',
                 'payments/paid',
                 'payments/update',
                 'payments/delete',

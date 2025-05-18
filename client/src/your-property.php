@@ -143,15 +143,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
     <style>
         body {
             background-color: #f8f9fa;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.6;
             color: #495057;
         }
-
-        .container {
-            max-width: 1200px;
-        }
-
         .card {
             border: none;
             border-radius: 12px;

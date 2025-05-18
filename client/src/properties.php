@@ -71,74 +71,74 @@ $result->free();
             <p class="lead text-muted">Explore our curated collection of premium rental properties</p>
             <div class="divider mx-auto bg-primary"></div>
         </div>
-      <!-- Unified Search & Filter Section -->
-<section class="search-filter py-2 bg-white">
-    <div class="container">
-        <form method="GET" id="propertySearchForm">
-            <input type="hidden" name="page" value="src/property">
-            <input type="hidden" name="submitted" value="1">
-            
-            <div class="row g-3 align-items-end">
-                <!-- Search Field -->
-                <div class="col-md-3">
-                    <label for="searchInput" class="form-label small text-muted mb-1">Search Properties</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
-                        <input type="text" class="form-control" id="searchInput" name="search" 
-                               placeholder="Name or description..." value="<?= htmlspecialchars($searchTerm) ?>">
-                    </div>
-                </div>
-                
-                <!-- Location Field -->
-                <div class="col-md-3">
-                    <label for="locationInput" class="form-label small text-muted mb-1">Location</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-primary text-white"><i class="fas fa-map-marker-alt"></i></span>
-                        <input type="text" class="form-control" id="locationInput" name="location" 
-                               placeholder="City or address" value="<?= htmlspecialchars($location) ?>">
-                    </div>
-                </div>
-                
-                <!-- Price Range -->
-                <div class="col-md-4">
-                    <label class="form-label small text-muted mb-1">Price Range</label>
-                    <div class="row g-2">
-                        <div class="col">
-                            <select class="form-select" name="min_price">
-                                <option value="">Min Price</option>
-                                <?php
-                                $prices = [0, 5000, 10000, 15000, 20000, 25000, 30000];
-                                foreach ($prices as $price) {
-                                    $selected = ($minPrice == $price) ? 'selected' : '';
-                                    echo "<option value=\"$price\" $selected>₱" . number_format($price) . "</option>";
-                                }
-                                ?>
-                            </select>
+        <!-- Unified Search & Filter Section -->
+        <section class="search-filter py-2 bg-white">
+            <div class="container">
+                <form method="GET" id="propertySearchForm">
+                    <input type="hidden" name="page" value="src/property">
+                    <input type="hidden" name="submitted" value="1">
+
+                    <div class="row g-3 align-items-end">
+                        <!-- Search Field -->
+                        <div class="col-md-3">
+                            <label for="searchInput" class="form-label small text-muted mb-1">Search Properties</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
+                                <input type="text" class="form-control" id="searchInput" name="search"
+                                    placeholder="Name or description..." value="<?= htmlspecialchars($searchTerm) ?>">
+                            </div>
                         </div>
-                        <div class="col">
-                            <select class="form-select" name="max_price">
-                                <option value="">Max Price</option>
-                                <?php
-                                foreach ($prices as $price) {
-                                    $selected = ($maxPrice == $price) ? 'selected' : '';
-                                    echo "<option value=\"$price\" $selected>₱" . number_format($price) . "</option>";
-                                }
-                                ?>
-                            </select>
+
+                        <!-- Location Field -->
+                        <div class="col-md-3">
+                            <label for="locationInput" class="form-label small text-muted mb-1">Location</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-primary text-white"><i class="fas fa-map-marker-alt"></i></span>
+                                <input type="text" class="form-control" id="locationInput" name="location"
+                                    placeholder="City or address" value="<?= htmlspecialchars($location) ?>">
+                            </div>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="col-md-4">
+                            <label class="form-label small text-muted mb-1">Price Range</label>
+                            <div class="row g-2">
+                                <div class="col">
+                                    <select class="form-select" name="min_price">
+                                        <option value="">Min Price</option>
+                                        <?php
+                                        $prices = [0, 5000, 10000, 15000, 20000, 25000, 30000];
+                                        foreach ($prices as $price) {
+                                            $selected = ($minPrice == $price) ? 'selected' : '';
+                                            echo "<option value=\"$price\" $selected>₱" . number_format($price) . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="col">
+                                    <select class="form-select" name="max_price">
+                                        <option value="">Max Price</option>
+                                        <?php
+                                        foreach ($prices as $price) {
+                                            $selected = ($maxPrice == $price) ? 'selected' : '';
+                                            echo "<option value=\"$price\" $selected>₱" . number_format($price) . "</option>";
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="col-md-2 d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-filter me-2"></i> Apply Filters
+                            </button>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Submit Button -->
-                <div class="col-md-2 d-grid">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-filter me-2"></i> Apply Filters
-                    </button>
-                </div>
+                </form>
             </div>
-        </form>
-    </div>
-</section>
+        </section>
 
         <!-- Map Section -->
         <section class="property-map py-4 bg-light">
@@ -150,7 +150,7 @@ $result->free();
                 </div>
             </div>
         </section>
-        
+
         <!-- Property Grid -->
         <div class="row g-4">
             <?php if (count($properties) > 0): ?>
@@ -180,7 +180,7 @@ $result->free();
                                 </p>
                             </div>
                             <div class="card-footer bg-transparent d-flex justify-content-between align-items-center border-0 pt-0">
-                                <a href="?page=src/property-details&property_id=<?php echo htmlspecialchars($row['property_id']); ?>"
+                                <a href="?page=src/properties-details&property_id=<?php echo htmlspecialchars($row['property_id']); ?>"
                                     class="btn btn-outline-primary rounded-pill px-4 stretched-link">
                                     View Details
                                 </a>
@@ -212,12 +212,12 @@ $result->free();
         $avgLat = 14.5995; // Default Manila latitude
         $avgLng = 120.9842; // Default Manila longitude
         $count = 0;
-        
+
         if (count($properties) > 0) {
             $sumLat = 0;
             $sumLng = 0;
             $count = 0;
-            
+
             foreach ($properties as $property) {
                 if (!empty($property['latitude']) && !empty($property['longitude'])) {
                     $sumLat += $property['latitude'];
@@ -225,14 +225,14 @@ $result->free();
                     $count++;
                 }
             }
-            
+
             if ($count > 0) {
                 $avgLat = $sumLat / $count;
                 $avgLng = $sumLng / $count;
             }
         }
         ?>
-        
+
         const map = L.map('propertyMap').setView([<?= $avgLat ?>, <?= $avgLng ?>], <?= $count > 0 ? '8' : '7' ?>);
 
         // Add tile layer (OpenStreetMap)
@@ -266,7 +266,7 @@ $result->free();
             $lng = !empty($property['longitude']) ? $property['longitude'] : (120.9842 + (rand(-50, 50) / 1000));
             $isAvailable = $property['property_status'] === 'available';
             ?>
-            
+
             L.marker([<?= $lat ?>, <?= $lng ?>], {
                     icon: <?= $isAvailable ? 'availableIcon' : 'unavailableIcon' ?>
                 }).addTo(map)
@@ -284,7 +284,7 @@ $result->free();
                             <p class="mb-1"><strong>Price:</strong> ₱<?= number_format($property['property_rental_price'], 2) ?>/mo</p>
                             <p class="mb-2 text-muted small"><?= substr(addslashes($property['property_description']), 0, 60) ?>...</p>
                         </div>
-                        <a href="?page=src/property-details&property_id=<?= $property['property_id'] ?>" 
+                        <a href="?page=src/properties-details&property_id=<?= $property['property_id'] ?>" 
                            class="btn btn-sm btn-outline-primary w-100 mb-2">
                             View Details
                         </a>

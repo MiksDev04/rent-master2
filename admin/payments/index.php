@@ -17,7 +17,7 @@ $sql = "SELECT p.payment_id, p.tenant_id, t.property_id, pr.property_rental_pric
         ORDER BY p.payment_id DESC";
 $result = $conn->query($sql);
 
-$payment_id = null; 
+$payment_id = null;
 if (isset($_GET['payment_id'])) {
     $payment_id = $_GET['payment_id'];
 }
@@ -25,7 +25,7 @@ if (isset($_GET['payment_id'])) {
 ?>
 
 <div class="container px-lg-5">
-    <header class=" d-flex justify-content-between mt-3">
+    <header class=" d-flex justify-content-between my-3">
         <h4 class=" fw-medium">Your Payments</h4>
     </header>
     <?php if ($result->num_rows > 0): ?>
@@ -34,7 +34,7 @@ if (isset($_GET['payment_id'])) {
                 <thead class=" table-info ">
                     <tr>
                         <th>Payment No.</th>
-                        <th>House ID</th>
+                        <th>Property ID</th>
                         <th>Tenant ID</th>
                         <th colspan="2">Payment Period</th>
                         <th>Amount</th>
@@ -47,7 +47,7 @@ if (isset($_GET['payment_id'])) {
                         <?php if ($row['payment_id'] == $payment_id): ?>
                             <tr class=" table-primary">
                             <?php else: ?>
-                                <tr>
+                            <tr>
                             <?php endif; ?>
                             <td><?php echo 'Pay_' . str_pad($row['payment_id'], 6, '0', STR_PAD_LEFT); ?></td>
                             <td><?php echo htmlspecialchars($row['property_id']); ?></td>
@@ -74,15 +74,15 @@ if (isset($_GET['payment_id'])) {
                                     </svg>
                                 </a>
 
-                                <a href="?page=payments/delete&payment_id=<?php echo $row['payment_id']; ?>" class="btn btn-sm btn-danger" title="Delete" >
+                                <a href="?page=payments/delete&payment_id=<?php echo $row['payment_id']; ?>" class="btn btn-sm btn-danger" title="Delete">
                                     <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" fill="currentColor" viewBox="0 0 448 512">
                                         <path d="M135.2 17.7C140.2 7.1 150.9 0 162.7 0h122.6c11.8 0 22.5 7.1 27.5 17.7L328 32h88c13.3 0 24 10.7 24 24s-10.7 24-24 24h-8l-20.2 363.6c-1.5 26.6-23.5 46.4-50.1 46.4H110.3c-26.6 0-48.6-19.8-50.1-46.4L40 80h-8c-13.3 0-24-10.7-24-24S18.7 32 32 32h88l15.2-14.3zM176 432c13.3 0 24-10.7 24-24V208c0-13.3-10.7-24-24-24s-24 10.7-24 24v200c0 13.3 10.7 24 24 24zm96 0c13.3 0 24-10.7 24-24V208c0-13.3-10.7-24-24-24s-24 10.7-24 24v200c0 13.3 10.7 24 24 24z" />
                                     </svg>
                                 </a>
 
                             </td>
-                        </tr>
-                    <?php endwhile; ?>
+                            </tr>
+                        <?php endwhile; ?>
                 </tbody>
             </table>
         </div>

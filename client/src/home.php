@@ -58,7 +58,7 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
 
 <!-- Featured Properties -->
 <section id="properties" class="section">
-    <div class="container">
+    <div class="container c">
         <div class="text-center mb-5">
             <h2 class="section-title">Featured Properties</h2>
             <p class="section-subtitle">Discover our latest additions</p>
@@ -89,7 +89,7 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
                                 <span class="property-price">PHP <?php echo number_format(htmlspecialchars($row['property_rental_price']), 2, '.', ',') ?></span>
                                 <span class="text-muted">per month</span>
                             </div>
-                            <a href="?page=src/property-details&property_id=<?php echo htmlspecialchars($row['property_id']); ?>"  class="btn btn-outline-primary w-100 mt-3">View Details</a>
+                            <a href="?page=src/properties-details&property_id=<?php echo htmlspecialchars($row['property_id']); ?>"  class="btn btn-outline-primary w-100 mt-3">View Details</a>
                         </div>
                     </div>
                 </div>
@@ -98,7 +98,7 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
        
 
         <div class="text-center mt-5">
-            <a href="?page=src/property" class="btn btn-primary px-4">View All Properties</a>
+            <a href="?page=src/properties" class="btn btn-primary px-4">View All Properties</a>
         </div>
     </div>
 </section>

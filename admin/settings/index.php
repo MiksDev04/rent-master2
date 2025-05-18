@@ -19,7 +19,7 @@
 </head>
 
 <body>
-  <div class="container py-4">
+  <div class="container py-4  px-lg-5">
     <div class="settings-section">
 
       <header class="mb-4">
