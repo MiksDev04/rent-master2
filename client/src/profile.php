@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_profile'])) {
     $description = $_POST['user_description'];
     $imagePath = $user['user_image']; // default to existing image
     // Define the target directory
-    $upload_folder = "/rent-master2/admin/assets/tenants/";
+    $upload_folder = "/admin/assets/tenants/";
     $target_dir = $_SERVER['DOCUMENT_ROOT'] . $upload_folder;
 
     // If a new image is uploaded

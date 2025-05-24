@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (isset($_FILES['user_image']) && $_FILES['user_image']['error'] == 0) {
         // Define the target directory
-        $upload_folder = "../admin/assets/tenants/";
+        $upload_folder = "/admin/assets/tenants/";
         $target_dir = $_SERVER['DOCUMENT_ROOT'] . $upload_folder;
 
         // Get the image file extension

@@ -39,7 +39,7 @@ function deleteOldImages($conn, $property_id)
 
 function uploadSingleImage($file)
 {
-    $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/rent-master2/admin/assets/properties/";
+    $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/admin/assets/properties/";
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0777, true);
     }

@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $imagePath = $currentUser['user_image'];
 
     // Upload config
-    $upload_folder = "/rent-master2/admin/assets/tenants/";
+    $upload_folder = "/admin/assets/tenants/";
     $target_dir = $_SERVER['DOCUMENT_ROOT'] . $upload_folder;
 
     // If a new image is uploaded
