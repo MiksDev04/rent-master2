@@ -132,10 +132,8 @@ if (mysqli_num_rows($result) == 0) {
 ?>
 
 <div class="container px-lg-5 mb-4">
-    <header class="d-flex justify-content-between mt-3">
-        <h4 class="fw-medium">Rental Request/s</h4>
-    </header>
-    <!-- Success/Error Messages -->
+    <h4 class="fw-medium mt-3">Rental Requests</h4>
+    
     <?php if (isset($_GET['success'])): ?>
         <div class="alert alert-success alert-dismissible fade show mb-4"><?= $_GET['success'] ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -147,75 +145,53 @@ if (mysqli_num_rows($result) == 0) {
     <?php endif; ?>
 
     <?php if ($no_requests): ?>
-        <div class="text-center text-bg-warning mt-3">No record found</div>
+        <div class="text-center text-bg-warning mt-3">No requests found</div>
     <?php else: ?>
-        <div class="container mt-3">
-            <div class="row gap-3">
-                <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                    <?php if ($row['property_id'] == $property_id): ?>
-
-                        <div class="col-12 d-flex justify-content-between align-items-center gap-3">
-                            <div class="card shadow border-primary">
-                                <?php else: ?>
-                                    <div class="col-12 d-flex justify-content-between align-items-center gap-3">
-                                    <div class="card">
-                            <?php endif; ?>
-                            <div class="card-header d-sm-flex d-grid gap-2 justify-content-between">
-                                <div class="d-flex">
-                                    <div class="card-img d-flex align-items-center gap-3">
-                                        <img width="70" height="70" class="rounded-circle"
-                                            src="<?php echo htmlspecialchars($row['user_image'] ?? '/rent-master2/admin/reports/images/default.jpg'); ?>"
-                                            alt="User Image">
-                                        <div>
-                                            <h4 class="fw-medium card-title mb-1"><?php echo htmlspecialchars($row['user_name']); ?></h4>
-                                            <span class="opacity-75 d-block card-subtitle"><?php echo htmlspecialchars($row['user_email']); ?></span>
-                                            <span class="opacity-75 d-block card-subtitle"><?php echo htmlspecialchars($row['user_phone_number']); ?></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="text-black-50"><?php echo date("F d, Y h:i A", strtotime($row['tenant_date_created'])); ?></div>
-                            </div>
-                            <div class="card-body">
-                                <blockquote class="blockquote">
-                                    <p class="fs-6 fw-medium lh-1">Dear Mr. Caricot</p>
-                                    <p class="opacity-75 fs-6 ps-3">
-                                        I’m interested in renting <?php echo htmlspecialchars($row['property_name']); ?> located at
-                                        <?php echo htmlspecialchars($row['property_location']); ?>. Could we schedule a viewing at your earliest convenience? Please let me know the next steps.
-                                    </p>
-                                </blockquote>
-                                <div class="d-sm-flex d-grid justify-content-between">
-                                    <div>
-                                        <p class="fs-6 fw-medium lh-1">Property</p>
-                                        <ul class="list-unstyled ps-3">
-                                            <li><span class="fw-medium">ID: </span><?php echo $row['property_id']; ?></li>
-                                            <li><span class="fw-medium">Name: </span><?php echo htmlspecialchars($row['property_name']); ?></li>
-                                            <li><span class="fw-medium">Location: </span><?php echo htmlspecialchars($row['property_location']); ?></li>
-                                        </ul>
-                                    </div>
-                                    <div class="d-flex gap-3 align-self-end">
-                                        <!-- Approve Form -->
-                                        <form action="reports/index.php" method="POST">
-                                            <input type="hidden" name="action" value="approve">
-                                            <input type="hidden" name="id" value="<?php echo $row['tenant_id']; ?>">
-                                            <input type="hidden" name="email" value="<?php echo $row['user_email']; ?>">
-                                            <button type="submit" class="rounded-5 btn btn-primary px-3 fw-medium">Approve</button>
-                                        </form>
-
-                                        <!-- Reject Form -->
-                                        <form action="reports/index.php" method="POST">
-                                            <input type="hidden" name="action" value="reject">
-                                            <input type="hidden" name="id" value="<?php echo $row['tenant_id']; ?>">
-                                            <input type="hidden" name="email" value="<?php echo $row['user_email']; ?>">
-                                            <button type="submit" class="rounded-5 btn btn-secondary px-3 fw-medium">Reject</button>
-                                        </form>
-                                    </div>
-
-                                </div>
-                            </div>
+        <div class="mt-3">
+            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                <div class="card mb-3 <?= $row['property_id'] == $property_id ? 'border-primary' : '' ?>">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <img width="50" height="50" class="rounded-circle"
+                                src="<?= htmlspecialchars($row['user_image'] ?? '/rent-master2/admin/reports/images/default.jpg') ?>"
+                                alt="User">
+                            <div>
+                                <h5 class="mb-0"><?= htmlspecialchars($row['user_name']) ?></h5>
+                                <small><?= htmlspecialchars($row['user_email']) ?></small>
+                                <small class="d-block"><?= htmlspecialchars($row['user_phone_number']) ?></small>
                             </div>
                         </div>
-                    <?php endwhile; ?>
-            </div>
+                        <small><?= date("M d, Y", strtotime($row['tenant_date_created'])) ?></small>
+                    </div>
+                    
+                    <div class="card-body">
+                            <div>
+                                <h5 class="fw-medium mb-1">Property:</h5>
+                                <ul class=" list-unstyled ms-3">
+                                    <li><strong>ID:</strong> <?= $row['property_id'] ?></li>
+                                    <li><strong>Name:</strong> <?= htmlspecialchars($row['property_name']) ?></li>
+                                    <li><strong>Location:</strong> <?= htmlspecialchars($row['property_location']) ?></li>
+                                </ul>
+                            </div>
+                            
+                            <div class="d-flex gap-2 justify-content-end">
+                                <form method="POST" action="reports/index.php">
+                                    <input type="hidden" name="action" value="approve">
+                                    <input type="hidden" name="id" value="<?= $row['tenant_id'] ?>">
+                                    <input type="hidden" name="email" value="<?= $row['user_email'] ?>">
+                                    <button type="submit" class="btn btn-primary fw-bold rounded-5 ">Approve</button>
+                                </form>
+                                
+                                <form method="POST" action="reports/index.php">
+                                    <input type="hidden" name="action" value="reject">
+                                    <input type="hidden" name="id" value="<?= $row['tenant_id'] ?>">
+                                    <input type="hidden" name="email" value="<?= $row['user_email'] ?>">
+                                    <button type="submit" class="btn btn-secondary fw-bold rounded-5">Reject</button>
+                                </form>
+                            </div>
+                    </div>
+                </div>
+            <?php endwhile; ?>
         </div>
     <?php endif; ?>
 </div>

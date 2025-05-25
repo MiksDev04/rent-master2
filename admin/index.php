@@ -9,6 +9,7 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Rent Master</title>
     <link rel="stylesheet" href="./css/style.css?v=<?php echo time(); ?>">
+    <link rel="icon" href="/client/assets/icons/image.ico" type="image/x-icon">
     <!-- <link rel="stylesheet" href="./css/style.css"> -->
     <link rel="stylesheet" href="/rent-master/bootstrap-5.3.3-dist/css/bootstrap.min.css">
     <!-- Set theme early -->

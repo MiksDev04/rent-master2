@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 12, 2025 at 02:54 AM
+-- Generation Time: May 18, 2025 at 01:57 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -78,12 +78,10 @@ CREATE TABLE `maintenance_requests` (
 --
 
 INSERT INTO `maintenance_requests` (`request_id`, `tenant_id`, `category`, `description`, `request_date`, `status`) VALUES
-(1, 65, 'Appliance Repair', 'hsjhahsAS', '2025-04-26 09:43:21', 'completed'),
-(2, 65, 'Plumbing', 'jhjjhh', '2025-04-26 09:43:45', 'completed'),
-(3, 65, 'Electrical', 'We are electric', '2025-05-02 10:47:35', 'completed'),
-(4, 67, 'Plumbing', 'hello', '2025-05-07 09:09:40', 'completed'),
-(5, 67, 'Plumbing', 'hello', '2025-05-10 17:51:53', 'completed'),
-(6, 72, 'Electrical', 'We are electric', '2025-05-12 08:42:44', 'pending');
+(16, 73, 'Plumbing', 'The water pipes suddenly explode', '2025-05-15 09:28:04', 'completed'),
+(17, 73, 'Electrical', 'We dont have electricity', '2025-05-16 10:51:09', 'completed'),
+(18, 73, 'Electrical', 'hello', '2025-05-16 15:27:02', 'pending'),
+(19, 73, 'Electrical', 'hello', '2025-05-16 16:12:15', 'completed');
 
 -- --------------------------------------------------------
 
@@ -100,6 +98,20 @@ CREATE TABLE `notifications` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
   `related_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `notifications`
+--
+
+INSERT INTO `notifications` (`notification_id`, `user_id`, `type`, `message`, `is_read`, `created_at`, `related_id`) VALUES
+(8, 1, 'property', 'New tenant request received for property: Pineview One-Bedroom – Unit 2C. Status: Pending', 1, '2025-05-15 09:24:54', 59),
+(9, 1, 'payment', 'Payment received for property: Pineview One-Bedroom – Unit 2C. Status: Paid.', 1, '2025-05-15 09:26:11', 59),
+(10, 1, 'maintenance', 'New maintenance request received for property: Pineview One-Bedroom – Unit 2C. Status: Pending', 1, '2025-05-15 09:28:04', 16),
+(11, 1, 'maintenance', 'New maintenance request received for property: Pineview One-Bedroom – Unit 2C. Status: Pending', 1, '2025-05-16 10:51:09', 17),
+(12, 1, 'maintenance', 'New maintenance request received for property: Pineview One-Bedroom – Unit 2C. Status: Pending', 1, '2025-05-16 15:27:02', 18),
+(13, 1, 'maintenance', 'New maintenance request received for property: Pineview One-Bedroom – Unit 2C. Status: Pending', 1, '2025-05-16 16:12:15', 19),
+(14, 2, 'property', 'Tenant request received for property: Rosewood Studio – Unit A1. Status: Pending', 1, '2025-05-16 17:00:06', 57),
+(15, 2, 'property', 'Tenant request received for property: Rosewood Studio – Unit A1. Status: Pending', 1, '2025-05-16 22:45:48', 57);
 
 -- --------------------------------------------------------
 
@@ -122,11 +134,8 @@ CREATE TABLE `payments` (
 --
 
 INSERT INTO `payments` (`payment_id`, `tenant_id`, `payment_start_date`, `payment_end_date`, `payment_status`, `payment_date`, `payment_method`) VALUES
-(18, 65, '2025-05-28', '2025-06-27', 'Paid', '2025-04-27', NULL),
-(19, 65, '2025-04-27', '2025-05-27', 'Paid', '2025-05-04', 'Maya'),
-(25, 67, '2025-05-04', '2025-06-04', 'Pending', '2025-05-04', 'Bank Transfer'),
-(53, 72, '2025-05-10', '2025-06-10', 'Paid', '2025-05-11', 'GCash'),
-(54, 72, '2025-06-11', '2025-07-10', 'Pending', NULL, NULL);
+(59, 73, '2025-05-15', '2025-06-15', 'Paid', '2025-05-15', 'Credit/Debit Card'),
+(60, 73, '2025-06-16', '2025-07-15', 'Pending', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -151,10 +160,10 @@ CREATE TABLE `properties` (
 --
 
 INSERT INTO `properties` (`property_id`, `property_name`, `property_location`, `property_date_created`, `property_description`, `property_status`, `property_rental_price`, `latitude`, `longitude`) VALUES
-(46, 'Super House', 'Abenida Padre Burgos, 659, Ermita, Fifth District, Manila, Capital District, Metro Manila, 1000, Philippines', '2025-04-25', 'This is the best house', 'available', 23454, 14.58923200, 120.98127400),
-(49, 'Maplewood Heights Apartment', 'L. Cruz Street, Hagdang Bato Libis, Mandaluyong, Eastern Manila District, Metro Manila, 1550, Philippines', '2024-12-01', 'A spacious 2-bedroom apartment located near major business districts. Comes with parking and 24/7 security.', 'unavailable', 18000, 14.59089300, 121.03431700),
-(50, 'Sunrise Condo Unit 5B', 'Naglabrahan, Guimba, Nueva Ecija, Central Luzon, Philippines', '2025-01-15', 'Modern studio unit perfect for young professionals. Features include a gym, pool, and co-working space.', 'unavailable', 22000, 15.67857700, 120.83313000),
-(51, 'Palm Tree Villas House', 'Bulakin 2, Dolores, 2nd District, Quezon, Calabarzon, 4326, Philippines', '2025-03-10', 'A family-friendly house with 3 bedrooms, large backyard, and pet-friendly policy. Near schools and markets.', 'available', 25000, 14.01201200, 121.39043900);
+(57, 'Rosewood Studio – Unit A1', 'Zamboanga Street, UP Campus, Diliman, 4th District, Quezon City, Eastern Manila District, Metro Manila, 1101, Philippines', '2025-01-29', ' Rosewood Studio offers a 25 sqm ground floor unit with ceramic tile flooring, a built-in wardrobe, compact kitchenette with granite countertops, and a private bathroom with a hot and cold shower. Ideal for students or single renters who value simplicity and accessibility.', 'unavailable', 24000, 14.65650300, 121.04845800),
+(58, 'Suncrest Flat – Unit B2', 'Dulong Bayan, San Jose del Monte, Bulacan, Central Luzon, 3023, Philippines', '2025-05-13', 'Suncrest Flat is a bright and airy 28 sqm studio with large windows, vinyl flooring, and a clean interior layout. It includes a private comfort room, compact kitchen area, and space for a bed and study desk—perfect for students or work-from-home tenants.', 'available', 17000, 14.82400900, 121.04736300),
+(59, 'Pineview One-Bedroom – Unit 2C', 'House of Grace, J. P. Rizal Street, T&D Village, Tuktukan, Taguig District 1, Taguig, Southern Manila District, Metro Manila, 1637, Philippines', '2025-03-12', 'Pineview is a 35 sqm one-bedroom unit on the second floor featuring a full living room, private balcony, tiled floors, and a modern bathroom. The kitchen is furnished with overhead cabinets, and the layout separates sleeping, dining, and leisure areas efficiently.', 'available', 27000, 14.53091400, 121.07242600),
+(60, 'Maple Heights Studio – Unit 3D', 'Tanzang Luma Road, Tanzang Luma VI, Imus, Cavite, Calabarzon, 4103, Philippines', '2024-11-20', ' Maple Heights Studio is a newly renovated 26 sqm unit on the third floor, offering a peaceful space with high ceilings, ceramic tiles, LED lighting, and a modern kitchenette. The private bathroom is neatly tiled, and the unit gets excellent natural ventilation.', 'available', 23000, 14.40941000, 120.94574000);
 
 -- --------------------------------------------------------
 
@@ -173,26 +182,40 @@ CREATE TABLE `property_amenities` (
 --
 
 INSERT INTO `property_amenities` (`id`, `property_id`, `amenity_id`) VALUES
-(95, 50, 9),
-(96, 50, 12),
-(97, 50, 14),
-(98, 50, 16),
-(110, 49, 9),
-(111, 49, 12),
-(112, 49, 14),
-(113, 49, 15),
-(114, 49, 16),
-(120, 51, 4),
-(121, 51, 5),
-(122, 51, 6),
-(123, 51, 18),
-(124, 51, 19),
-(195, 46, 1),
-(196, 46, 2),
-(197, 46, 4),
-(198, 46, 5),
-(199, 46, 13),
-(200, 46, 20);
+(270, 57, 1),
+(271, 57, 2),
+(272, 57, 3),
+(273, 57, 8),
+(274, 57, 9),
+(275, 57, 14),
+(276, 57, 15),
+(277, 57, 16),
+(278, 57, 17),
+(368, 58, 1),
+(369, 58, 2),
+(370, 58, 3),
+(371, 58, 9),
+(372, 58, 14),
+(373, 58, 16),
+(374, 59, 1),
+(375, 59, 2),
+(376, 59, 3),
+(377, 59, 9),
+(378, 59, 11),
+(379, 59, 13),
+(380, 59, 14),
+(381, 59, 15),
+(382, 59, 16),
+(383, 59, 18),
+(384, 59, 19),
+(385, 60, 1),
+(386, 60, 2),
+(387, 60, 8),
+(388, 60, 11),
+(389, 60, 14),
+(390, 60, 15),
+(391, 60, 16),
+(392, 60, 17);
 
 -- --------------------------------------------------------
 
@@ -220,10 +243,10 @@ CREATE TABLE `property_images` (
 --
 
 INSERT INTO `property_images` (`property_images_id`, `property_id`, `image1`, `image2`, `image3`, `image4`, `image5`, `image6`, `image7`, `image8`, `image9`, `image10`) VALUES
-(12, 46, '/rent-master2/admin/assets/properties/1746278809_holiday-home-177401_1280.jpg', '/rent-master2/admin/assets/properties/1746278809_florida-1744694_1920.jpg', '/rent-master2/admin/assets/properties/1746278809_florida-1744691_1920.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(15, 51, '/rent-master2/admin/assets/properties/1746189409_lifestyle-3107041_1920.jpg', '/rent-master2/admin/assets/properties/1746189409_holiday-home-177401_1920.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(16, 50, '/rent-master2/admin/assets/properties/1746189473_large-home-389271_1280.jpg', '/rent-master2/admin/assets/properties/1746189474_kitchen-9288111_1280.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(17, 49, '/rent-master2/admin/assets/properties/1746189451_florida-1744691_1920.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+(23, 57, '/rent-master2/admin/assets/properties/1747271009_pexels-pixabay-53610.jpg', '/rent-master2/admin/assets/properties/1747271009_pexels-jvdm-1457847.jpg', '/rent-master2/admin/assets/properties/1747271009_pexels-fotoaibe-1571463.jpg', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(24, 58, '/rent-master2/admin/assets/properties/1747410294_pexels-pixabay-259588.jpg', '/rent-master2/admin/assets/properties/1747410294_pexels-curtis-adams-1694007-3935352.jpg', '/rent-master2/admin/assets/properties/1747410294_pexels-pixabay-276554.jpg', '/rent-master2/admin/assets/properties/1747410294_pexels-pixabay-276671.jpg', NULL, NULL, NULL, NULL, NULL, NULL),
+(25, 59, '/rent-master2/admin/assets/properties/1747410391_pexels-pixabay-280222 (1).jpg', '/rent-master2/admin/assets/properties/1747410391_pexels-fotoaibe-1571462.jpg', '/rent-master2/admin/assets/properties/1747410391_pexels-falling4utah-2724749.jpg', '/rent-master2/admin/assets/properties/1747410391_pexels-pixabay-262048.jpg', NULL, NULL, NULL, NULL, NULL, NULL),
+(26, 60, '../admin/assets/properties/1747410450_pexels-binyaminmellish-1396132.jpg', '/rent-master2/admin/assets/properties/1747410450_pexels-curtis-adams-1694007-3935352.jpg', '/rent-master2/admin/assets/properties/1747410450_pexels-falling4utah-2724749.jpg', '/rent-master2/admin/assets/properties/1747410450_pexels-fotoaibe-1571459.jpg', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -245,11 +268,10 @@ CREATE TABLE `tenants` (
 --
 
 INSERT INTO `tenants` (`tenant_id`, `user_id`, `property_id`, `tenant_status`, `tenant_date_created`, `tenant_terminated_at`) VALUES
-(65, 9, 51, 'terminated', '2025-05-10', '2025-05-10'),
-(67, 1, 49, 'active', '2025-05-04', NULL),
-(68, 2, 51, 'terminated', '2025-05-04', '2025-05-04'),
-(69, 29, 51, 'terminated', '2025-05-08', '2025-05-08'),
-(72, 39, 50, 'active', '2025-05-10', NULL);
+(73, 1, 59, 'terminated', '2025-05-15', '2025-05-16'),
+(74, 29, 58, 'terminated', '2025-05-16', '2025-05-16'),
+(75, 2, 57, 'active', '2025-05-16', '2025-05-16'),
+(76, 40, 57, 'terminated', '2025-05-16', '2025-05-16');
 
 -- --------------------------------------------------------
 
@@ -271,16 +293,7 @@ CREATE TABLE `testimonials` (
 --
 
 INSERT INTO `testimonials` (`testimonial_id`, `tenant_id`, `property_id`, `rating`, `comment`, `created_at`) VALUES
-(1, 65, 46, 5, 'this house is the best', '2025-04-27'),
-(2, 65, 46, 5, 'this house is the best', '2025-04-27'),
-(3, 65, 46, 0, 'fgdgd', '2025-04-27'),
-(4, 65, 46, 0, 'This is the best ever', '2025-04-27'),
-(5, 65, 46, 5, 'nmbnb', '2025-04-27'),
-(6, 65, 46, 5, 'This house is very good. I will continue in renting this house.', '2025-04-27'),
-(7, 65, 46, 5, 'ddfhdfbhkdsf', '2025-05-03'),
-(8, 67, 49, 5, 'I want to live here forever. This is so good🥰🥰🥰🥰', '2025-05-04'),
-(9, 65, 46, 5, 'Sobrang granda😍😍', '2025-05-04'),
-(10, 72, 50, 5, 'Esta casa es una de las mejores que he tenido.', '2025-05-11');
+(15, 73, 59, 5, 'The unit is clean, well-maintained, and peaceful. Great location, friendly landlord, and perfect for students or young professionals.', '2025-05-15');
 
 -- --------------------------------------------------------
 
@@ -305,12 +318,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `user_name`, `user_email`, `user_password`, `user_phone_number`, `user_address`, `user_description`, `user_image`, `user_role`) VALUES
-(1, 'Marc Eihenburg', 'eihenburg@gmail.com', 'password123', '0945-765-3567', 'Makati City', 'Marc is a young professional working in the IT industry. He recently moved to the city for career growth and is looking for a rental home that suits his quiet and independent lifestyle. He values responsibility and ensures that his financial obligations, including rent and utilities, are always met on time.', '/rent-master2/admin/assets/tenants/man-8741800_1280.jpg', 'tenant'),
-(2, 'George Peterson', 'georgepetersong@gmail.com', 'password123', '0934-721-9547', 'Quezon City', 'George is a freelance graphic designer who works remotely. He prefers a well-maintained and organized living space that fosters creativity and productivity. His flexible schedule allows him to keep the property in excellent condition, and he takes pride in being a responsible tenant who respects the rules of the rental home.', '/rent-master2/admin/assets/tenants/ai-generated-9009342_1280.jpg', 'visitor'),
-(9, 'Miko Gapasans', 'miksgapasan@gmail.com', 'miko1234', '0995-064-4707', 'Dolores, Quezon, Philippines', 'I am the strongest', '/rent-master2/admin/assets/tenants/6820116e3acfb.png', 'visitor'),
-(16, 'Miko', 'mikogapasa04@gmail.com', 'miko1234', '0995-064-4707', 'Dolores, Quezon, Philippines', 'I am working student', '/rent-master2/admin/assets/tenants/6820295255018.jpg', 'landlord'),
-(29, 'Jane Doe', 'janedoe@gmail.com', '1234', '09876543211', 'Dolores, Quezon, Philippines', '1234', '/rent-master2/admin/assets/tenants/681e0159abc34.jpg', 'visitor'),
-(39, 'Jose Rizal', 'rizzzzal@gmail.com', '1234', '09876543212', 'Calamba, Laguna', 'I am the national hero of the Philippines', '/rent-master2/admin/assets/tenants/6820263669331.jpg', 'tenant');
+(1, 'Marc Eihenburg', 'eihenburg@gmail.com', 'password123', '0945-765-3567', 'Makati City', 'Marc is a young professional working in the IT industry. He recently moved to the city for career growth and is looking for a rental home that suits his quiet and independent lifestyle. He values responsibility and ensures that his financial obligations, including rent and utilities, are always met on time.', '/rent-master2/admin/assets/tenants/man-8741800_1280.jpg', 'visitor'),
+(2, 'George Peterson', 'georgepetersong@gmail.com', 'password123', '0934-721-9547', 'Quezon City', 'George is a freelance graphic designer who works remotely. He prefers a well-maintained and organized living space that fosters creativity and productivity. His flexible schedule allows him to keep the property in excellent condition, and he takes pride in being a responsible tenant who respects the rules of the rental home.', '/rent-master2/admin/assets/tenants/ai-generated-9009342_1280.jpg', 'tenant'),
+(9, 'Angela Martinez', 'angela.martinez@example.com', 'password123', '09181234567', 'Unit 1A, 123 Mabini St, Quezon City', 'Marketing professional who enjoys urban living and values a peaceful environment.', '/rent-master2/admin/assets/tenants/6820116e3acfb.png', 'visitor'),
+(16, 'Jonathan Reyes', 'admin@gmail.com', 'admin1234', '09171234567', '123 Mabini St, Quezon City', 'Property owner and manager of multiple residential units in Quezon City.\r\n\r\n', '/rent-master2/admin/assets/tenants/682535789482b.jpg', 'landlord'),
+(29, 'Jane Doe', 'janedoe@gmail.com', '1234', '09876543211', '123 Mabini St, Quezon City', '1234', '/rent-master2/admin/assets/tenants/681e0159abc34.jpg', 'visitor'),
+(40, 'Beatrice Santos', 'bea@gmail.com', '1234', '09221234567', 'Unit 3A, 123 Mabini St, Quezon City', ' Junior accountant who commutes daily to Makati and values convenience and affordability.', '/rent-master2/admin/assets/tenants/682546d86c105.jpg', 'visitor');
 
 --
 -- Indexes for dumped tables
@@ -369,8 +382,8 @@ ALTER TABLE `property_images`
 --
 ALTER TABLE `tenants`
   ADD PRIMARY KEY (`tenant_id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `property_id` (`property_id`);
+  ADD KEY `property_id` (`property_id`),
+  ADD KEY `tenants_ibfk_1` (`user_id`);
 
 --
 -- Indexes for table `testimonials`
@@ -378,7 +391,7 @@ ALTER TABLE `tenants`
 ALTER TABLE `testimonials`
   ADD PRIMARY KEY (`testimonial_id`),
   ADD KEY `tenant_id` (`tenant_id`),
-  ADD KEY `property_id` (`property_id`);
+  ADD KEY `testimonials_ibfk_2` (`property_id`);
 
 --
 -- Indexes for table `users`
@@ -400,55 +413,55 @@ ALTER TABLE `amenities`
 -- AUTO_INCREMENT for table `maintenance_requests`
 --
 ALTER TABLE `maintenance_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `properties`
 --
 ALTER TABLE `properties`
-  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `property_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT for table `property_amenities`
 --
 ALTER TABLE `property_amenities`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=202;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=393;
 
 --
 -- AUTO_INCREMENT for table `property_images`
 --
 ALTER TABLE `property_images`
-  MODIFY `property_images_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `property_images_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `tenants`
 --
 ALTER TABLE `tenants`
-  MODIFY `tenant_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `tenant_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=77;
 
 --
 -- AUTO_INCREMENT for table `testimonials`
 --
 ALTER TABLE `testimonials`
-  MODIFY `testimonial_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `testimonial_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- Constraints for dumped tables
@@ -489,15 +502,13 @@ ALTER TABLE `property_images`
 -- Constraints for table `tenants`
 --
 ALTER TABLE `tenants`
-  ADD CONSTRAINT `tenants_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `tenants_ibfk_2` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`);
+  ADD CONSTRAINT `tenants_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `testimonials`
 --
 ALTER TABLE `testimonials`
-  ADD CONSTRAINT `testimonials_ibfk_1` FOREIGN KEY (`tenant_id`) REFERENCES `tenants` (`tenant_id`),
-  ADD CONSTRAINT `testimonials_ibfk_2` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`);
+  ADD CONSTRAINT `testimonials_ibfk_2` FOREIGN KEY (`property_id`) REFERENCES `properties` (`property_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
