@@ -55,6 +55,12 @@ if (isset($_GET['request_id'])) {
     <header class="d-flex justify-content-between my-3">
         <h4 class="fw-medium">Maintenance Requests</h4>
     </header>
+        <?php if (isset($_GET['message'])): ?>
+        <div id="addSuccess" class="alert alert-success alert-dismissible fade show slide-in position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 1055; min-width: 300px;">
+            <?= htmlspecialchars($_GET['message']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
     <?php if ($result->num_rows > 0): ?>
         <div class="table-responsive">
             <table class="table">

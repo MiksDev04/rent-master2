@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mysqli_query($conn, "UPDATE properties SET property_status = 'available' WHERE property_id = '$property_id'");
 
             // Redirect to tenants list
-            header("Location: /rent-master2/admin/?page=tenants/index");
+            header("Location: /rent-master2/admin/?page=tenants/index&message=Tenant removed successfully");
             exit();
         } else {
             echo "Error terminating tenant: " . mysqli_error($conn);

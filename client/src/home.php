@@ -41,7 +41,12 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
 }
 
 ?>
-
+ <?php if (isset($_GET['message'])): ?>
+        <div id="addSuccess"  class="alert alert-success alert-dismissible fade show slide-in position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; min-width: 300px;">
+            <?= htmlspecialchars($_GET['message']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
 
 <!-- Hero Section -->
 <section class="hero">

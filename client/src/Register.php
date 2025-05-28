@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     if (isset($_FILES['user_image']) && $_FILES['user_image']['error'] == 0) {
         // Define the target directory
-        $upload_folder = "/admin/assets/tenants/";
+        $upload_folder = "/rent-master2/admin/assets/tenants/";
         $target_dir = $_SERVER['DOCUMENT_ROOT'] . $upload_folder;
 
         // Get the image file extension
@@ -69,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         // Redirect with inserted ID and name
-        header("Location: ?page=src/register-successful");
+        header("Location: ?page=src/home&message='Registration complete! You can now access your account.'");
         exit();
     } else {
         echo "<div class='alert alert-danger mt-3'>Error: " . mysqli_error($conn) . "</div>";

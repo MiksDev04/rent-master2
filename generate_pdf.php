@@ -11,10 +11,10 @@ function cleanText($text) {
 }
 
 // DB connection
-$servername = "sql307.infinityfree.com";
-$username = "if0_38978427";
-$password = "rkXN1Ja5Bh";
-$dbname = "if0_38978427_rentsystem";
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "rentsystem";
 
 try {
     $conn = mysqli_connect($servername, $username, $password, $dbname);

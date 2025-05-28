@@ -47,7 +47,7 @@
     ?>
 
     <!-- Bootstrap 4 JS and dependencies -->
-    <script src="./js/script.js"></script>
+    <script src="js/script.js?v=<?php echo time(); ?>"></script>
     <script src="/rent-master2/bootstrap-5.3.3-dist/js/bootstrap.bundle.js"></script>
 </body>
 

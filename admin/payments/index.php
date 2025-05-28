@@ -27,13 +27,20 @@ if (isset($_GET['payment_id'])) {
 <div class="container px-lg-5">
     <header class=" d-flex justify-content-between my-3">
         <h4 class=" fw-medium">Your Payments</h4>
+        <a href="?page=payments/create" class="btn btn-primary fw-bold rounded-5 px-4">Add Payment</a>
     </header>
+    <?php if (isset($_GET['message'])): ?>
+        <div id="addSuccess"  class="alert alert-success alert-dismissible fade show slide-in position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 1055; min-width: 300px;">
+            <?= htmlspecialchars($_GET['message']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
     <?php if ($result->num_rows > 0): ?>
         <div class="table-responsive">
             <table class="table">
                 <thead class=" table-info ">
                     <tr>
-                        <th>Payment No.</th>
+                        <th>Payment No.</th> 
                         <th>Property ID</th>
                         <th>Tenant ID</th>
                         <th colspan="2">Payment Period</th>
@@ -90,5 +97,7 @@ if (isset($_GET['payment_id'])) {
         <div class='text-center text-bg-warning'>No record found</div>
     <?php endif; ?>
 </div>
+
+
 
 <?php $conn->close(); ?>

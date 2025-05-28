@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_id'])) {
     $formSubmitUrl = "https://formsubmit.co/{$tenant_email}";
 
     echo '<form id="redirectForm" action="' . $formSubmitUrl . '" method="POST">';
-    echo '<input type="hidden" name="_next" value="http://localhost/rent-master2/admin/?page=maintenance/response&message=Response sent successfully">';
+    echo '<input type="hidden" name="_next" value="http://localhost/rent-master2/admin/?page=maintenance/index&message=Response sent successfully">';
     echo '<input type="hidden" name="_subject" value="Maintenance Request Update">';
     echo '<input type="hidden" name="_captcha" value="false">';
     echo '<input type="hidden" name="Maintenance Status" value="' . htmlspecialchars(ucfirst($status)) . '">';
@@ -62,11 +62,7 @@ $request = $result->fetch_assoc();
         </a>
         <h4 class="fw-medium">Respond to Maintenance Request</h4>
     </header>
- <?php if (isset($_GET['message'])): ?>
-        <div class="alert alert-success alert-dismissible fade show mb-4"><?= $_GET['message'] ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
+
     <div class="card mt-3">
         <div class="card-body">
             <form method="POST" action="">

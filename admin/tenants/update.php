@@ -73,7 +73,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $queryUpdateTenant = "UPDATE tenants SET user_id = '$new_user_id', property_id = '$new_property_id', tenant_date_created = '$new_date_created' WHERE tenant_id = '$tenant_id'";
     mysqli_query($conn, $queryUpdateTenant);
 
-    header("Location: /rent-master2/admin/?page=tenants/index");
+    header("Location: /rent-master2/admin/?page=tenants/index&message=Tenant updated successfully");
     exit();
 }
 

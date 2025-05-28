@@ -24,7 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_id'] = $user_data['user_id']; // ✅ Store user_id for tenant use
         $_SESSION['user_image'] = $user_data['user_image']; // ✅ Store user_id for tenant use
 
-        header("Location: ?page=src/login-successful");
+        if ($user_data['user_role'] == 'landlord') {
+            header("Location: /rent-master2/admin/?page=dashboard/index&message=Welcome back! You’ve successfully logged in.");
+            exit();
+        }
+        header("Location: ?page=src/home&message=Welcome back! You’ve successfully logged in.");
         exit();
     } else {
         $login_error = "Invalid email or password. Please try again";
@@ -83,30 +87,8 @@ mysqli_close($conn);
                     <p class="text-muted">Don't have an account? <a href="/rent-master2/client/?page=src/register" class="text-decoration-none">Register</a></p>
                 </div>
             </form>
-            <button role="button" type="button" data-bs-toggle="modal" data-bs-target="#logoutModal" class="btn btn-outline-warning">
-                Logout Account
-            </button>
-
         </div>
     </div>
 </div>
 
-<!-- Logout Confirmation Modal -->
-<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to logout?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <a href="/rent-master2/client/src/logout.php" class="btn btn-danger">Logout</a>
-            </div>
-        </div>
-    </div>
-</div>
 

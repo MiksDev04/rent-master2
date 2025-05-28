@@ -149,11 +149,15 @@ $result->free();
 <header>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-
 </header>
 <div class="container">
     <h4 class="text-center fw-medium mt-3">Welcome Admin</h4>
-
+ <?php if (isset($_GET['message'])): ?>
+        <div id="addSuccess"  class="alert alert-success alert-dismissible fade show slide-in position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 1055; min-width: 300px;">
+            <?= htmlspecialchars($_GET['message']) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
 
     <div class="container ">
         <h5 class=" mt-4">Overview this Month</h5>

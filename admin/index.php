@@ -9,7 +9,7 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Rent Master</title>
     <link rel="stylesheet" href="./css/style.css?v=<?php echo time(); ?>">
-    <link rel="icon" href="/client/assets/icons/image.ico" type="image/x-icon">
+    <link rel="short icon" href="assets/icons/image.ico" type="image/x-icon">
     <!-- <link rel="stylesheet" href="./css/style.css"> -->
     <link rel="stylesheet" href="/rent-master/bootstrap-5.3.3-dist/css/bootstrap.min.css">
     <!-- Set theme early -->
@@ -83,12 +83,13 @@ session_start();
                 'tenants/update',
                 'tenants/delete',
                 'tenants/view',
-                'payments/index',
                 'reports/index',
                 'settings/index',
                 'maintenance/index',
                 'maintenance/view',
                 'maintenance/respond',
+                'payments/index',
+                'payments/create',
                 'payments/paid',
                 'payments/update',
                 'payments/delete',
@@ -104,8 +105,8 @@ session_start();
     </main>
 
 
-    <!-- <script src="./js/script.js?v=<?php echo time(); ?>" defer></script> -->
-    <script src="./js/script.js"></script>
+    <script src="./js/script.js?v=<?php echo time(); ?>" defer></script>
+    <!-- <script src="./js/script.js"></script> -->
     <!-- Bootstrap JS -->
     <script src="/rent-master/bootstrap-5.3.3-dist/js/bootstrap.bundle.js"></script>
 </body>

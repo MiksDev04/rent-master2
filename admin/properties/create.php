@@ -11,7 +11,7 @@ if (!$conn) {
 
 function uploadSingleImage($file)
 {
-    $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/admin/assets/properties/";
+    $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/rent-master2/admin/assets/properties/";
     if (!is_dir($targetDir)) {
         mkdir($targetDir, 0777, true);
     }
@@ -105,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         }
 
-        header("Location: /rent-master2/admin/?page=properties/index");
+        header("Location: /rent-master2/admin/?page=properties/index&message=Property added successfully");
         exit();
     } else {
         echo "All fields are required";

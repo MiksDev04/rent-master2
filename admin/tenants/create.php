@@ -41,21 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 SET tenant_status = 'active', property_id = '$property_id', tenant_date_created = NOW(), tenant_terminated_at = NULL 
                                 WHERE user_id = '$user_id'";
             mysqli_query($conn, $updateTenantSql);
-            $row = mysqli_fetch_assoc($checkTenantResult);
-            $tenant_id = $row['tenant_id'];
-
-            // Include the function and call it with the tenant_id
-             // Insert initial payment record
-             $payment_sql = "INSERT INTO payments (tenant_id, payment_start_date, payment_end_date, payment_status, payment_date, payment_method)
-             VALUES (
-                 '$tenant_id', 
-                 CURDATE(), 
-                 DATE_ADD(CURDATE(), INTERVAL 1 MONTH), 
-                 'Pending', 
-                 NULL, 
-                 NULL
-             )";
-            mysqli_query($conn, $payment_sql);
+          
         } else {
             // Insert new tenant
             $queryInsertTenant = "
@@ -64,21 +50,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ";
             mysqli_query($conn, $queryInsertTenant);
 
-            // Get the last inserted tenant ID
-            $tenant_id = mysqli_insert_id($conn);
-
-            // Include the function and call it with the tenant_id
-             // Insert initial payment record
-             $payment_sql = "INSERT INTO payments (tenant_id, payment_start_date, payment_end_date, payment_status, payment_date, payment_method)
-             VALUES (
-                 '$tenant_id', 
-                 CURDATE(), 
-                 DATE_ADD(CURDATE(), INTERVAL 1 MONTH), 
-                 'Pending', 
-                 '', 
-                 ''
-             )";
-            mysqli_query($conn, $payment_sql);
         }
 
         // Mark user as a tenant
@@ -89,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $queryUpdateProperty = "UPDATE properties SET property_status = 'unavailable' WHERE property_id = '$property_id'";
         mysqli_query($conn, $queryUpdateProperty);
 
-        header("Location: /rent-master2/admin/?page=tenants/index");
+        header("Location: /rent-master2/admin/?page=tenants/index&message=Tenant assigned successfully");
         exit();
     } else {
         echo "Both user and property are required.";

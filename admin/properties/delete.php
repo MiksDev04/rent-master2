@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (mysqli_query($conn, $query)) {
             // Redirect to properties list page after successful deletion
-            header("Location: /rent-master2/admin/?page=properties/index");
+            header("Location: /rent-master2/admin/?page=properties/index&message=Property removed successfully");
             exit();
         } else {
             echo "Error deleting record: " . mysqli_error($conn);

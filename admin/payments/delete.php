@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->bind_param("i", $payment_id);
     $stmt->execute();
     
-    header("Location: /rent-master2/admin/?page=payments/index");
+    header("Location: /rent-master2/admin/?page=payments/index&message=Payment record deleted successfully! ");
     exit();
 }
 

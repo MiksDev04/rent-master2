@@ -82,8 +82,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
 
                 $payment_message = "You paid for this month";
 
-                require_once __DIR__ . '/../includes/functions.php';
-                reserveNextMonthPayment($conn, $tenant_id);
 
                 header("Location: /rent-master2/client/?page=src/rating-property");
                 exit;
@@ -145,6 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
             background-color: #f8f9fa;
             color: #495057;
         }
+
         .card {
             border: none;
             border-radius: 12px;
@@ -354,8 +353,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
                 <div class="col">
                     <?php if ($payment_info == []): ?>
                         <div class="card p-4 h-100">
-                            <h2>You'd already pay for this month</h2>
-                            <img src="./assets/icons/undraw_online-payments_p97e.png" alt="">
+                            <h2>You've already paid for this month</h2>
+
+                            <?php
+                            // Get tenant's property information and move-in date
+                            $property_sql = "SELECT p.*, t.tenant_date_created
+                         FROM properties p
+                         JOIN tenants t ON p.property_id = t.property_id
+                         WHERE t.tenant_id = $tenant_id";
+                            $property_result = mysqli_query($conn, $property_sql);
+                            $property_info = mysqli_fetch_assoc($property_result);
+
+                            // Calculate how long tenant has been living there
+                            $move_in_date = new DateTime($property_info['tenant_date_created']);
+                            $today = new DateTime();
+                            $tenancy_duration = $move_in_date->diff($today);
+                            ?>
+
+                            <div class="property-info mb-4">
+                                <h4>Your Current Residence</h4>
+                                <p><strong>Property:</strong> <?= $property_info['property_name'] ?></p>
+                                <p><strong>Address:</strong> <?= $property_info['property_location'] ?></p>
+                                <p><strong>Move-in Date:</strong> <?= date('M j, Y', strtotime($property_info['tenant_date_created'])) ?></p>
+                                <p><strong>Duration:</strong>
+                                    <?= $tenancy_duration->y ?> years,
+                                    <?= $tenancy_duration->m ?> months,
+                                    <?= $tenancy_duration->d ?> days
+                                </p>
+                            </div>
+
+                            <img src="/rent-master2/client/assets/icons/undraw_online-payments_p97e.png" alt="Payment already made" class="img-fluid">
                         </div>
                     <?php else : ?>
                         <!-- Payment Section -->
@@ -455,7 +482,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
 
                 <div class="col">
                     <!-- Maintenance Section -->
-                    <div class="card p-4 h-100">
+                    <div class="card p-4">
                         <h2>Request for Maintenance</h2>
 
                         <?php if ($maintenance_message): ?>
