@@ -16,13 +16,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $payment_id = $_POST['payment_id'];
     $update_sql = "UPDATE payments SET payment_status = 'Paid', payment_date = CURDATE() WHERE payment_id = '$payment_id'";
     mysqli_query($conn, $update_sql);
-    // Get the next month payment
     header("Location: /rent-master2/admin/?page=payments/index&message=Payment status updated to 'Paid'. The tenant has completed the payment.");
     exit();
 }
 
-// Fetch payment record
-$sql = "SELECT * FROM payments WHERE payment_id = ?";
+// Fetch payment record with related information
+$sql = "SELECT p.*, 
+               pr.property_name, 
+               pr.property_rental_price,
+               u.user_name, 
+               u.user_phone_number,
+               u.user_email
+        FROM payments p
+        JOIN tenants t ON p.tenant_id = t.tenant_id
+        JOIN properties pr ON t.property_id = pr.property_id
+        JOIN users u ON t.user_id = u.user_id
+        WHERE p.payment_id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $payment_id);
 $stmt->execute();
@@ -44,18 +53,44 @@ $payment = $result->fetch_assoc();
     <?php if ($payment): ?>
     <div class="card mt-3 shadow-sm p-4">
         <h5 class="mb-3">Payment Information</h5>
-        <p><strong>Payment ID:</strong> <?php echo 'Pay_' . str_pad($payment['payment_id'], 6, '0', STR_PAD_LEFT); ?></p>
-        <p><strong>Tenant ID:</strong> <?php echo htmlspecialchars($payment['tenant_id']); ?></p>
-        <p><strong>Payment Date:</strong> <?php echo htmlspecialchars($payment['payment_date']); ?></p>
-        <p><strong>Payment Method:</strong> <?php echo htmlspecialchars($payment['payment_method']) ? htmlspecialchars($payment['payment_method']) : "N/A"; ?></p>
-        <p><strong>Payment Period:</strong> 
+        
+        <div class="mb-3">
+            <strong>For Property:</strong> <?php echo htmlspecialchars($payment['property_name']); ?>
+        </div>
+        
+        <div class="mb-3">
+            <strong>Tenant:</strong> <?php echo htmlspecialchars($payment['user_name']); ?>
+        </div>
+        
+        <div class="mb-3">
+            <strong>Contact:</strong> <?php echo htmlspecialchars($payment['user_phone_number']); ?> | <?php echo htmlspecialchars($payment['user_email']); ?>
+        </div>
+        
+        <div class="mb-3">
+            <strong>Amount:</strong> ₱<?php echo number_format($payment['property_rental_price'], 2); ?>
+        </div>
+        
+        <div class="mb-3">
+            <strong>Payment Period:</strong> 
             <?php echo date('M d, Y', strtotime($payment['payment_start_date'])) . " - " . date('M d, Y', strtotime($payment['payment_end_date'])); ?>
-        </p>
-        <p><strong>Status:</strong> 
-            <span class="<?php echo ($payment['payment_status'] == 'Paid') ? 'text-success' : 'text-warning'; ?> fw-bold">
+        </div>
+        
+        <div class="mb-3">
+            <strong>Payment Method:</strong> 
+            <?php echo $payment['payment_method'] ? htmlspecialchars($payment['payment_method']) : "Not specified"; ?>
+        </div>
+        
+        <div class="mb-3">
+            <strong>Status:</strong> 
+            <span class="<?php 
+                echo ($payment['payment_status'] == 'Paid') ? 'text-success' : 
+                     ($payment['payment_status'] == 'Overdue' ? 'text-danger' : 'text-warning'); ?> fw-bold">
                 <?php echo htmlspecialchars($payment['payment_status']); ?>
+                <?php if ($payment['payment_status'] == 'Paid' && $payment['payment_date']): ?>
+                    (on <?php echo date('M d, Y', strtotime($payment['payment_date'])); ?>)
+                <?php endif; ?>
             </span>
-        </p>
+        </div>
 
         <?php if ($payment['payment_status'] != 'Paid'): ?>
         <form method="POST" action="payments/paid.php" class="d-flex gap-2 mt-4">
@@ -65,7 +100,7 @@ $payment = $result->fetch_assoc();
         </form>
         <?php else: ?>
             <div class="alert alert-success mt-4" role="alert">
-                This payment has already been marked as <strong>Paid</strong>.
+                This payment has been completed.
             </div>
             <a href="?page=payments/index" class="btn btn-primary mt-3">Back to Payments</a>
         <?php endif; ?>

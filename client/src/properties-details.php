@@ -110,6 +110,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
 
 
 <div class="container py-5">
+    
+     <?php if (isset($_GET['message'])): ?>
+        <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <?php echo $_GET['message']; ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
     <!-- Success Message -->
     <?php if (!empty($success_message)): ?>
         <div class="alert <?php echo $success_message_status ?> alert-dismissible fade show mb-4" role="alert">
@@ -275,7 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                                 <label for="message" class="form-label">Message</label>
                                 <textarea class="form-control" name="message" id="message" rows="4" placeholder="Your message..." required></textarea>
                             </div>
-                            <input type="hidden" name="_next" value="http://localhost/rent-master2/client/">
+                            <input type="hidden" name="_next" value="http://localhost/rent-master2/client/?page=src/properties-details&property_id=<?= $property['property_id']?>&message=Rent request sent successfully! Just wait for the landlord response.">
                             <input type="hidden" name="_subject" value="New inquiry about <?php echo htmlspecialchars($property['property_name']); ?>">
                             <input type="hidden" name="_captcha" value="false">
                             <button type="submit" class="btn btn-primary w-100">

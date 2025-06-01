@@ -10,10 +10,11 @@ if (!$conn) {
 }
 
 // Fetch payment records with property price
-$sql = "SELECT p.payment_id, p.tenant_id, t.property_id, pr.property_rental_price, p.payment_start_date, p.payment_end_date, p.payment_status 
+$sql = "SELECT p.payment_id , u.user_name, pr.property_name, pr.property_rental_price, p.payment_start_date, p.payment_end_date, p.payment_status 
         FROM payments p
         INNER JOIN tenants t ON p.tenant_id = t.tenant_id
         INNER JOIN properties pr ON t.property_id = pr.property_id
+        INNER JOIN users u ON u.user_id = t.user_id
         ORDER BY p.payment_id DESC";
 $result = $conn->query($sql);
 
@@ -40,9 +41,8 @@ if (isset($_GET['payment_id'])) {
             <table class="table">
                 <thead class=" table-info ">
                     <tr>
-                        <th>Payment No.</th> 
-                        <th>Property ID</th>
-                        <th>Tenant ID</th>
+                        <th>Tenant</th> 
+                        <th>Property</th>
                         <th colspan="2">Payment Period</th>
                         <th>Amount</th>
                         <th>Status</th>
@@ -56,9 +56,8 @@ if (isset($_GET['payment_id'])) {
                             <?php else: ?>
                             <tr>
                             <?php endif; ?>
-                            <td><?php echo 'Pay_' . str_pad($row['payment_id'], 6, '0', STR_PAD_LEFT); ?></td>
-                            <td><?php echo htmlspecialchars($row['property_id']); ?></td>
-                            <td><?php echo htmlspecialchars($row['tenant_id']); ?></td>
+                            <td><?php echo htmlspecialchars($row['user_name']); ?></td>
+                            <td><?php echo htmlspecialchars($row['property_name']); ?></td>
                             <td colspan="2">
                                 <?php
                                 echo date('M d, Y', strtotime($row['payment_start_date'])) . " - " . date('M d, Y', strtotime($row['payment_end_date']));

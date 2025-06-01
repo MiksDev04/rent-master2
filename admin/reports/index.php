@@ -27,17 +27,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $user_sql = "UPDATE users SET user_role = 'tenant' WHERE user_id = (SELECT user_id FROM tenants WHERE tenant_id = '$tenant_id')";
             mysqli_query($conn, $user_sql);
 
-            // Insert initial payment record
-            $payment_sql = "INSERT INTO payments (tenant_id, payment_start_date, payment_end_date, payment_status, payment_date, payment_method)
-                          VALUES (
-                              '$tenant_id', 
-                              CURDATE(), 
-                              DATE_ADD(CURDATE(), INTERVAL 1 MONTH), 
-                              'Pending', 
-                              '', 
-                              ''
-                          )";
-            mysqli_query($conn, $payment_sql);
             sendEmail($tenant_id, $tenant_email, $action);
         } else {
             echo "Error updating tenant: " . mysqli_error($conn);

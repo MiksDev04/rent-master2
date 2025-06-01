@@ -32,7 +32,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 $payment = $result->fetch_assoc();
 ?>
-
 <div class="container px-lg-5">
     <header class="d-flex gap-2 align-items-center mt-3">
         <a href="?page=payments/index" class="btn btn-sm btn-outline-secondary">
@@ -44,7 +43,20 @@ $payment = $result->fetch_assoc();
         <h4 class="fw-medium">Delete Payment</h4>
     </header>
 
-    <?php if ($payment): ?>
+    <?php if ($payment): 
+        // Fetch additional information about the tenant and property
+        $tenant_query = "SELECT u.user_name, p.property_name 
+                        FROM payments pm
+                        JOIN tenants t ON pm.tenant_id = t.tenant_id
+                        JOIN users u ON t.user_id = u.user_id
+                        JOIN properties p ON t.property_id = p.property_id
+                        WHERE pm.payment_id = ?";
+        $stmt = $conn->prepare($tenant_query);
+        $stmt->bind_param("i", $payment['payment_id']);
+        $stmt->execute();
+        $tenant_result = $stmt->get_result();
+        $tenant_info = $tenant_result->fetch_assoc();
+    ?>
     <div class="card mt-3 shadow-sm p-4">
         <div class="alert alert-danger" role="alert">
             <h5 class="alert-heading">Warning!</h5>
@@ -52,7 +64,8 @@ $payment = $result->fetch_assoc();
         </div>
         
         <h5 class="mb-3">Payment Information</h5>
-        <p><strong>Payment ID:</strong> <?php echo 'Pay_' . str_pad($payment['payment_id'], 6, '0', STR_PAD_LEFT); ?></p>
+        <p><strong>Tenant Name:</strong> <?php echo htmlspecialchars($tenant_info['user_name'] ?? 'N/A'); ?></p>
+        <p><strong>Property:</strong> <?php echo htmlspecialchars($tenant_info['property_name'] ?? 'N/A'); ?></p>
         <p><strong>Payment Period:</strong> 
             <?php echo date('M d, Y', strtotime($payment['payment_start_date'])) . " - " . date('M d, Y', strtotime($payment['payment_end_date'])); ?>
         </p>
@@ -77,5 +90,4 @@ $payment = $result->fetch_assoc();
         </div>
     <?php endif; ?>
 </div>
-
 <?php $conn->close(); ?>

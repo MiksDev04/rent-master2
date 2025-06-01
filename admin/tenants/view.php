@@ -74,6 +74,79 @@ if (isset($_GET['tenant_id'])) {
             </div>
         </div>
     </div>
+    
+    <!-- Payment History Section -->
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Payment History</h5>
+        </div>
+        <div class="card-body">
+            <?php
+            // Query to get payment history for this tenant
+            $payment_query = "SELECT * FROM payments WHERE tenant_id = $tenant_id ORDER BY payment_start_date DESC";
+            $payment_result = mysqli_query($conn, $payment_query);
+            
+            if (mysqli_num_rows($payment_result) > 0) {
+            ?>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Status</th>
+                            <th>Payment Date</th>
+                            <th>Method</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php while ($payment = mysqli_fetch_assoc($payment_result)) { ?>
+                        <tr>
+                            <td>
+                                <?php echo htmlspecialchars($payment['payment_start_date']); ?> 
+                                to 
+                                <?php echo htmlspecialchars($payment['payment_end_date']); ?>
+                            </td>
+                            <td>
+                                <?php 
+                                    switch ($payment['payment_status']) {
+                                        case 'Paid':
+                                            echo '<span class="badge bg-success">Paid</span>';
+                                            break;
+                                        case 'Pending':
+                                            echo '<span class="badge bg-warning">Pending</span>';
+                                            break;
+                                        case 'Overdue':
+                                            echo '<span class="badge bg-danger">Overdue</span>';
+                                            break;
+                                        default:
+                                            echo '<span class="badge bg-secondary">Unknown</span>';
+                                    }
+                                ?>
+                            </td>
+                            <td>
+                                <?php 
+                                    echo $payment['payment_date'] 
+                                        ? htmlspecialchars($payment['payment_date']) 
+                                        : '<span class="text-muted">Not paid yet</span>'; 
+                                ?>
+                            </td>
+                            <td>
+                                <?php 
+                                    echo $payment['payment_method'] 
+                                        ? htmlspecialchars($payment['payment_method']) 
+                                        : '<span class="text-muted">Not specified</span>'; 
+                                ?>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php } else { ?>
+                <div class="alert alert-info">No payment history found for this tenant.</div>
+            <?php } ?>
+        </div>
+    </div>
 </div>
 <?php
     } else {

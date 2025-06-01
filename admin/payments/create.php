@@ -14,9 +14,10 @@ $errors = [];
 $tenant_id = '';
 
 // Fetch active tenants with their properties
-$tenants_sql = "SELECT t.tenant_id, t.user_id, t.property_id, p.property_name, p.property_rental_price 
+$tenants_sql = "SELECT t.tenant_id, t.user_id, t.property_id, p.property_name, p.property_rental_price, u.user_name
                 FROM tenants t
                 INNER JOIN properties p ON t.property_id = p.property_id
+                INNER JOIN users u ON t.user_id = u.user_id
                 WHERE t.tenant_status = 'active'";
 $tenants_result = $conn->query($tenants_sql);
 
@@ -101,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tenant_id'])) {
                     <?php while ($tenant = $tenants_result->fetch_assoc()): ?>
                         <option value="<?php echo $tenant['tenant_id']; ?>"
                             <?php echo ($tenant_id == $tenant['tenant_id']) ? 'selected' : ''; ?>>
-                            Tenant ID: <?php echo $tenant['tenant_id']; ?> -
+                            Tenant: <?php echo $tenant['user_name']; ?> -
                             Property: <?php echo htmlspecialchars($tenant['property_name']); ?>
                         </option>
                     <?php endwhile; ?>

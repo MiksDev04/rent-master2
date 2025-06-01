@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="/rent-master2/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" href="/rent-master2/client/assets/icons/image.ico" type="image/x-icon">
-
+    
     <link rel="stylesheet" href="css/style.css?v=<?php echo time(); ?>">
 </head>
 

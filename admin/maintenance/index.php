@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_id'])) {
 }
 
 // Fetch maintenance requests with tenant emails
-$sql = "SELECT m.request_id, m.tenant_id, m.category, m.description, m.request_date, m.status, u.user_email 
+$sql = "SELECT m.request_id, m.tenant_id, m.category, m.description, m.request_date, m.status, u.user_email, u.user_name
         FROM maintenance_requests m
         JOIN tenants t ON m.tenant_id = t.tenant_id
         JOIN users u ON u.user_id = t.user_id
@@ -66,8 +66,7 @@ if (isset($_GET['request_id'])) {
             <table class="table">
                 <thead class="table-info">
                     <tr>
-                        <th>Request ID</th>
-                        <th>Tenant ID</th>
+                        <th>Tenant</th>
                         <th>Category</th>
                         <th>Description</th>
                         <th>Request Date</th>
@@ -82,8 +81,7 @@ if (isset($_GET['request_id'])) {
                             <?php else: ?>
                             <tr>
                             <?php endif; ?>
-                            <td><?php echo 'Req_' . str_pad($row['request_id'], 6, '0', STR_PAD_LEFT) ?></td>
-                            <td><?php echo htmlspecialchars($row['tenant_id']); ?></td>
+                            <td><?php echo strlen(htmlspecialchars($row['user_name'])) < 21 ? htmlspecialchars($row['user_name']) :   substr(htmlspecialchars($row['user_name']), 0, 20) . '...'; ?></td>
                             <td><?php echo htmlspecialchars($row['category']); ?></td>
                             <td><?php echo htmlspecialchars($row['description']); ?></td>
                             <td><?php echo date('M d, Y', strtotime($row['request_date'])); ?></td>

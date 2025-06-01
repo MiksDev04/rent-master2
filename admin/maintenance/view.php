@@ -47,7 +47,6 @@ $property_details = $property_result->fetch_assoc();
 
     <div class="card mb-3 shadow-sm">
         <div class="card-body">
-            <h5 class="card-title mb-3">Request #Req_<?php echo str_pad($request_details['request_id'], 6, '0', STR_PAD_LEFT); ?></h5>
             
             <div class="mb-2">
                 <span class="fw-bold">Status:</span>

@@ -42,10 +42,11 @@ if (!isset($_GET['request_id'])) {
 $request_id = $_GET['request_id'];
 
 // Fetch request details
-$sql = "SELECT m.*, u.user_email 
+$sql = "SELECT m.*, u.user_email , u.user_name, p.property_name
         FROM maintenance_requests m
         JOIN tenants t ON m.tenant_id = t.tenant_id
         JOIN users u ON u.user_id = t.user_id
+        JOIN properties p ON p.property_id = t.property_id
         WHERE m.request_id = '$request_id'";
 $result = $conn->query($sql);
 $request = $result->fetch_assoc();
@@ -56,7 +57,7 @@ $request = $result->fetch_assoc();
     <header class="d-flex  gap-2 align-items-center mt-3">
         <a href="?page=maintenance/index" class="btn btn-sm btn-outline-secondary">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
             </svg>
             Back
         </a>
@@ -71,7 +72,20 @@ $request = $result->fetch_assoc();
                 <input type="hidden" name="_next" value="http://localhost/rent-master2/admin/">
                 <input type="hidden" name="_subject" value="Maintenance Request Update">
                 <input type="hidden" name="_captcha" value="false">
-
+                <div class="card mb-3 bg-light">
+                    <div class="card-body py-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-send-fill text-primary" viewBox="0 0 16 16">
+                                <path d="M15.964.686a.5.5 0 0 0-.65-.65L.767 5.855H.766l-.452.18a.5.5 0 0 0-.082.887l.41.26.001.002 4.995 3.178 3.178 4.995.002.002.26.41a.5.5 0 0 0 .886-.083zm-1.833 1.89L6.637 10.07l-.215-.338a.5.5 0 0 0-.154-.154l-.338-.215 7.494-7.494 1.178-.471z" />
+                            </svg>
+                            <div>
+                                <span class="fw-bold text-primary">Send to</span>:
+                                <span class="fw-semibold"><?= $request['user_name'] ?></span> in
+                                <span class="fw-semibold text-decoration-underline"><?= $request['property_name'] ?></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Maintenance Status</label>
                     <select class="form-select" name="status" required>

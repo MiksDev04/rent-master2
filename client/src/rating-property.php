@@ -202,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_testimonial'])
                         
                         <div class="d-grid gap-2">
                             <button type="submit" name="submit_testimonial" class="btn btn-primary">Submit Feedback</button>
-                            <a href="/rent-master2/client/?page=src/home.php" class="btn btn-outline-secondary">Back to Dashboard</a>
+                            <a href="/rent-master2/client/?page=src/home" class="btn btn-outline-secondary">Back to Home Page</a>
                         </div>
                     </form>
                     

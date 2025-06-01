@@ -173,7 +173,7 @@ $result->free();
                                     <svg class="svg-icon" viewBox="0 0 24 24">
                                         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                                     </svg>
-                                    <?php echo htmlspecialchars($row['property_location']); ?>
+                                    <?php echo substr(htmlspecialchars($row['property_location']), 0, 70); ?>
                                 </p>
                                 <p class="card-text text-secondary small">
                                     <?php echo substr(htmlspecialchars($row['property_description']), 0, 100); ?>...

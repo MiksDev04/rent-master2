@@ -11,7 +11,6 @@ if (!$conn) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Sanitize user input
     $user_name = mysqli_real_escape_string($conn, $_POST['user_name']);
-    $user_email = mysqli_real_escape_string($conn, $_POST['user_email']);
     $user_password = mysqli_real_escape_string($conn, $_POST['user_password']);
     $user_phone_number = mysqli_real_escape_string($conn, $_POST['user_phone_number']);
     $user_address = mysqli_real_escape_string($conn, $_POST['user_address']);
@@ -30,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Generate a unique filename
         $unique_filename = uniqid() . '.' . $image_file_type;
         $target_file = $target_dir . $unique_filename;
-        
+
 
         // Move uploaded file to the target directory
         if (move_uploaded_file($_FILES['user_image']['tmp_name'], $target_file)) {
@@ -93,13 +92,7 @@ mysqli_close($conn);
             </div>
 
             <p class="text-muted mb-4">Join us to find your perfect rental property</p>
-            <div class="mb-3 text-center">
-                <a href="/path-to-your-google-auth-handler" class="btn btn-outline-dark w-100 py-2" style="display: flex; align-items: center; justify-content: center;">
-                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" style="height: 20px; margin-right: 10px;">
-                    Sign in with Google
-                </a>
-            </div>
-            <p class="text-center">or</p>
+
             <form method="post" enctype="multipart/form-data" class="mt-4">
                 <div class="row">
                     <div class="col-md-6 mb-3">
@@ -113,21 +106,6 @@ mysqli_close($conn);
                             <input type="text" class="form-control" id="user_name" name="user_name" placeholder="Enter your full name" required>
                         </div>
                     </div>
-
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label" for="user_email">Email</label>
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <svg width="16" height="16" viewBox="0 0 16 16" fill="#6C757D">
-                                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383l-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z" />
-                                </svg>
-                            </span>
-                            <input type="email" class="form-control" id="user_email" name="user_email" placeholder="Enter your email" required>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label" for="user_password">Password</label>
                         <div class="input-group">
@@ -137,9 +115,20 @@ mysqli_close($conn);
                                 </svg>
                             </span>
                             <input type="password" class="form-control" id="user_password" name="user_password" placeholder="Create a password" required>
+                            <button class="btn btn-light border" type="button" id="togglePassword">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="#6C757D">
+                                    <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z" />
+                                    <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299l.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z" />
+                                    <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884l-12-12 .708-.708 12 12-.708.708z" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
 
+                </div>
+                
+                <div class="row">
+                    
                     <div class="col-md-6 mb-3">
                         <label class="form-label" for="user_phone_number">Phone Number</label>
                         <div class="input-group">
@@ -150,6 +139,10 @@ mysqli_close($conn);
                             </span>
                             <input type="number" class="form-control" id="user_phone_number" name="user_phone_number" placeholder="Enter phone number" required>
                         </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="user_image">Profile Photo</label>
+                        <input type="file" class="form-control" id="user_image" name="user_image" accept="image/*">
                     </div>
                 </div>
 
@@ -164,16 +157,13 @@ mysqli_close($conn);
                         <input type="text" class="form-control" id="user_address" name="user_address" placeholder="Enter your address" required>
                     </div>
                 </div>
-
+                
                 <div class="mb-3">
                     <label class="form-label" for="user_description">About You</label>
                     <textarea class="form-control" id="user_description" name="user_description" rows="3" placeholder="Tell us about yourself"></textarea>
                 </div>
+                
 
-                <div class="mb-4">
-                    <label class="form-label" for="user_image">Profile Photo</label>
-                    <input type="file" class="form-control" id="user_image" name="user_image" accept="image/*">
-                </div>
 
                 <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Create Account</button>
 
@@ -185,3 +175,23 @@ mysqli_close($conn);
 
     </div>
 </div>
+
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordInput = document.getElementById('user_password');
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+
+        // Toggle the eye icon
+        this.innerHTML = type === 'password' ?
+            `<svg width="16" height="16" viewBox="0 0 16 16" fill="#6C757D">
+        <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z"/>
+        <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299l.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/>
+        <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884l-12-12 .708-.708 12 12-.708.708z"/>
+        </svg>` :
+            `<svg width="16" height="16" viewBox="0 0 16 16" fill="#6C757D">
+            <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+            <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+        </svg>`;
+    });
+</script>

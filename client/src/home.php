@@ -336,7 +336,7 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
                             <textarea class="form-control" id="message" name="message" rows="4" placeholder="How can we help you?" required></textarea>
                         </div>
 
-                        <input type="hidden" name="_next" value="http://localhost/rent-master2/client/">
+                        <input type="hidden" name="_next" value="http://localhost/rent-master2/client/?page=src/home">
                         <input type="hidden" name="_subject" value="New contact from RentMaster website">
                         <input type="hidden" name="_captcha" value="false">
 
