@@ -20,15 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['request_id'])) {
     mysqli_query($conn, $update_sql);
 
     // Redirect to FormSubmit after updating
-    $formSubmitUrl = "https://formsubmit.co/{$tenant_email}";
+    $formSubmitUrl = "includes/send_email.php";
 
     echo '<form id="redirectForm" action="' . $formSubmitUrl . '" method="POST">';
-    echo '<input type="hidden" name="_next" value="http://localhost/rent-master2/admin/?page=maintenance/index&message=Response sent successfully">';
-    echo '<input type="hidden" name="_subject" value="Maintenance Request Update">';
-    echo '<input type="hidden" name="_captcha" value="false">';
-    echo '<input type="hidden" name="Maintenance Status" value="' . htmlspecialchars(ucfirst($status)) . '">';
-    echo '<input type="hidden" name="Message" value="' . htmlspecialchars($admin_message) . '">';
-    echo '<input type="hidden" name="Landlord Email" value="mikogapasan04@gmail.com">';
+    echo '<input type="hidden" name="submit-maintenance-form" value="1">';
+    echo '<input type="hidden" name="status" value="' . htmlspecialchars(ucfirst($status)) . '">';
+    echo '<input type="hidden" name="admin_message" value="' . htmlspecialchars($admin_message) . '">';
+    echo '<input type="hidden" name="tenant_email" value="' . htmlspecialchars($tenant_email) . '">';
     echo '</form>';
 
     echo '<script>document.getElementById("redirectForm").submit();</script>';
@@ -69,9 +67,6 @@ $request = $result->fetch_assoc();
             <form method="POST" action="">
                 <input type="hidden" name="request_id" value="<?php echo $request['request_id']; ?>">
                 <input type="hidden" name="tenant_email" value="<?php echo htmlspecialchars($request['user_email']); ?>">
-                <input type="hidden" name="_next" value="http://localhost/rent-master2/admin/">
-                <input type="hidden" name="_subject" value="Maintenance Request Update">
-                <input type="hidden" name="_captcha" value="false">
                 <div class="card mb-3 bg-light">
                     <div class="card-body py-2">
                         <div class="d-flex align-items-center gap-2">

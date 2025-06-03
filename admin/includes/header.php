@@ -95,7 +95,7 @@ if ($notifResult) {
                             ];
                             $link = $linkMap[$notification['type']] ?? 'dashboard.php';
                             ?>
-                            <a href="mark_as_read.php?id=<?= $notification['notification_id'] ?>&redirect=<?= urlencode($link) ?>" class="list-group-item list-group-item-action <?= $notification['is_read'] ? '' : 'bg-body-tertiary' ?>">
+                            <a href="includes/mark_as_read.php?id=<?= $notification['notification_id'] ?>&redirect=<?= urlencode($link) ?>" class="list-group-item list-group-item-action <?= $notification['is_read'] ? '' : 'bg-body-tertiary' ?>">
                                  <div class="d-flex align-items-start">
                                     <div class="me-2">
                                         <?php 

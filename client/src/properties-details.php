@@ -56,51 +56,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
     }
 
     $user_id = intval($_SESSION['user_id']);
+    // Landlord check (insert this part)
+    $landlord_check = "SELECT user_role FROM users WHERE user_id = $user_id AND user_role = 'landlord'";
+    $landlord_result = mysqli_query($conn, $landlord_check);
 
-    // Check if user is already an active tenant
-    $check_sql = "SELECT * FROM tenants WHERE user_id = $user_id AND tenant_status = 'active'";
-    $check_result = mysqli_query($conn, $check_sql);
-
-    if ($check_result && mysqli_num_rows($check_result) > 0) {
-        $success_message_status = "alert-warning";
-        $success_message = "You already have an active rental. You cannot rent another property.";
+    if ($landlord_result && mysqli_num_rows($landlord_result) > 0) {
+        $success_message_status = "alert-danger";
+        $success_message = "Landlords cannot rent properties.";
+        // Skip the rest of the rental process
     } else {
-        // Check if tenant exists but not active
-        $existing_sql = "SELECT * FROM tenants WHERE user_id = $user_id";
-        $existing_result = mysqli_query($conn, $existing_sql);
 
-        if ($existing_result && mysqli_num_rows($existing_result) > 0) {
-            $update_sql = "UPDATE tenants 
+        // Check if user is already an active tenant
+        $check_sql = "SELECT * FROM tenants WHERE user_id = $user_id AND tenant_status = 'active'";
+        $check_result = mysqli_query($conn, $check_sql);
+
+        if ($check_result && mysqli_num_rows($check_result) > 0) {
+            $success_message_status = "alert-warning";
+            $success_message = "You already have an active rental. You cannot rent another property.";
+        } else {
+            // Check if tenant exists but not active
+            $existing_sql = "SELECT * FROM tenants WHERE user_id = $user_id";
+            $existing_result = mysqli_query($conn, $existing_sql);
+
+            if ($existing_result && mysqli_num_rows($existing_result) > 0) {
+                $update_sql = "UPDATE tenants 
                            SET tenant_status = 'pending', property_id = $property_id, tenant_date_created = NOW()
                            WHERE user_id = $user_id";
 
-            if (mysqli_query($conn, $update_sql)) {
-                $success_message = "Your existing tenant status has been updated to pending.";
-                $success_message_status = "alert-info";
-                
-                // Add notification for property owner
-                $message = "Tenant request received for property: {$property['property_name']}. Status: Pending";
-                $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
+                if (mysqli_query($conn, $update_sql)) {
+                    $success_message = "Your existing tenant status has been updated to pending.";
+                    $success_message_status = "alert-info";
+
+                    // Add notification for property owner
+                    $message = "Tenant request received for property: {$property['property_name']}. Status: Pending";
+                    $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
                                     VALUES ($user_id, 'property', '$message', $property_id)";
-                mysqli_query($conn, $notification_sql);
+                    mysqli_query($conn, $notification_sql);
+                } else {
+                    echo "<p>Error updating tenant: " . mysqli_error($conn) . "</p>";
+                }
             } else {
-                echo "<p>Error updating tenant: " . mysqli_error($conn) . "</p>";
-            }
-        } else {
-            $insert_sql = "INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created)
+                $insert_sql = "INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created)
                            VALUES ($user_id, $property_id, 'pending', NOW())";
 
-            if (mysqli_query($conn, $insert_sql)) {
-                $success_message = "Rent request sent successfully! Your status is now pending.";
-                $success_message_status = "alert-success";
-                
-                // Add notification for property owner
-                $message = "New tenant request received for property: {$property['property_name']}. Status: Pending";
-                $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
+                if (mysqli_query($conn, $insert_sql)) {
+                    $success_message = "Rent request sent successfully! Your status is now pending.";
+                    $success_message_status = "alert-success";
+
+                    // Add notification for property owner
+                    $message = "New tenant request received for property: {$property['property_name']}. Status: Pending";
+                    $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
                                     VALUES ($user_id, 'property', '$message', $property_id)";
-                mysqli_query($conn, $notification_sql);
-            } else {
-                echo "<p>Error inserting tenant: " . mysqli_error($conn) . "</p>";
+                    mysqli_query($conn, $notification_sql);
+                } else {
+                    echo "<p>Error inserting tenant: " . mysqli_error($conn) . "</p>";
+                }
             }
         }
     }
@@ -110,8 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
 
 
 <div class="container py-5">
-    
-     <?php if (isset($_GET['message'])): ?>
+
+    <?php if (isset($_GET['message'])): ?>
         <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
             <?php echo $_GET['message']; ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -272,7 +282,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                 <div class="card shadow-sm " style="top: 20px;">
                     <div class="card-body p-4">
                         <h3 class="h5 fw-normal mb-3 text-primary">Contact Owner</h3>
-                        <form method="POST" action="https://formsubmit.co/mikogapasan04@gmail.com">
+                        <form method="POST" action="client/../includes/send_email.php">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Your Email</label>
                                 <input type="email" class="form-control" name="email" id="email" placeholder="Email address" required>
@@ -282,9 +292,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                                 <label for="message" class="form-label">Message</label>
                                 <textarea class="form-control" name="message" id="message" rows="4" placeholder="Your message..." required></textarea>
                             </div>
-                            <input type="hidden" name="_next" value="http://localhost/rent-master2/client/?page=src/properties-details&property_id=<?= $property['property_id']?>&message=Rent request sent successfully! Just wait for the landlord response.">
-                            <input type="hidden" name="_subject" value="New inquiry about <?php echo htmlspecialchars($property['property_name']); ?>">
-                            <input type="hidden" name="_captcha" value="false">
+                            <input type="hidden" name="submit-property-request-form" value="1">
                             <button type="submit" class="btn btn-primary w-100">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11zM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493z" />
@@ -307,8 +315,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                                                 <img src="<?php echo htmlspecialchars($review['user_image']); ?>" alt="User Image" class="rounded-circle" style="width: 40px; height: 40px;">
                                             <?php else: ?>
                                                 <span class="text-muted">
-                                                <?php echo strtoupper(substr($review['user_name'] ?? 'A', 0, 1)); ?>
-                                            </span>
+                                                    <?php echo strtoupper(substr($review['user_name'] ?? 'A', 0, 1)); ?>
+                                                </span>
                                             <?php endif; ?>
                                         </div>
                                         <div class="ms-3">

@@ -325,7 +325,7 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
             <div class="col-lg-6 offset-lg-1">
                 <div class="contact-form p-4">
                     <h4 class="mb-4">Send us a message</h4>
-                    <form method="POST" action="https://formsubmit.co/mikogapasan04@gmail.com">
+                    <form method="POST" action="client/../includes/send_email.php">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email address</label>
                             <input type="email" class="form-control" id="email" name="email" placeholder="your@email.com" required>
@@ -335,11 +335,7 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
                             <label for="message" class="form-label">Your message</label>
                             <textarea class="form-control" id="message" name="message" rows="4" placeholder="How can we help you?" required></textarea>
                         </div>
-
-                        <input type="hidden" name="_next" value="http://localhost/rent-master2/client/?page=src/home">
-                        <input type="hidden" name="_subject" value="New contact from RentMaster website">
-                        <input type="hidden" name="_captcha" value="false">
-
+                        <input type="hidden" name="submit-normal-form" value="1">
                         <button type="submit" class="btn btn-primary w-100 py-2">Send Message</button>
                     </form>
                 </div>

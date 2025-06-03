@@ -43,8 +43,7 @@ if (isset($_GET['tenant_id'])) {
                     <p><strong>Description:</strong> <?php echo htmlspecialchars($tenant['user_description']); ?></p>
                     <p><strong>Email:</strong> <?php echo htmlspecialchars($tenant['user_email']); ?></p>
                     <p><strong>Phone Number:</strong> <?php echo htmlspecialchars($tenant['user_phone_number']); ?></p>
-                    <p><strong>Property:</strong> <?php echo htmlspecialchars($tenant['property_name']); ?> (ID: <?php echo $tenant['property_id']; ?>)</p>
-                    <p><strong>Tenant ID:</strong> <?php echo $tenant['tenant_id']; ?></p>
+                    <p><strong>Property:</strong> <?php echo htmlspecialchars($tenant['property_name']); ?> </p>
                     <p><strong>Status:</strong> 
                         <?php 
                             // Display status with better readability

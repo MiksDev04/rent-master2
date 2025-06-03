@@ -40,7 +40,7 @@ session_start();
 <body>
     <!-- Sidebar -->
     <?php
-    include('sidebar.php'); // Include the sidebar file
+    include('includes/sidebar.php'); // Include the sidebar file
     ?>
 
     <!-- Logout Confirmation Modal -->
@@ -65,7 +65,7 @@ session_start();
 
     <!-- Main Content -->
     <main class="content p-0">
-        <?php include('header.php'); ?>
+        <?php include('includes/header.php'); ?>
         <div class=" main-content">
             <!-- Content Goes Here -->
             <?php

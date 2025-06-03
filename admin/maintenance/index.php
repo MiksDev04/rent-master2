@@ -55,7 +55,7 @@ if (isset($_GET['request_id'])) {
     <header class="d-flex justify-content-between my-3">
         <h4 class="fw-medium">Maintenance Requests</h4>
     </header>
-        <?php if (isset($_GET['message'])): ?>
+    <?php if (isset($_GET['message'])): ?>
         <div id="addSuccess" class="alert alert-success alert-dismissible fade show slide-in position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 1055; min-width: 300px;">
             <?= htmlspecialchars($_GET['message']) ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -83,7 +83,7 @@ if (isset($_GET['request_id'])) {
                             <?php endif; ?>
                             <td><?php echo strlen(htmlspecialchars($row['user_name'])) < 21 ? htmlspecialchars($row['user_name']) :   substr(htmlspecialchars($row['user_name']), 0, 20) . '...'; ?></td>
                             <td><?php echo htmlspecialchars($row['category']); ?></td>
-                            <td><?php echo htmlspecialchars($row['description']); ?></td>
+                            <td><?php echo strlen(htmlspecialchars($row['description'])) > 30 ? substr(htmlspecialchars($row['description']), 0, 30) . '...' : htmlspecialchars($row['description']); ?></td>
                             <td><?php echo date('M d, Y', strtotime($row['request_date'])); ?></td>
                             <td class="fw-medium">
                                 <span class="badge <?php echo ($row['status'] == 'completed') ? 'bg-success' : (($row['status'] == 'pending') ? 'bg-danger' : 'bg-warning'); ?> ">
