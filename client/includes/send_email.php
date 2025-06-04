@@ -50,7 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit-normal-form'])
             $mail->AltBody = "New message from Rent Master website\n\nSender Email: $email\n\nMessage:\n$message";
 
             $mail->send();
-            echo "✅ Message successfully sent to Rent Master admin!";
+            header("Location: /rent-master2/client/?page=src/home&message=Message sent successfully.");
+            exit();
         } catch (Exception $e) {
             echo "❌ Failed to send message. Error: {$mail->ErrorInfo}";
         }
@@ -63,6 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit-property-reque
     $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
     $message = htmlspecialchars(trim($_POST['message'] ?? ''), ENT_QUOTES, 'UTF-8');
     $propertyName = htmlspecialchars(trim($_POST['property_name'] ?? ''), ENT_QUOTES, 'UTF-8');
+    $propertyId = htmlspecialchars($_POST['property_id']);
 
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $mail = new PHPMailer(true);
@@ -102,7 +104,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit-property-reque
             $mail->AltBody = "New Property Inquiry\nProperty: $propertyName\nSender: $email\n\nMessage:\n$message";
 
             $mail->send();
-            echo "✅ Message successfully sent to Rent Master Admin.";
+            header("Location: /rent-master2/client/?page=src/properties-details&property_id=" . $propertyId . "&message=✅ Message successfully sent to Rent Master Admin.");
+            exit();
         } catch (Exception $e) {
             echo "❌ Failed to send message. Error: {$mail->ErrorInfo}";
         }

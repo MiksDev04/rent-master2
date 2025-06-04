@@ -55,10 +55,18 @@ function sendTenantDecisionEmail($tenant_email, $action, $tenantDetails)
         }
 
         $mail->send();
-        echo "✅ Email successfully sent to $tenant_email.";
         // 🔥 Delete the PDF file after sending
         if ($action === 'approve' && file_exists($pdfFilePath)) {
             unlink($pdfFilePath);
+        }
+        if ($action === 'approve') {
+            $message = $tenant_email . " request has been successfully approved.";
+            header("Location: /rent-master2/admin/?page=maintenance/index&success=" . urlencode($message));
+            exit();
+        } else {
+            $message = $tenant_email . " request has been rejected.";
+            header("Location: /rent-master2/admin/?page=maintenance/index&error=" . urlencode($message));
+            exit();
         }
     } catch (Exception $e) {
         echo "❌ Failed to send email. Error: {$mail->ErrorInfo}";
@@ -168,7 +176,6 @@ function generateLeaseAgreementPDF($tenant)
 }
 
 // maintenance request handling
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit-maintenance-form'])) {
     // Sanitize and validate inputs
     $tenantEmail = filter_var(trim($_POST['tenant_email'] ?? ''), FILTER_SANITIZE_EMAIL);
@@ -211,7 +218,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit-maintenance-fo
             $mail->AltBody = "Maintenance Request {$status}\n\nAdmin Message:\n{$adminMessage}";
 
             $mail->send();
-            echo "✅ Maintenance response email sent to tenant.";
+            // Redirect after sending email
+            if ($status === 'Approved') {
+                $message = $tenantEmail . " maintenance request has been successfully approved.";
+                header("Location: /rent-master2/admin/?page=maintenance/index&success=" . urlencode($message));
+                exit();
+            } else {
+                $message = $tenantEmail . " maintenance request has been rejected";
+                header("Location: /rent-master2/admin/?page=maintenance/index&error=" . urlencode($message));
+                exit();
+            }
         } catch (Exception $e) {
             echo "❌ Email could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }

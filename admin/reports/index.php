@@ -44,7 +44,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             'lease_start' => date('Y-m-d'), // Optional: replace with real lease start date
             'monthly_rent' => $data['property_rental_price']
         ];
-       
     }
     if ($action == 'approve') {
         // Approve the tenant
@@ -59,10 +58,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             mysqli_query($conn, $user_sql);
 
 
-           require_once __DIR__ . '/../includes/send_email.php'; // Include the email sending function
-        sendTenantDecisionEmail($data['user_email'], $action, $tenantDetails);
+            require_once __DIR__ . '/../includes/send_email.php'; // Include the email sending function
+            sendTenantDecisionEmail($data['user_email'], $action, $tenantDetails);
 
-            // sendEmail($tenant_id, $tenant_email, $action); // the action about approve or reject will be passed to the function 
         } else {
             echo "Error updating tenant: " . mysqli_error($conn);
         }
@@ -104,45 +102,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-function sendEmail($tenant_id, $tenant_email, $action)
-{
-    if (!$tenant_email) {
-        header("Location: ?page=reports/index&error=Missing email address.");
-        exit();
-    }
 
-    ob_clean();
-
-    $status = ($action === 'approve') ? 'Approved' : 'Rejected';
-    $admin_message = ($action === 'approve')
-        ? "Congratulations! Your rental request has been approved."
-        : "Unfortunately! Your rental request has been rejected.";
-
-    $message_feedback = ($action === 'approve')
-        ? "&success=Tenant added successfully."
-        : "&error=Tenant rejected successfully.";
-
-    // Create a simple text version of the download link
-    $download_text = "";
-    if ($action === 'approve' && $tenant_id) {
-        $download_url = "/rent-master2/generate_pdf.php?tenant_id=" . $tenant_id;
-        $download_text = "DOWNLOAD AGREEMENT: " . $download_url;
-    }
-
-    echo '<form id="redirectForm" action="https://formsubmit.co/' . rawurlencode($tenant_email) . '" method="POST">';
-    echo '<input type="hidden" name="_subject" value="Rental Request ' . $status . '">';
-    echo '<input type="hidden" name="_captcha" value="false">';
-    echo '<input type="hidden" name="Landlord Email" value="mikogapasan04@gmail.com">';
-    echo '<input type="hidden" name="message" value="' . htmlspecialchars($admin_message) . '">';
-
-    if (!empty($download_text)) {
-        echo '<input type="hidden" name="agreement" value="' . htmlspecialchars($download_text) . '">';
-    }
-
-    echo '</form>';
-    echo '<script>document.getElementById("redirectForm").submit();</script>';
-    exit();
-}
 // Fetch pending rental requests
 $sql = "SELECT *
         FROM tenants
