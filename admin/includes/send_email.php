@@ -34,20 +34,32 @@ function sendTenantDecisionEmail($tenant_email, $action, $tenantDetails)
         $mail->Subject = "Rental Request $subjectStatus";
 
         $bodyMsg = ($action === 'approve') ?
-            "<p>Dear {$tenantDetails['name']},</p>
-            <p>Your request to rent the property <strong>{$tenantDetails['property_name']}</strong> has been <strong style='color:green;'>approved</strong>.</p>
-            <p>Please find the attached lease agreement for your review.</p>" :
-            "<p>Dear {$tenantDetails['name']},</p>
-            <p>We regret to inform you that your request to rent <strong>{$tenantDetails['property_name']}</strong> has been <strong style='color:red;'>rejected</strong>.</p>
-            <p>For further inquiries, contact our office.</p>";
+            "
+            <p style='margin-bottom: 10px;'>Dear {$tenantDetails['name']},</p>
+            <p>Your request to rent the property <strong>{$tenantDetails['property_name']}</strong> has been 
+                <strong style='color: #28a745;'>approved</strong>.</p>
+            <p>Please find the attached lease agreement for your review.</p>
+            " :
+                    "
+            <p style='margin-bottom: 10px;'>Dear {$tenantDetails['name']},</p>
+            <p>We regret to inform you that your request to rent <strong>{$tenantDetails['property_name']}</strong> has been 
+                <strong style='color: #dc3545;'>rejected</strong>.</p>
+            <p>For further inquiries, contact our office.</p>
+            ";
 
         $mail->Body = "
-            <div style='font-family: Arial, sans-serif; color: #333;'>
+            <div style='font-family: Arial, sans-serif; color: #2c3e50; padding: 20px; background-color: #f9f9f9; border-radius: 8px;'>
+                <h2 style='color: #007bff; margin-bottom: 20px;'>🏠 Rental Request Update</h2>
                 $bodyMsg
-                <p>Thank you,<br>Rent Master Team</p>
+                <p style='margin-top: 30px; font-size: 14px; color: #7f8c8d;'>
+                    Thank you,<br>
+                    <strong>Rent Master Team</strong>
+                </p>
             </div>
         ";
-        $mail->AltBody = strip_tags($bodyMsg);
+
+        $mail->AltBody = strip_tags("Rental Request Update\n\n" . $bodyMsg . "\n\nThank you,\nRent Master Team");
+
 
         // Attach Lease PDF if approved
         if ($action === 'approve' && file_exists($pdfFilePath)) {
@@ -61,11 +73,11 @@ function sendTenantDecisionEmail($tenant_email, $action, $tenantDetails)
         }
         if ($action === 'approve') {
             $message = $tenant_email . " request has been successfully approved.";
-            header("Location: /rent-master2/admin/?page=maintenance/index&success=" . urlencode($message));
+            header("Location: /rent-master2/admin/?page=reports/index&success=" . urlencode($message));
             exit();
         } else {
             $message = $tenant_email . " request has been rejected.";
-            header("Location: /rent-master2/admin/?page=maintenance/index&error=" . urlencode($message));
+            header("Location: /rent-master2/admin/?page=reports/index&error=" . urlencode($message));
             exit();
         }
     } catch (Exception $e) {
@@ -202,20 +214,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit-maintenance-fo
             // Email content
             $mail->isHTML(true);
             $mail->Subject = "Maintenance Request - " . ucfirst($status);
-
             $mail->Body = "
-                <div style='font-family: Arial, sans-serif; color: #333;'>
-                    <h2>🛠️ Maintenance Request {$status}</h2>
-                    <p>Your maintenance request has been <strong>" . strtoupper($status) . "</strong>.</p>
-                    <p><strong>Admin Response:</strong></p>
-                    <div style='margin-top:10px; padding: 15px; background-color: #f9f9f9; border-left: 4px solid #28a745;'>
-                        <p>{$adminMessage}</p>
+                <div style='font-family: Arial, sans-serif; color: #2c3e50; padding: 20px; background-color: #f9f9f9; border-radius: 8px;'>
+                    <h2 style='color: #28a745; margin-bottom: 20px;'>🛠️ Maintenance Request " . ucfirst($status) . "</h2>
+                    
+                    <p style='font-size: 16px; margin-bottom: 10px;'>
+                        Your maintenance request has been <strong style='color: #28a745;'>" . strtoupper($status) . "</strong>.
+                    </p>
+
+                    <p style='font-size: 16px; margin: 20px 0 5px;'><strong>Admin Response:</strong></p>
+                    <div style='background-color: #eefaf0; padding: 15px; border-left: 5px solid #28a745; border-radius: 5px; font-size: 15px; line-height: 1.6;'>
+                        <em>{$adminMessage}</em>
                     </div>
-                    <p style='margin-top:20px;'>This is an automated message from Rent Master system.</p>
+
+                    <p style='margin-top: 30px; font-size: 14px; color: #7f8c8d;'>
+                        — This is an automated message from the <strong>Rent Master</strong> system.
+                    </p>
                 </div>
             ";
 
-            $mail->AltBody = "Maintenance Request {$status}\n\nAdmin Message:\n{$adminMessage}";
+
+            $mail->AltBody = "Maintenance Request " . ucfirst($status) . "\n\nAdmin Response:\n{$adminMessage}\n\nThis is an automated message from the Rent Master system.";
+
 
             $mail->send();
             // Redirect after sending email

@@ -14,10 +14,10 @@ function deleteOldImages($conn, $property_id)
     $targetDir = $_SERVER['DOCUMENT_ROOT'] . "/rent-master2/admin/assets/properties/";
     $query = "SELECT * FROM property_images WHERE property_id = '$property_id'";
     $result = mysqli_query($conn, $query);
-    
+
     if (mysqli_num_rows($result) > 0) {
         $images = mysqli_fetch_assoc($result);
-        
+
         // Delete old images from the folder
         for ($i = 1; $i <= 10; $i++) {
             $imagePath = $images["image$i"];
@@ -25,7 +25,7 @@ function deleteOldImages($conn, $property_id)
                 unlink($_SERVER['DOCUMENT_ROOT'] . $imagePath);
             }
         }
-        
+
         // Clear all image references from database
         $clearQuery = "UPDATE property_images SET ";
         $updates = [];
@@ -65,20 +65,23 @@ function uploadSingleImage($file)
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    if (!empty($_POST['property_id']) && !empty($_POST['property_name']) && !empty($_POST['location']) && 
-        !empty($_POST['description']) && !empty($_POST['date_created']) && !empty($_POST['property_rental_price'])) {
+    if (
+        !empty($_POST['property_id']) && !empty($_POST['property_name']) && !empty($_POST['location']) &&
+        !empty($_POST['description']) && !empty($_POST['date_created']) && !empty($_POST['property_rental_price'])
+    ) {
 
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
         $property_name = mysqli_real_escape_string($conn, $_POST['property_name']);
         $location = mysqli_real_escape_string($conn, $_POST['location']);
-        
+
         // Proper NULL handling for coordinates
         $latitude = !empty($_POST['latitude']) ? (float)$_POST['latitude'] : 'NULL';
         $longitude = !empty($_POST['longitude']) ? (float)$_POST['longitude'] : 'NULL';
-        
+
         $description = mysqli_real_escape_string($conn, $_POST['description']);
         $date_created = mysqli_real_escape_string($conn, $_POST['date_created']);
         $rental_price = mysqli_real_escape_string($conn, $_POST['property_rental_price']);
+        $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
 
         // UPDATE statement
         $queryUpdate = "UPDATE properties 
@@ -88,7 +91,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 longitude = $longitude,
                 property_date_created = '$date_created', 
                 property_description = '$description',
-                property_rental_price = '$rental_price'
+                property_rental_price = '$rental_price',
+                property_capacity = '$capacity'
             WHERE property_id = '$property_id'";
 
         // Execute the UPDATE query with error checking
@@ -100,10 +104,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (!empty($_FILES['property_images']['name'][0])) {
             // Delete all old images and clear database references
             deleteOldImages($conn, $property_id);
-            
+
             // Prepare image paths for database
             $imagePaths = array_fill(1, 10, NULL);
-            
+
             // Upload new images (up to 10)
             $uploadCount = min(count($_FILES['property_images']['name']), 10);
             for ($i = 0; $i < $uploadCount; $i++) {
@@ -114,17 +118,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     'error' => $_FILES['property_images']['error'][$i],
                     'size' => $_FILES['property_images']['size'][$i]
                 ];
-                
+
                 $imagePath = uploadSingleImage($file);
                 if ($imagePath) {
-                    $imagePaths[$i+1] = $imagePath;
+                    $imagePaths[$i + 1] = $imagePath;
                 }
             }
-            
+
             // Update image paths in database
             $query = "SELECT * FROM property_images WHERE property_id = '$property_id'";
             $result = mysqli_query($conn, $query);
-            
+
             if (mysqli_num_rows($result) > 0) {
                 // Update existing record with new images
                 $updateQuery = "UPDATE property_images SET ";
@@ -151,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (isset($_POST['amenities'])) {
             // First delete existing amenities for this property
             mysqli_query($conn, "DELETE FROM property_amenities WHERE property_id = '$property_id'");
-            
+
             // Insert the new selected amenities
             foreach ($_POST['amenities'] as $amenity_id) {
                 $amenity_id = mysqli_real_escape_string($conn, $amenity_id);
@@ -161,7 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // If no amenities selected, remove all for this property
             mysqli_query($conn, "DELETE FROM property_amenities WHERE property_id = '$property_id'");
         }
-        
+
         header("Location: /rent-master2/admin/?page=properties/index&message=Property updated successfully");
         exit();
     } else {
@@ -227,7 +231,7 @@ if (isset($_GET['property_id'])) {
     <header class="d-flex align-items-center mt-3 gap-2">
         <a href="?page=properties/index" class="btn btn-sm btn-outline-secondary">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
             </svg>
             Back
         </a>
@@ -236,7 +240,7 @@ if (isset($_GET['property_id'])) {
 
     <form id="property-form" action="properties/update.php" method="post" enctype="multipart/form-data">
         <!-- <?php if (isset($property)): ?> -->
-            <input type="hidden" name="property_id" value="<?= $property['property_id'] ?>">
+        <input type="hidden" name="property_id" value="<?= $property['property_id'] ?>">
         <!-- <?php endif; ?> -->
 
         <div class="mt-2">
@@ -291,37 +295,48 @@ if (isset($_GET['property_id'])) {
         </div>
 
         <div class="mt-2">
-            <label for="property_images" class="form-label">Upload Images</label>
-            <input type="file" id="property_images" name="property_images[]" class="form-control" accept="image/*"
-                <?= !isset($property) ? 'required' : '' ?> multiple>
-            <?php if (isset($images)): ?>
-                <div class="current-images mt-2">
-                    <?php for ($i = 1; $i <= 10; $i++): ?>
-                        <?php if (!empty($images["image$i"])): ?>
-                            <img src="<?= htmlspecialchars($images["image$i"]) ?>" alt="Property image <?= $i ?>">
-                        <?php endif; ?>
-                    <?php endfor; ?>
-                </div>
-                <small class="text-muted">New images will replace existing ones</small>
-            <?php endif; ?>
-        </div>
+            <label for="capacity" class="form-label">Capacity</label>
+            <select id="capacity" name="capacity" class="form-select" required>
+                <option value="" disabled <?= !isset($property) ? 'selected' : '' ?>>Select capacity</option>
+                <option value="1-3">1–3 Persons</option>
+                <option value="4-6">4–6 Persons</option>
+                <option value="7-10">7–10 Persons</option>
+                <option value="11-15">11–15 Persons</option>
+                <option value="16+">16 or more Persons</option>
+            </select>
 
-        <div class="mt-2">
-            <label class="form-label">Amenities</label>
-            <div class="d-flex flex-wrap gap-3">
-                <?php while ($row = mysqli_fetch_assoc($all_amenities)): ?>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="amenities[]" value="<?= $row['amenity_id'] ?>"
-                            <?= (isset($selected_amenities) && in_array($row['amenity_id'], $selected_amenities)) ? 'checked' : '' ?>>
-                        <label class="form-check-label"><?= htmlspecialchars($row['amenity_name']) ?></label>
+            <div class="mt-2">
+                <label for="property_images" class="form-label">Upload Images</label>
+                <input type="file" id="property_images" name="property_images[]" class="form-control" accept="image/*"
+                    <?= !isset($property) ? 'required' : '' ?> multiple>
+                <?php if (isset($images)): ?>
+                    <div class="current-images mt-2">
+                        <?php for ($i = 1; $i <= 10; $i++): ?>
+                            <?php if (!empty($images["image$i"])): ?>
+                                <img src="<?= htmlspecialchars($images["image$i"]) ?>" alt="Property image <?= $i ?>">
+                            <?php endif; ?>
+                        <?php endfor; ?>
                     </div>
-                <?php endwhile; ?>
+                    <small class="text-muted">New images will replace existing ones</small>
+                <?php endif; ?>
             </div>
-        </div>
 
-        <button type="button" class="btn btn-primary px-4 rounded-5 mt-3" id="submit-btn">
-            <?= isset($property) ? 'Update' : 'Submit' ?>
-        </button>
+            <div class="mt-2">
+                <label class="form-label">Amenities</label>
+                <div class="d-flex flex-wrap gap-3">
+                    <?php while ($row = mysqli_fetch_assoc($all_amenities)): ?>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="amenities[]" value="<?= $row['amenity_id'] ?>"
+                                <?= (isset($selected_amenities) && in_array($row['amenity_id'], $selected_amenities)) ? 'checked' : '' ?>>
+                            <label class="form-check-label"><?= htmlspecialchars($row['amenity_name']) ?></label>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary px-4 rounded-5 mt-3" id="submit-btn">
+                <?= isset($property) ? 'Update' : 'Submit' ?>
+            </button>
     </form>
 </div>
 

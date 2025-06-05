@@ -47,12 +47,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $description = mysqli_real_escape_string($conn, $_POST['description']);
         $date_created = mysqli_real_escape_string($conn, $_POST['date_created']);
         $rental_price = mysqli_real_escape_string($conn, $_POST['rental-price']);
+        $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
 
         $queryInsert = "INSERT INTO properties 
     (property_name, property_location, latitude, longitude, 
-     property_date_created, property_description, property_rental_price) 
+     property_date_created, property_description, property_rental_price, property_capacity) 
     VALUES ('$property_name', '$location', $latitude, $longitude, 
-            '$date_created', '$description', '$rental_price')";
+            '$date_created', '$description', '$rental_price', '$capacity')";
         mysqli_query($conn, $queryInsert);
         $property_id = mysqli_insert_id($conn);
 
@@ -146,7 +147,7 @@ mysqli_close($conn);
     <header class="d-flex align-items-center mt-3 gap-2">
         <a href="?page=properties/index" class=" btn btn-sm btn-outline-secondary" width="2rem" height="2rem">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
             </svg>
             Back
         </a>
@@ -193,22 +194,33 @@ mysqli_close($conn);
             <textarea id="description" name="description" class="form-control" required></textarea>
         </div>
         <div class="mt-2">
-            <label for="property_images" class="form-label">Upload Images</label>
-            <input type="file" id="property_images" name="property_images[]" class="form-control" accept="image/*" multiple required>
-        </div>
-        <div class="mt-2">
-            <label class="form-label">Amenities</label>
-            <div class="d-flex flex-wrap gap-3">
-                <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="amenities[]" value="<?= $row['amenity_id'] ?>" id="amenity<?= $row['amenity_id'] ?>">
-                        <label class="form-check-label" for="amenity<?= $row['amenity_id'] ?>"><?= $row['amenity_name'] ?></label>
-                    </div>
-                <?php endwhile; ?>
-            </div>
-        </div>
+            <label for="capacity" class="form-label">Capacity</label>
+            <select id="capacity" name="capacity" class="form-select" required>
+                <option value="" disabled selected>Select capacity</option>
+                <option value="1-3">1–3 Persons</option>
+                <option value="4-6">4–6 Persons</option>
+                <option value="7-10">7–10 Persons</option>
+                <option value="11-15">11–15 Persons</option>
+                <option value="16+">16 or more Persons</option>
+            </select>
 
-        <button type="button" class="btn btn-primary px-4 rounded-5 mt-3" id="submit-btn">Submit</button>
+            <div class="mt-2">
+                <label for="property_images" class="form-label">Upload Images</label>
+                <input type="file" id="property_images" name="property_images[]" class="form-control" accept="image/*" multiple required>
+            </div>
+            <div class="mt-2">
+                <label class="form-label">Amenities</label>
+                <div class="d-flex flex-wrap gap-3">
+                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="amenities[]" value="<?= $row['amenity_id'] ?>" id="amenity<?= $row['amenity_id'] ?>">
+                            <label class="form-check-label" for="amenity<?= $row['amenity_id'] ?>"><?= $row['amenity_name'] ?></label>
+                        </div>
+                    <?php endwhile; ?>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary px-4 rounded-5 mt-3" id="submit-btn">Submit</button>
 
     </form>
 

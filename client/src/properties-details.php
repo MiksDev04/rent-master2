@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                            WHERE user_id = $user_id";
 
                 if (mysqli_query($conn, $update_sql)) {
-                    $success_message = "Your existing tenant status has been updated to pending.";
+                    $success_message = "Rent request sent successfully! Wait for the landlord's approval.";
                     $success_message_status = "alert-info";
 
                     // Add notification for property owner
@@ -100,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                            VALUES ($user_id, $property_id, 'pending', NOW())";
 
                 if (mysqli_query($conn, $insert_sql)) {
-                    $success_message = "Rent request sent successfully! Your status is now pending.";
+                    $success_message = "Rent request sent successfully! Wait for the landlord's approval.";
                     $success_message_status = "alert-success";
 
                     // Add notification for property owner
@@ -140,26 +140,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
         <div class="col-lg-8">
             <h1 class="fw-light mb-3"><?php echo htmlspecialchars($property['property_name']); ?></h1>
 
-            <!-- Image Carousel -->
-            <div id="propertyCarousel" class="carousel slide mb-4 rounded-3 overflow-hidden shadow-sm" data-bs-ride="carousel">
-                <div class="carousel-inner">
-                    <?php for ($i = 1; $i <= 10; $i++): ?>
-                        <?php if (!empty($images['image' . $i])): ?>
-                            <div class="carousel-item <?php echo $i === 1 ? 'active' : ''; ?>">
-                                <img src="<?php echo $images['image' . $i]; ?>" class="d-block w-100" style="height: 500px; object-fit: cover;" alt="Property image <?php echo $i; ?>">
+            <?php
+            $validImages = [];
+            for ($i = 1; $i <= 10; $i++) {
+                if (!empty($images['image' . $i])) {
+                    $validImages[] = [
+                        'src' => htmlspecialchars($images['image' . $i]),
+                        'alt' => "Property image $i",
+                        'index' => count($validImages)
+                    ];
+                }
+            }
+            ?>
+
+            <?php if (!empty($validImages)): ?>
+                <div id="propertyCarousel" class="carousel slide mb-3 rounded-4 overflow-hidden shadow" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <?php foreach ($validImages as $idx => $img): ?>
+                            <div class="carousel-item <?= $idx === 0 ? 'active' : '' ?>">
+                                <img src="<?= $img['src'] ?>" class="d-block w-100" style="height: 500px; object-fit: cover;" alt="<?= $img['alt'] ?>">
                             </div>
-                        <?php endif; ?>
-                    <?php endfor; ?>
+                        <?php endforeach; ?>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#propertyCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#propertyCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
-            </div>
+
+                <!-- Thumbnails -->
+                <div class="d-flex justify-content-start gap-2 flex-wrap mb-4">
+                    <?php foreach ($validImages as $img): ?>
+                        <img
+                            src="<?= $img['src'] ?>"
+                            class="img-thumbnail <?= $img['index'] === 0 ? 'active-thumbnail' : '' ?>"
+                            style="width: 100px; height: 75px; object-fit: cover; cursor: pointer;"
+                            alt="<?= $img['alt'] ?>"
+                            data-bs-target="#propertyCarousel"
+                            data-bs-slide-to="<?= $img['index'] ?>"
+                            id="thumb-<?= $img['index'] ?>">
+                    <?php endforeach; ?>
+                </div>
+
+            <?php else: ?>
+                <div class="text-center text-muted p-5 border rounded bg-light">
+                    <p>No property images available.</p>
+                </div>
+            <?php endif; ?>
+
 
             <!-- Property Details -->
             <div class="card border-0 shadow-sm mb-4">
@@ -193,6 +225,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                             <p><span class="badge bg-<?php echo $property['property_status'] === 'available' ? 'success' : 'secondary'; ?>">
                                     <?php echo ucfirst($property['property_status']); ?>
                                 </span></p>
+                        </div>
+                         <div class="col-md-6 mb-3">
+                            <p class="mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"  viewBox="0 0 640 512"><path d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z"/></svg>
+                                </svg> <strong>House capacity:</strong></p>
+                            <p><?php echo $property['property_capacity']; ?> Persons</p>
                         </div>
                     </div>
                 </div>
@@ -345,6 +382,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
 </div>
 
 <style>
+    .img-thumbnail.active-thumbnail {
+        border: 3px solid #0d6efd;
+        box-shadow: 0 0 0 2px #fff, 0 0 10px rgba(13, 110, 253, 0.6);
+    }
+
     .carousel-control-prev,
     .carousel-control-next {
         background-color: rgba(0, 0, 0, 0.2);

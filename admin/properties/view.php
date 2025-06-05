@@ -52,6 +52,7 @@ if (isset($_GET['property_id'])) {
             <p class="card-text"><strong>Rental Price:</strong> PHP <?= number_format($property['property_rental_price'], 2, '.', ',') ?></p>
             <p class="card-text"><strong>Description:</strong> <?= htmlspecialchars($property['property_description']) ?></p>
             <p class="card-text"><strong>Status:</strong><span class=" badge bg-success ms-1"> <?= ucfirst(htmlspecialchars($property['property_status'])) ?></span></p>
+            <p class="card-text"><strong>Capacity:</strong> <?= ucfirst(htmlspecialchars($property['property_capacity'])) ?> Persons</p>
         </div>
     </div>
 

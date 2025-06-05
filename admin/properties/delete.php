@@ -79,7 +79,7 @@ mysqli_close($conn);
     <header class="d-flex align-items-center mt-3 gap-2">
         <a href="?page=properties/index" class="btn btn-sm btn-outline-secondary" width="2rem" height="2rem">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
             </svg>
             Back
         </a>
@@ -114,6 +114,18 @@ mysqli_close($conn);
         <label class="form-label fw-bold">Rental Price</label>
         <div class="form-control-plaintext">PHP <?php echo number_format(htmlspecialchars($property['property_rental_price']), 2, '.', ','); ?></div>
     </div>
+
+    <div class="mt-2">
+        <label class="form-label fw-bold">Status</label>
+        <div class="form-control-plaintext">
+            <span class="badge bg-<?php echo htmlspecialchars($property['property_status']) === 'active' ? 'success' : 'secondary'; ?>">
+                <?php echo ucfirst(htmlspecialchars($property['property_status'])); ?>
+            </span>
+        </div>
+    </div>
+    <div class="mt-2">
+        <label class="form-label fw-bold">Capacity</label>
+        <div class="form-control-plaintext"><?php echo htmlspecialchars($property['property_capacity']); ?> Person/s</div>
 
     <div class="mt-2">
         <label class="form-label fw-bold">Description</label>
