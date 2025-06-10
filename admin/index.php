@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+// Get admin user info
+if (!isset($_SESSION['user_id'])) {
+    die("Admin not logged in");
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -94,7 +100,7 @@ session_start();
                 'payments/update',
                 'payments/delete',
                 'account/index',
-                'notification-link'
+
             ];
             if (!in_array($page, $allowed_pages)) {
                 $page = 'dashboard/index';

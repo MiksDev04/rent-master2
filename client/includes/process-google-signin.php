@@ -46,7 +46,7 @@ try {
     
     // Check if user exists (select all needed fields)
     $stmt = $pdo->prepare("SELECT user_id, user_email, user_name, user_image, user_role FROM users WHERE user_email = ?");
-    $stmt->execute([$email]);
+    $stmt->execute([$email]); 
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
@@ -59,7 +59,7 @@ try {
         $userId = $user['user_id'];
     } else {
         // Insert new user
-        $stmt = $pdo->prepare("INSERT INTO users (user_name, user_email, user_image, user_role) VALUES (?, ?, ?, 'tenant')");
+        $stmt = $pdo->prepare("INSERT INTO users (user_name, user_email, user_image, user_role) VALUES (?, ?, ?, 'visitor')");
         $stmt->execute([$name, $email, $picture]);
         $userId = $pdo->lastInsertId();
         
@@ -68,15 +68,15 @@ try {
         $_SESSION['user_email'] = $email;
         $_SESSION['user_name'] = $name;
         $_SESSION['user_image'] = $picture;
-        $_SESSION['user_role'] = 'tenant';
+        $_SESSION['user_role'] = 'visitor';
     }
 
     echo json_encode([
         'success' => true, 
         'user_id' => $userId,
         'redirect' => ($_SESSION['user_role'] === 'landlord') 
-            ? '/rent-master2/admin/?page=dashboard/index&message=Welcome Landlord! You’ve successfully logged in.' 
-            : '/rent-master2/client/?page=src/home&message=Welcome Tenant! You’ve successfully logged in.'
+            ? '/rent-master2/admin/?page=dashboard/index&message=Welcome! You’ve successfully logged in.' 
+            : '/rent-master2/client/?page=src/home&message=Welcome! You’ve successfully logged in.'
     ]);
 
 } catch (PDOException $e) {

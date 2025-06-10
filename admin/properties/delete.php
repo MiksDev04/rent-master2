@@ -125,8 +125,8 @@ mysqli_close($conn);
     </div>
     <div class="mt-2">
         <label class="form-label fw-bold">Capacity</label>
-        <div class="form-control-plaintext"><?php echo htmlspecialchars($property['property_capacity']); ?> Person/s</div>
-
+        <div class="form-control-plaintext"><?php echo htmlspecialchars($property['property_capacity']); ?> Persons</div>
+    </div>
     <div class="mt-2">
         <label class="form-label fw-bold">Description</label>
         <div class="form-control-plaintext"><?php echo htmlspecialchars($property['property_description']); ?></div>

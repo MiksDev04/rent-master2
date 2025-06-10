@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Sanitize user input
     $user_name = mysqli_real_escape_string($conn, $_POST['user_name']);
     $user_password = mysqli_real_escape_string($conn, $_POST['user_password']);
+    $user_email = mysqli_real_escape_string($conn, $_POST['user_email']);
     $user_phone_number = mysqli_real_escape_string($conn, $_POST['user_phone_number']);
     $user_address = mysqli_real_escape_string($conn, $_POST['user_address']);
     $user_description = mysqli_real_escape_string($conn, $_POST['user_description']);
@@ -45,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $user_role = 'visitor'; // Default status
 
     // Prepare the SQL query
-    $sql = "INSERT INTO users (user_name, user_email, user_password, user_phone_number, user_address, user_description, user_image, user_role)
+     $sql = "INSERT INTO users (user_name, user_email, user_password, user_phone_number, user_address, user_description, user_image, user_role)
             VALUES ('$user_name', '$user_email', '$user_password', '$user_phone_number', '$user_address', '$user_description', '$user_image', '$user_role')";
 
     // Execute the query and check for success
@@ -126,9 +127,9 @@ mysqli_close($conn);
                     </div>
 
                 </div>
-                
+
                 <div class="row">
-                    
+
                     <div class="col-md-6 mb-3">
                         <label class="form-label" for="user_phone_number">Phone Number</label>
                         <div class="input-group">
@@ -141,11 +142,18 @@ mysqli_close($conn);
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label" for="user_image">Profile Photo</label>
-                        <input type="file" class="form-control" id="user_image" name="user_image" accept="image/*">
+                        <label class="form-label" for="user_email">Email</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <svg width="16" height="16" viewBox="0 0 16 16" fill="#6C757D">
+                                    <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383l-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z" />
+                                </svg>
+                            </span>
+                            <input type="email" class="form-control" id="user_email" name="user_email" placeholder="Enter your email" required>
+                        </div>
                     </div>
                 </div>
-
+                
                 <div class="mb-3">
                     <label class="form-label" for="user_address">Address</label>
                     <div class="input-group">
@@ -157,12 +165,16 @@ mysqli_close($conn);
                         <input type="text" class="form-control" id="user_address" name="user_address" placeholder="Enter your address" required>
                     </div>
                 </div>
+                <div class=" mb-3">
+                    <label class="form-label" for="user_image">Profile Photo</label>
+                    <input type="file" class="form-control" id="user_image" name="user_image" accept="image/*">
+                </div>
                 
                 <div class="mb-3">
                     <label class="form-label" for="user_description">About You</label>
                     <textarea class="form-control" id="user_description" name="user_description" rows="3" placeholder="Tell us about yourself"></textarea>
                 </div>
-                
+
 
 
                 <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Create Account</button>

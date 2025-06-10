@@ -67,7 +67,8 @@ function uploadSingleImage($file)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (
         !empty($_POST['property_id']) && !empty($_POST['property_name']) && !empty($_POST['location']) &&
-        !empty($_POST['description']) && !empty($_POST['date_created']) && !empty($_POST['property_rental_price'])
+        !empty($_POST['description']) && !empty($_POST['date_created']) && !empty($_POST['property_rental_price']) &&
+        !empty($_POST['capacity'])
     ) {
 
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
@@ -296,7 +297,7 @@ if (isset($_GET['property_id'])) {
 
         <div class="mt-2">
             <label for="capacity" class="form-label">Capacity</label>
-            <select id="capacity" name="capacity" class="form-select" required>
+            <select id="capacity" name="capacity" class="form-select" required value="<?= isset($property) ? htmlspecialchars($property['property_capacity']) : '' ?>">
                 <option value="" disabled <?= !isset($property) ? 'selected' : '' ?>>Select capacity</option>
                 <option value="1-3">1–3 Persons</option>
                 <option value="4-6">4–6 Persons</option>
@@ -304,39 +305,39 @@ if (isset($_GET['property_id'])) {
                 <option value="11-15">11–15 Persons</option>
                 <option value="16+">16 or more Persons</option>
             </select>
-
-            <div class="mt-2">
-                <label for="property_images" class="form-label">Upload Images</label>
-                <input type="file" id="property_images" name="property_images[]" class="form-control" accept="image/*"
-                    <?= !isset($property) ? 'required' : '' ?> multiple>
-                <?php if (isset($images)): ?>
-                    <div class="current-images mt-2">
-                        <?php for ($i = 1; $i <= 10; $i++): ?>
-                            <?php if (!empty($images["image$i"])): ?>
-                                <img src="<?= htmlspecialchars($images["image$i"]) ?>" alt="Property image <?= $i ?>">
-                            <?php endif; ?>
-                        <?php endfor; ?>
-                    </div>
-                    <small class="text-muted">New images will replace existing ones</small>
-                <?php endif; ?>
-            </div>
-
-            <div class="mt-2">
-                <label class="form-label">Amenities</label>
-                <div class="d-flex flex-wrap gap-3">
-                    <?php while ($row = mysqli_fetch_assoc($all_amenities)): ?>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="amenities[]" value="<?= $row['amenity_id'] ?>"
-                                <?= (isset($selected_amenities) && in_array($row['amenity_id'], $selected_amenities)) ? 'checked' : '' ?>>
-                            <label class="form-check-label"><?= htmlspecialchars($row['amenity_name']) ?></label>
-                        </div>
-                    <?php endwhile; ?>
+        </div>
+        <div class="mt-2">
+            <label for="property_images" class="form-label">Upload Images</label>
+            <input type="file" id="property_images" name="property_images[]" class="form-control" accept="image/*"
+                <?= !isset($property) ? 'required' : '' ?> multiple>
+            <?php if (isset($images)): ?>
+                <div class="current-images mt-2">
+                    <?php for ($i = 1; $i <= 10; $i++): ?>
+                        <?php if (!empty($images["image$i"])): ?>
+                            <img src="<?= htmlspecialchars($images["image$i"]) ?>" alt="Property image <?= $i ?>">
+                        <?php endif; ?>
+                    <?php endfor; ?>
                 </div>
-            </div>
+                <small class="text-muted">New images will replace existing ones</small>
+            <?php endif; ?>
+        </div>
 
-            <button type="button" class="btn btn-primary px-4 rounded-5 mt-3" id="submit-btn">
-                <?= isset($property) ? 'Update' : 'Submit' ?>
-            </button>
+        <div class="mt-2">
+            <label class="form-label">Amenities</label>
+            <div class="d-flex flex-wrap gap-3">
+                <?php while ($row = mysqli_fetch_assoc($all_amenities)): ?>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="amenities[]" value="<?= $row['amenity_id'] ?>"
+                            <?= (isset($selected_amenities) && in_array($row['amenity_id'], $selected_amenities)) ? 'checked' : '' ?>>
+                        <label class="form-check-label"><?= htmlspecialchars($row['amenity_name']) ?></label>
+                    </div>
+                <?php endwhile; ?>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary px-4 rounded-5 mt-3" id="submit-btn">
+            <?= isset($property) ? 'Update' : 'Submit' ?>
+        </button>
     </form>
 </div>
 

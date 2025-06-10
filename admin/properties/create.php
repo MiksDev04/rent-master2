@@ -203,24 +203,25 @@ mysqli_close($conn);
                 <option value="11-15">11–15 Persons</option>
                 <option value="16+">16 or more Persons</option>
             </select>
+        </div>
 
-            <div class="mt-2">
-                <label for="property_images" class="form-label">Upload Images</label>
-                <input type="file" id="property_images" name="property_images[]" class="form-control" accept="image/*" multiple required>
+        <div class="mt-2">
+            <label for="property_images" class="form-label">Upload Images</label>
+            <input type="file" id="property_images" name="property_images[]" class="form-control" accept="image/*" multiple required>
+        </div>
+        <div class="mt-2">
+            <label class="form-label">Amenities</label>
+            <div class="d-flex flex-wrap gap-3">
+                <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="amenities[]" value="<?= $row['amenity_id'] ?>" id="amenity<?= $row['amenity_id'] ?>">
+                        <label class="form-check-label" for="amenity<?= $row['amenity_id'] ?>"><?= $row['amenity_name'] ?></label>
+                    </div>
+                <?php endwhile; ?>
             </div>
-            <div class="mt-2">
-                <label class="form-label">Amenities</label>
-                <div class="d-flex flex-wrap gap-3">
-                    <?php while ($row = mysqli_fetch_assoc($result)): ?>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="amenities[]" value="<?= $row['amenity_id'] ?>" id="amenity<?= $row['amenity_id'] ?>">
-                            <label class="form-check-label" for="amenity<?= $row['amenity_id'] ?>"><?= $row['amenity_name'] ?></label>
-                        </div>
-                    <?php endwhile; ?>
-                </div>
-            </div>
+        </div>
 
-            <button type="button" class="btn btn-primary px-4 rounded-5 mt-3" id="submit-btn">Submit</button>
+        <button type="button" class="btn btn-primary px-4 rounded-5 mt-3" id="submit-btn">Submit</button>
 
     </form>
 
@@ -301,6 +302,7 @@ mysqli_close($conn);
             let latitude = document.getElementById("latitude").value;
             let longitude = document.getElementById("longitude").value;
             let description = document.getElementById("description").value.trim();
+            let capacity = document.getElementById("capacity").value;
             let dateCreated = document.getElementById("date-created").value;
             let rentalPrice = document.getElementById("rental-price").value;
             let fileInput = document.getElementById("property_images");
@@ -313,6 +315,7 @@ mysqli_close($conn);
                 description === "" ||
                 dateCreated === "" ||
                 rentalPrice === "" ||
+                capacity === "" ||
                 fileInput.files.length === 0
             ) {
                 alert("All fields are required, including selecting a location on the map!");
@@ -328,6 +331,7 @@ mysqli_close($conn);
         let propertyName = document.getElementById("property-name").value.trim();
         let location = document.getElementById("location").value.trim();
         let description = document.getElementById("description").value.trim();
+        let capacity = document.getElementById("capacity").value;
         let dateCreated = document.getElementById("date-created").value;
         let rentalPrice = document.getElementById("rental-price").value;
         let fileInput = document.getElementById("property_images");
@@ -337,6 +341,7 @@ mysqli_close($conn);
             propertyName === "" ||
             location === "" ||
             description === "" ||
+            capacity === "" ||
             dateCreated === "" ||
             rentalPrice === "" ||
             fileInput.files.length === 0

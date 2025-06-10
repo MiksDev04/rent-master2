@@ -39,3 +39,27 @@ setTimeout(function () {
         bsAlert.close();
     }
 }, 2500); // 2.5 seconds
+
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.querySelector('.search-input');
+    const searchDropdown = document.querySelector('.search-dropdown');
+
+    // Show dropdown when form is submitted or input has value
+    if (window.location.search.includes('search=')) {
+        searchDropdown.style.display = 'block';
+    }
+
+    // Show dropdown when input is focused
+    searchInput.addEventListener('focus', function () {
+        if (this.value.trim() !== '') {
+            searchDropdown.style.display = 'block';
+        }
+    });
+
+    // Hide dropdown when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('.search-dropdown-container')) {
+            searchDropdown.style.display = 'none';
+        }
+    });
+});

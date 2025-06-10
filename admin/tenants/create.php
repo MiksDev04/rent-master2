@@ -31,26 +31,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user_id = mysqli_real_escape_string($conn, $_POST['user_id']);
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
 
-        // Check if the user already exists in tenants table
-        $checkTenantSql = "SELECT * FROM tenants WHERE user_id = '$user_id'";
-        $checkTenantResult = mysqli_query($conn, $checkTenantSql);
 
-        if ($checkTenantResult && mysqli_num_rows($checkTenantResult) > 0) {
-            // Update existing tenant status and property
-            $updateTenantSql = "UPDATE tenants 
-                                SET tenant_status = 'active', property_id = '$property_id', tenant_date_created = NOW(), tenant_terminated_at = NULL 
-                                WHERE user_id = '$user_id'";
-            mysqli_query($conn, $updateTenantSql);
-          
-        } else {
-            // Insert new tenant
-            $queryInsertTenant = "
+        // Insert new tenant
+        $queryInsertTenant = "
                 INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created, tenant_terminated_at) 
                 VALUES ('$user_id', '$property_id', 'active', NOW(), NULL)
                 ";
-            mysqli_query($conn, $queryInsertTenant);
+        mysqli_query($conn, $queryInsertTenant);
 
-        }
 
         // Mark user as a tenant
         $queryUpdateUser = "UPDATE users SET user_role = 'tenant' WHERE user_id = '$user_id'";
@@ -74,7 +62,7 @@ mysqli_close($conn);
     <header class="d-flex align-items-center mt-3 gap-2">
         <a href="?page=tenants/index" class="btn btn-sm btn-outline-secondary">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
             </svg>
             Back
         </a>

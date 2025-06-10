@@ -74,43 +74,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
             $success_message_status = "alert-warning";
             $success_message = "You already have an active rental. You cannot rent another property.";
         } else {
-            // Check if tenant exists but not active
-            $existing_sql = "SELECT * FROM tenants WHERE user_id = $user_id";
-            $existing_result = mysqli_query($conn, $existing_sql);
 
-            if ($existing_result && mysqli_num_rows($existing_result) > 0) {
-                $update_sql = "UPDATE tenants 
-                           SET tenant_status = 'pending', property_id = $property_id, tenant_date_created = NOW()
-                           WHERE user_id = $user_id";
-
-                if (mysqli_query($conn, $update_sql)) {
-                    $success_message = "Rent request sent successfully! Wait for the landlord's approval.";
-                    $success_message_status = "alert-info";
-
-                    // Add notification for property owner
-                    $message = "Tenant request received for property: {$property['property_name']}. Status: Pending";
-                    $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
-                                    VALUES ($user_id, 'property', '$message', $property_id)";
-                    mysqli_query($conn, $notification_sql);
-                } else {
-                    echo "<p>Error updating tenant: " . mysqli_error($conn) . "</p>";
-                }
-            } else {
-                $insert_sql = "INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created)
+            $insert_sql = "INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created)
                            VALUES ($user_id, $property_id, 'pending', NOW())";
 
-                if (mysqli_query($conn, $insert_sql)) {
-                    $success_message = "Rent request sent successfully! Wait for the landlord's approval.";
-                    $success_message_status = "alert-success";
+            if (mysqli_query($conn, $insert_sql)) {
+                $success_message = "Rent request sent successfully! Wait for the landlord's approval.";
+                $success_message_status = "alert-success";
 
-                    // Add notification for property owner
-                    $message = "New tenant request received for property: {$property['property_name']}. Status: Pending";
-                    $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
+                // Add notification for property owner
+                $message = "New tenant request received for property: {$property['property_name']}. Status: Pending";
+                $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
                                     VALUES ($user_id, 'property', '$message', $property_id)";
-                    mysqli_query($conn, $notification_sql);
-                } else {
-                    echo "<p>Error inserting tenant: " . mysqli_error($conn) . "</p>";
-                }
+                mysqli_query($conn, $notification_sql);
+            } else {
+                echo "<p>Error inserting tenant: " . mysqli_error($conn) . "</p>";
             }
         }
     }
@@ -226,8 +204,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                                     <?php echo ucfirst($property['property_status']); ?>
                                 </span></p>
                         </div>
-                         <div class="col-md-6 mb-3">
-                            <p class="mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"  viewBox="0 0 640 512"><path d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z"/></svg>
+                        <div class="col-md-6 mb-3">
+                            <p class="mb-1"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 640 512">
+                                    <path d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192l42.7 0c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0L21.3 320C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7l42.7 0C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3l-213.3 0zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352l117.3 0C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7l-330.7 0c-14.7 0-26.7-11.9-26.7-26.7z" />
+                                </svg>
                                 </svg> <strong>House capacity:</strong></p>
                             <p><?php echo $property['property_capacity']; ?> Persons</p>
                         </div>

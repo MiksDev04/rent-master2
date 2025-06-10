@@ -75,7 +75,7 @@ $result->free();
         <section class="search-filter py-2 bg-white">
             <div class="container">
                 <form method="GET" id="propertySearchForm">
-                    <input type="hidden" name="page" value="src/property">
+                    <input type="hidden" name="page" value="src/properties">
                     <input type="hidden" name="submitted" value="1">
 
                     <div class="row g-3 align-items-end">
@@ -107,7 +107,7 @@ $result->free();
                                     <select class="form-select" name="min_price">
                                         <option value="">Min Price</option>
                                         <?php
-                                        $prices = [0, 5000, 10000, 15000, 20000, 25000, 30000];
+                                        $prices = [0, 5000, 10000, 15000, 20000, 25000, 30000, 50000, 100000];
                                         foreach ($prices as $price) {
                                             $selected = ($minPrice == $price) ? 'selected' : '';
                                             echo "<option value=\"$price\" $selected>₱" . number_format($price) . "</option>";

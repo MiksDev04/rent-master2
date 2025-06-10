@@ -1,7 +1,7 @@
 <?php
 require_once '../database/config.php';
 // Start session
-$searchTerm = $_GET['search'] ?? '';
+$searchTerm = $_GET['searchInput'] ?? '';
 $minPrice = $_GET['min_price'] ?? '';
 $maxPrice = $_GET['max_price'] ?? '';
 $location = $_GET['location'] ?? '';
@@ -152,14 +152,14 @@ $result->free();
 </header>
 <div class="container">
     <h4 class="text-center fw-medium mt-3">Welcome Admin</h4>
- <?php if (isset($_GET['message'])): ?>
-        <div id="addSuccess"  class="alert alert-success alert-dismissible fade show slide-in position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 1055; min-width: 300px;">
+    <?php if (isset($_GET['message'])): ?>
+        <div id="addSuccess" class="alert alert-success alert-dismissible fade show slide-in position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 1055; min-width: 300px;">
             <?= htmlspecialchars($_GET['message']) ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
 
-    <div class="container ">
+    <div class="container container">
         <h5 class=" mt-4">Overview this Month</h5>
         <hr>
         <div class="px-lg-5 row row-cols-1 row-cols-md-2 row-cols-lg-3 gx-lg-5 gy-3 overviews">
@@ -286,8 +286,9 @@ $result->free();
         <h5 class=" mt-4">Properties Map</h5>
         <hr>
         <section class="search-filter py-2 bg-body-tertiary shadow-sm border-5">
-            <div class="container">
-                <form method="GET"  id="propertySearchForm">
+            <div class="container" id="map">
+                <form method="get" action="<?= htmlspecialchars($_SERVER['PHP_SELF']); ?>#propertyMap">
+                    <input type="hidden" name="map" value="1">
                     <input type="hidden" name="submitted" value="1">
                     <div class="row g-3 align-items-end">
                         <!-- Search Field -->
@@ -295,7 +296,7 @@ $result->free();
                             <label for="searchInput" class="form-label small text-muted mb-1">Search Properties</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-primary text-white"><i class="fas fa-search"></i></span>
-                                <input type="text" class="form-control" id="searchInput" name="search"
+                                <input type="text" class="form-control" id="searchInput" name="searchInput"
                                     placeholder="Name or description..." value="<?= htmlspecialchars($searchTerm) ?>">
                             </div>
                         </div>
@@ -318,7 +319,7 @@ $result->free();
                                     <select class="form-select" name="min_price">
                                         <option value="">Min Price</option>
                                         <?php
-                                        $prices = [0, 5000, 10000, 15000, 20000, 25000, 30000];
+                                        $prices = [0, 5000, 10000, 15000, 20000, 25000, 30000, 50000, 100000];
                                         foreach ($prices as $price) {
                                             $selected = ($minPrice == $price) ? 'selected' : '';
                                             echo "<option value=\"$price\" $selected>₱" . number_format($price) . "</option>";
@@ -339,6 +340,7 @@ $result->free();
                                 </div>
                             </div>
                         </div>
+                        <input type="hidden" name="map" value="#propertyMap">
 
                         <!-- Submit Button -->
                         <div class="col-md-2 d-grid">
@@ -364,6 +366,16 @@ $result->free();
 
 
 </div>
+<?php if (isset($_GET['map']) && $_GET['map'] == 1): ?>
+<script>
+window.addEventListener('load', () => {
+    const target = document.getElementById("propertyMap");
+    if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
+    }
+});
+</script>
+<?php endif; ?>
 <script>
     // Run initChart when the page loads
     document.addEventListener('DOMContentLoaded', initChart);
@@ -372,6 +384,7 @@ $result->free();
 <!-- JavaScript for Map -->
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script>
+
     // Initialize the map
     document.addEventListener('DOMContentLoaded', function() {
         // Calculate average coordinates from properties
