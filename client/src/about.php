@@ -1,31 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <!-- Font Awesome -->
     <style>
         .system-hero {
             background-color: #f0f8ff;
             padding: 60px 0;
-            margin-bottom: 40px;
+            /* margin-bottom: 40px; */
             border-bottom: 1px solid #dee2e6;
         }
+
         .system-feature {
             border-left: 4px solid #0d6efd;
             padding-left: 15px;
             margin-bottom: 30px;
             transition: all 0.3s ease;
         }
+
         .system-feature:hover {
             transform: translateX(5px);
         }
+
         .user-card {
             transition: all 0.3s ease;
             height: 100%;
         }
+
         .user-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
+
         .benefit-icon {
             color: #0d6efd;
             font-size: 1.5rem;
@@ -33,6 +39,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- System Hero Section -->
     <section class="system-hero">
@@ -41,7 +48,84 @@
             <p class="lead">A comprehensive solution for modern rental property management</p>
         </div>
     </section>
+    <!-- Landlord/Admin Profile Section - Styled to Match Existing Design -->
+    <section class="bg-light py-5 mb-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">System Administrator Profile</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <?php
+                    // Database connection (make sure this is secure in production)
+                    require_once '../database/config.php'; // Adjust path as necessary
 
+                    // Query for landlord/admin (user_role = 'landlord')
+                    $query = "SELECT * FROM users WHERE user_role = 'landlord' LIMIT 1";
+                    $result = $conn->query($query);
+
+                    if ($result && $result->num_rows > 0) {
+                        $landlord = $result->fetch_assoc();
+                    ?>
+                        <div class="card user-card"> <!-- Added user-card class for hover effect -->
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-md-4 text-center mb-4 mb-md-0">
+                                        <img src="<?php echo htmlspecialchars($landlord['user_image']); ?>"
+                                            class="img-fluid rounded-circle shadow"
+                                            alt="<?php echo htmlspecialchars($landlord['user_name']); ?>"
+                                            style="width: 200px; height: 200px; object-fit: cover;">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="system-feature"> <!-- Using system-feature class for consistent styling -->
+                                            <h3 class="text-primary">
+                                                <i class="fas fa-user-tie benefit-icon"></i>
+                                                <?php echo htmlspecialchars($landlord['user_name']); ?>
+                                            </h3>
+                                            <p class="text-muted mb-4">Property Manager & System Administrator</p>
+
+                                            <div class=" mb-3">
+                                                <h4><i class="fas fa-info-circle benefit-icon"></i>About</h4>
+                                                <p><?php echo htmlspecialchars($landlord['user_description']); ?></p>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div>
+                                                        <h4><i class="fas fa-envelope benefit-icon"></i>Contact</h4>
+                                                        <p>
+                                                            <a href="#"><?php echo htmlspecialchars($landlord['user_email']); ?></a>
+                                                            <br>
+                                                            <?php echo htmlspecialchars($landlord['user_phone_number']); ?>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div>
+                                                        <h4><i class="fas fa-map-marker-alt benefit-icon"></i>Location</h4>
+                                                        <p><?php echo htmlspecialchars($landlord['user_address']); ?></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mt-4">
+                                                <a href="?page=src/home#contact" class="btn btn-primary me-2">
+                                                    <i class="fas fa-envelope me-1"></i> Contact Admin
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php
+                    } else {
+                        echo '<div class="alert alert-warning text-center">No administrator profile available at this time.</div>';
+                    }
+                    $conn->close();
+                    ?>
+                </div>
+            </div>
+        </div>
+    </section>
     <!-- System Overview -->
     <section class="container mb-5">
         <div class="row align-items-center">
@@ -218,4 +302,5 @@
         </div>
     </section>
 </body>
+
 </html>

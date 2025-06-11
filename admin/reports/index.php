@@ -60,7 +60,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             require_once __DIR__ . '/../includes/send_email.php'; // Include the email sending function
             sendTenantDecisionEmail($data['user_email'], $action, $tenantDetails);
-
         } else {
             echo "Error updating tenant: " . mysqli_error($conn);
         }
@@ -185,7 +184,7 @@ if (mysqli_num_rows($result) == 0) {
                 <div class="modal fade" id="approveModal<?= $tenantId ?>" tabindex="-1" aria-labelledby="approveModalLabel<?= $tenantId ?>" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <form method="POST" action="reports/index.php">
+                            <form method="POST" action="reports/index.php" id="approve-form">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="approveModalLabel<?= $tenantId ?>">Confirm Approval</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -197,7 +196,7 @@ if (mysqli_num_rows($result) == 0) {
                                     <input type="hidden" name="action" value="approve">
                                     <input type="hidden" name="id" value="<?= $tenantId ?>">
                                     <input type="hidden" name="email" value="<?= $row['user_email'] ?>">
-                                    <button type="submit" class="btn btn-primary">Yes, Approve</button>
+                                    <button type="submit" id="approve-btn" class="btn btn-primary">Yes, Approve</button>
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                 </div>
                             </form>
@@ -209,7 +208,7 @@ if (mysqli_num_rows($result) == 0) {
                 <div class="modal fade" id="rejectModal<?= $tenantId ?>" tabindex="-1" aria-labelledby="rejectModalLabel<?= $tenantId ?>" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered">
                         <div class="modal-content">
-                            <form method="POST" action="reports/index.php">
+                            <form method="POST" action="reports/index.php" id="reject-form">
                                 <div class="modal-header">
                                     <h5 class="modal-title" id="rejectModalLabel<?= $tenantId ?>">Confirm Rejection</h5>
                                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
@@ -221,7 +220,7 @@ if (mysqli_num_rows($result) == 0) {
                                     <input type="hidden" name="action" value="reject">
                                     <input type="hidden" name="id" value="<?= $tenantId ?>">
                                     <input type="hidden" name="email" value="<?= $row['user_email'] ?>">
-                                    <button type="submit" class="btn btn-danger">Yes, Reject</button>
+                                    <button type="submit" id="reject-btn" class="btn btn-danger">Yes, Reject</button>
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                                 </div>
                             </form>
@@ -233,5 +232,24 @@ if (mysqli_num_rows($result) == 0) {
     <?php endif; ?>
 </div>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('approve-form');
+        const submitBtn = document.getElementById('approve-btn');
 
+        form.addEventListener('submit', function() {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('reject-form');
+        const submitBtn = document.getElementById('reject-btn');
+
+        form.addEventListener('submit', function() {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+        });
+    });
+</script>
 <?php mysqli_close($conn); ?>

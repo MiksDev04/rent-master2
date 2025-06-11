@@ -41,12 +41,12 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
 }
 
 ?>
- <?php if (isset($_GET['message'])): ?>
-        <div id="addSuccess"  class="alert alert-success alert-dismissible fade show slide-in position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; min-width: 300px;">
-            <?= htmlspecialchars($_GET['message']) ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    <?php endif; ?>
+<?php if (isset($_GET['message'])): ?>
+    <div id="addSuccess" class="alert alert-success alert-dismissible fade show slide-in position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; min-width: 300px;">
+        <?= htmlspecialchars($_GET['message']) ?>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+<?php endif; ?>
 
 <!-- Hero Section -->
 <section class="hero">
@@ -94,13 +94,13 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
                                 <span class="property-price">PHP <?php echo number_format(htmlspecialchars($row['property_rental_price']), 2, '.', ',') ?></span>
                                 <span class="text-muted">per month</span>
                             </div>
-                            <a href="?page=src/properties-details&property_id=<?php echo htmlspecialchars($row['property_id']); ?>"  class="btn btn-outline-primary w-100 mt-3">View Details</a>
+                            <a href="?page=src/properties-details&property_id=<?php echo htmlspecialchars($row['property_id']); ?>" class="btn btn-outline-primary w-100 mt-3">View Details</a>
                         </div>
                     </div>
                 </div>
             <?php endwhile; ?>
         </div>
-       
+
 
         <div class="text-center mt-5">
             <a href="?page=src/properties" class="btn btn-primary px-4">View All Properties</a>
@@ -201,82 +201,82 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
         <div class="row">
             <?php foreach ($testimonials as $testimonial): ?>
                 <div class="col-md-4 mb-4">
-    <div class="testimonial-card card h-100 border-0 shadow-sm overflow-hidden">
-        <!-- Decorative ribbon for premium testimonials -->
-        <?php if (($testimonial['rating'] ?? 0) >= 4): ?>
-        <div class="position-absolute end-0 top-0 bg-primary text-white px-3 py-1 small" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10px 50%);">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-1">
-                <path d="M12 1L15.09 7.26L22 8.27L17 13.14L18.18 20.02L12 16.77L5.82 20.02L7 13.14L2 8.27L8.91 7.26L12 1z"/>
-            </svg>
-            Highly Suggested
-        </div>
-        <?php endif; ?>
+                    <div class="testimonial-card card h-100 border-0 shadow-sm overflow-hidden">
+                        <!-- Decorative ribbon for premium testimonials -->
+                        <?php if (($testimonial['rating'] ?? 0) >= 4): ?>
+                            <div class="position-absolute end-0 top-0 bg-primary text-white px-3 py-1 small" style="clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 10px 50%);">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" class="me-1">
+                                    <path d="M12 1L15.09 7.26L22 8.27L17 13.14L18.18 20.02L12 16.77L5.82 20.02L7 13.14L2 8.27L8.91 7.26L12 1z" />
+                                </svg>
+                                Highly Suggested
+                            </div>
+                        <?php endif; ?>
 
-        <div class="card-body d-flex flex-column align-items-center text-center p-4">
-            <!-- User avatar with subtle shadow -->
-            <div class="position-relative mb-3">
-                <img src="<?php echo htmlspecialchars($testimonial['user_image'] ?? 'path/to/default-image.jpg'); ?>" 
-                     alt="<?php echo htmlspecialchars($testimonial['user_name'] ?? 'Anonymous'); ?>" 
-                     class="rounded-circle shadow-sm" 
-                     style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                
-                <!-- Verified badge for trusted users -->
-                <?php if (($testimonial['is_verified'] ?? false)): ?>
-                <div class="position-absolute bottom-0 end-0 bg-success rounded-circle p-1" style="width: 24px; height: 24px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="white" class="d-block">
-                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/>
-                    </svg>
+                        <div class="card-body d-flex flex-column align-items-center text-center p-4">
+                            <!-- User avatar with subtle shadow -->
+                            <div class="position-relative mb-3">
+                                <img src="<?php echo htmlspecialchars($testimonial['user_image'] ?? 'path/to/default-image.jpg'); ?>"
+                                    alt="<?php echo htmlspecialchars($testimonial['user_name'] ?? 'Anonymous'); ?>"
+                                    class="rounded-circle shadow-sm"
+                                    style="width: 80px; height: 80px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+
+                                <!-- Verified badge for trusted users -->
+                                <?php if (($testimonial['is_verified'] ?? false)): ?>
+                                    <div class="position-absolute bottom-0 end-0 bg-success rounded-circle p-1" style="width: 24px; height: 24px;">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="white" class="d-block">
+                                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z" />
+                                        </svg>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Star rating with animated hover effect -->
+                            <div class="stars mb-3" style="letter-spacing: 2px;">
+                                <?php
+                                $rating = $testimonial['rating'] ?? 5;
+                                for ($i = 1; $i <= 5; $i++):
+                                ?>
+                                    <svg width="20" height="20" viewBox="0 0 24 24"
+                                        fill="<?= $i <= $rating ? '#ffc107' : '#e9ecef'; ?>"
+                                        class="star-icon"
+                                        style="transition: transform 0.2s, fill 0.2s;">
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                                    </svg>
+                                <?php endfor; ?>
+                                <span class="ms-2 small text-muted"><?= $rating ?>.0</span>
+                            </div>
+
+                            <!-- Testimonial text with elegant quote marks -->
+                            <div class="position-relative mb-3">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#e9ecef" class="position-absolute top-0 start-0" style="transform: translate(-5px, -5px);">
+                                    <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z" />
+                                </svg>
+                                <p class="testimonial-text mb-0 px-3" style="font-style: italic; line-height: 1.6;">
+                                    "<?php echo htmlspecialchars($testimonial['comment'] ?? 'No comment provided.'); ?>"
+                                </p>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#e9ecef" class="position-absolute bottom-0 end-0" style="transform: translate(5px, 5px);">
+                                    <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z" />
+                                </svg>
+                            </div>
+
+                            <!-- User info with subtle divider -->
+                            <div class="w-100 mt-auto pt-3 border-top">
+                                <p class="testimonial-author mb-1 fw-semibold">
+                                    <?php echo htmlspecialchars($testimonial['user_name'] ?? 'Anonymous'); ?>
+                                </p>
+                                <small class="d-block text-muted">
+                                    <?php echo htmlspecialchars($testimonial['property_name'] ?? 'Unknown Property'); ?>
+                                </small>
+                                <small class="text-muted">
+                                    <?php echo htmlspecialchars(date('M d, Y ', strtotime($testimonial['created_at'] ?? 'now'))); ?>
+                                </small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <?php endif; ?>
-            </div>
 
-            <!-- Star rating with animated hover effect -->
-            <div class="stars mb-3" style="letter-spacing: 2px;">
-                <?php 
-                    $rating = $testimonial['rating'] ?? 5;
-                    for ($i = 1; $i <= 5; $i++): 
-                ?>
-                    <svg width="20" height="20" viewBox="0 0 24 24" 
-                         fill="<?= $i <= $rating ? '#ffc107' : '#e9ecef'; ?>" 
-                         class="star-icon" 
-                         style="transition: transform 0.2s, fill 0.2s;">
-                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                    </svg>
-                <?php endfor; ?>
-                <span class="ms-2 small text-muted"><?= $rating ?>.0</span>
-            </div>
-
-            <!-- Testimonial text with elegant quote marks -->
-            <div class="position-relative mb-3">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="#e9ecef" class="position-absolute top-0 start-0" style="transform: translate(-5px, -5px);">
-                    <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
-                </svg>
-                <p class="testimonial-text mb-0 px-3" style="font-style: italic; line-height: 1.6;">
-                    "<?php echo htmlspecialchars($testimonial['comment'] ?? 'No comment provided.'); ?>"
-                </p>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="#e9ecef" class="position-absolute bottom-0 end-0" style="transform: translate(5px, 5px);">
-                    <path d="M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z"/>
-                </svg>
-            </div>
-
-            <!-- User info with subtle divider -->
-            <div class="w-100 mt-auto pt-3 border-top">
-                <p class="testimonial-author mb-1 fw-semibold">
-                    <?php echo htmlspecialchars($testimonial['user_name'] ?? 'Anonymous'); ?>
-                </p>
-                <small class="d-block text-muted">
-                    <?php echo htmlspecialchars($testimonial['property_name'] ?? 'Unknown Property'); ?>
-                </small>
-                <small class="text-muted">
-                    <?php echo htmlspecialchars(date('M d, Y ', strtotime($testimonial['created_at'] ?? 'now'))); ?>
-                </small>
-            </div>
+            <?php endforeach; ?>
         </div>
-    </div>
-</div>
-
-<?php endforeach; ?>
-</div>
     </div>
 </section>
 
@@ -296,7 +296,7 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
                         </svg>
                         <div>
                             <h5 class="mb-1">Email</h5>
-                            <p class="mb-0 text-muted">rentmaster@example.com</p>
+                            <p class="mb-0 text-muted">rentmaster@gmail.com</p>
                         </div>
                     </div>
 
@@ -358,6 +358,16 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
 </script>
 
 <script>
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        const submitBtn = form.querySelector('button[type="submit"]');
+
+        form.addEventListener('submit', function() {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+        });
+    });
     // Add subtle animation to stars on hover
     document.querySelectorAll('.star-icon').forEach(star => {
         star.addEventListener('mouseenter', function() {

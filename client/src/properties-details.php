@@ -284,7 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <form method="POST" class="text-center" id="rent-form">
-                            <button type="submit" name="rent_submit" class="btn btn-primary">Confirm</button>
+                            <button type="submit" name="rent_submit" id="send-rent-btn" class="btn btn-primary">Confirm</button>
                         </form>
                     </div>
                 </div>
@@ -299,7 +299,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                 <div class="card shadow-sm " style="top: 20px;">
                     <div class="card-body p-4">
                         <h3 class="h5 fw-normal mb-3 text-primary">Contact Owner</h3>
-                        <form method="POST" action="client/../includes/send_email.php">
+                        <form method="POST" action="client/../includes/send_email.php" id="send-email-form">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Your Email</label>
                                 <input type="email" class="form-control" name="email" id="email" placeholder="Email address" required>
@@ -311,7 +311,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                             </div>
                             <input type="hidden" name="submit-property-request-form" value="1">
                             <input type="hidden" name="property_id" value="<?php echo htmlspecialchars($property['property_id']); ?>">
-                            <button type="submit" class="btn btn-primary w-100">
+                            <button type="submit" class="btn btn-primary w-100" id="send-email-btn">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M15.854.146a.5.5 0 0 1 .11.54l-5.819 14.547a.75.75 0 0 1-1.329.124l-3.178-4.995L.643 7.184a.75.75 0 0 1 .124-1.33L15.314.037a.5.5 0 0 1 .54.11zM6.636 10.07l2.761 4.338L14.13 2.576 6.636 10.07zm6.787-8.201L1.591 6.602l4.339 2.76 7.494-7.493z" />
                                 </svg> Send Message
@@ -394,5 +394,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
         transform: translateY(-5px);
     }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('send-email-form');
+        const submitBtn = document.getElementById('send-email-btn');
 
+        form.addEventListener('submit', function() {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Sending...';
+        });
+    });
+</script>
 <?php $conn->close(); ?>
