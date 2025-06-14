@@ -91,6 +91,7 @@ if (!isset($_SESSION['user_id'])) {
                 'tenants/view',
                 'reports/index',
                 'settings/index',
+                'settings/user_manual',
                 'maintenance/index',
                 'maintenance/view',
                 'maintenance/respond',

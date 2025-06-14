@@ -27,23 +27,36 @@ if ($tenant_id) {
     // SQL query to fetch the most recent payment record for the tenant
     $payment_sql = "SELECT p.*, pr.*
                     FROM payments AS p
-                    JOIN tenants AS t
-                    ON p.tenant_id = t.tenant_id
-                    JOIN properties AS pr
-                    ON t.property_id = pr.property_id
-                    WHERE t.tenant_id = $tenant_id  ORDER BY p.payment_date DESC LIMIT 1";
+                    JOIN tenants AS t ON p.tenant_id = t.tenant_id
+                    JOIN properties AS pr ON t.property_id = pr.property_id
+                    WHERE t.tenant_id = $tenant_id
+                    ORDER BY p.payment_end_date DESC
+                    LIMIT 1";
+
     $payment_result = mysqli_query($conn, $payment_sql);
 
-    // Check if the query returns any results
     if ($payment_result && mysqli_num_rows($payment_result) > 0) {
-        // Fetch the payment record
         $payment_info = mysqli_fetch_assoc($payment_result);
 
-        // Get the payment start and end dates from the fetched record
-        $payment_start_date = $payment_info['payment_start_date'];
+        $payment_id = $payment_info['payment_id'];
         $payment_end_date = $payment_info['payment_end_date'];
+        $new_status = $payment_info['payment_status'];
+        // Check if current date is past payment_end_date
+        if ($current_date > $payment_end_date && $new_status !== 'Paid') {
+            $new_status = 'Overdue';
+        } 
+
+        // Update DB if the current status is different
+        if ($payment_info['payment_status'] !== $new_status) {
+            $update_sql = "UPDATE payments SET payment_status = '$new_status' WHERE payment_id = $payment_id";
+            mysqli_query($conn, $update_sql);
+        }
+
+        // Update the in-memory payment_info variable to reflect the new status
+        $payment_info['payment_status'] = $new_status;
     }
 }
+
 
 
 // Handle payment submission
