@@ -570,13 +570,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
     <script>
         // Handle payment method selection
         document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('maintenance-form');
-            const submitBtn = document.getElementById('maintenance-btn');
+            // const form = document.getElementById('maintenance-form');
+            // const submitBtn = document.getElementById('maintenance-btn');
 
-            form.addEventListener('submit', function() {
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Sending...';
-            });
+            // form.addEventListener('submit', function() {
+            //     submitBtn.disabled = true;
+            //     submitBtn.textContent = 'Sending...';
+            // });
             const paymentOptions = document.querySelectorAll('.payment-option');
 
             paymentOptions.forEach(option => {
