@@ -22,11 +22,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['user_role'] = $user_data['user_role'];
         $_SESSION['user_name'] = $user_data['user_name'];
         $_SESSION['user_id'] = $user_data['user_id']; // ✅ Store user_id for tenant use
+        $user_id = $user_data['user_id']; // ✅ Store user_id for tenant use
         $_SESSION['user_image'] = $user_data['user_image']; // ✅ Store user_id for tenant use
 
         if ($user_data['user_role'] == 'landlord') {
-            header("Location: /rent-master2/admin/?page=dashboard/index&message=Welcome back! You’ve successfully logged in.");
-            exit();
+            $landlord_id = null;
+            // Check if user is logged in
+            $landlordSql = "SELECT landlord_id FROM landlords WHERE user_id = $user_id AND landlord_status = 'active'";
+            $landlordResult = $conn->query($landlordSql);
+            if ($landlordResult && $landlordResult->num_rows > 0) {
+                $landlordRow = $landlordResult->fetch_assoc();
+                $_SESSION['landlord_id'] = $landlordRow['landlord_id'];
+                header("Location: /rent-master2/admin/?page=dashboard/index&message=Welcome back! You’ve successfully logged in.");
+                exit();
+            } else {
+                header("Location: /rent-master2/client/?page=src/home&message=Inactive landlord status. Please message the admin for concerns");
+                exit();
+            }
         }
         header("Location: ?page=src/home&message=Welcome back! You’ve successfully logged in.");
         exit();
@@ -58,6 +70,12 @@ mysqli_close($conn);
 
             <p class="text-muted mb-4">Sign in to manage your properties and rentals</p>
 
+            <?php if (isset($_GET['message'])): ?>
+                <div id="addSuccess" class="alert alert-success alert-dismissible fade show slide-in position-fixed top-0 start-50 translate-middle-x mt-3 shadow" role="alert" style="z-index: 9999; min-width: 300px;">
+                    <?= htmlspecialchars($_GET['message']) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?> 
             <?php if (isset($login_error)): ?>
                 <div class="alert alert-danger alert-dismissible fade show"><?= $login_error ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -179,14 +197,14 @@ mysqli_close($conn);
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.href = data.redirect || '/rent-master2/client/?page=src/login&message=Welcome back! You’ve successfully logged in.';
+                    window.location.href = data.redirect || '/rent-master2/client/?page=src/home&message=Welcome back! You’ve successfully logged in.';
                 } else {
                     alert(data.message || "Login failed");
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Sign-in failed. Please try again.');
+                alert('Sign-in failed. Please try again.', error);
             });
     }
 

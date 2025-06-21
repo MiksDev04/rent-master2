@@ -7,10 +7,12 @@ $maxPrice = $_GET['max_price'] ?? '';
 $location = $_GET['location'] ?? '';
 $searchType = $_GET['search_type'] ?? 'list';
 
+
+
 $sql = "SELECT p.*, pi.image1 
         FROM properties p 
         LEFT JOIN property_images pi ON p.property_id = pi.property_id 
-        WHERE (p.property_status = 'available' OR p.property_status = 'unavailable')";
+        WHERE (p.property_status = 'available' OR p.property_status = 'unavailable') AND p.landlord_id = $landlordId ";
 
 $params = [];
 $types = '';
@@ -62,9 +64,9 @@ $propertyTotal = 0;
 $tenantTotal = 0;
 $paymentTotal = 0;
 
-$propertySql = "SELECT COUNT(*) AS total FROM properties WHERE property_status = 'available'";
-$tenantSql = "SELECT COUNT(*) AS total FROM tenants WHERE tenant_status = 'active'";
-$paymentSql = "SELECT COUNT(*) AS total FROM payments WHERE payment_status = 'paid'";
+$propertySql = "SELECT COUNT(*) AS total FROM properties WHERE property_status = 'available' AND landlord_id = $landlordId";
+$tenantSql = "SELECT COUNT(*) AS total FROM tenants WHERE tenant_status = 'active' AND landlord_id = $landlordId";
+$paymentSql = "SELECT COUNT(*) AS total FROM payments WHERE payment_status = 'paid' AND landlord_id = $landlordId";
 
 $propertyTotal = getTotal($conn, $propertySql);
 $tenantTotal = getTotal($conn, $tenantSql);
@@ -83,17 +85,16 @@ function getTotal($conn, $query)
 
 
 // Get monthly income data
-$monthlyIncomeQuery = "
-    SELECT 
-        MONTH(p.payment_date) AS month,
-        SUM(pr.property_rental_price) AS total_income
-    FROM payments p
-    JOIN tenants t ON p.tenant_id = t.tenant_id
-    JOIN properties pr ON t.property_id = pr.property_id
-    WHERE p.payment_status = 'Paid' AND p.payment_date IS NOT NULL
-    GROUP BY MONTH(p.payment_date)
-    ORDER BY MONTH(p.payment_date)
-";
+$monthlyIncomeQuery = " SELECT 
+                MONTH(p.payment_date) AS month,
+                SUM(pr.property_rental_price) AS total_income
+                FROM payments p
+                JOIN tenants t ON p.tenant_id = t.tenant_id
+                JOIN properties pr ON t.property_id = pr.property_id
+                WHERE p.payment_status = 'Paid' AND p.payment_date IS NOT NULL AND p.landlord_id = $landlordId
+                GROUP BY MONTH(p.payment_date)
+                ORDER BY MONTH(p.payment_date) 
+            ";
 
 $monthlyIncomeResult = mysqli_query($conn, $monthlyIncomeQuery);
 $monthlyIncomeData = [];
@@ -104,14 +105,13 @@ if ($monthlyIncomeResult) {
 }
 
 // Get yearly total income
-$yearlyIncomeQuery = "
-    SELECT SUM(pr.property_rental_price) AS yearly_total
-    FROM payments p
-    JOIN tenants t ON p.tenant_id = t.tenant_id
-    JOIN properties pr ON t.property_id = pr.property_id
-    WHERE p.payment_status = 'Paid' AND p.payment_date IS NOT NULL
-    AND YEAR(p.payment_date) = YEAR(CURRENT_DATE())
-";
+$yearlyIncomeQuery = " SELECT SUM(pr.property_rental_price) AS yearly_total
+                        FROM payments p
+                        JOIN tenants t ON p.tenant_id = t.tenant_id
+                        JOIN properties pr ON t.property_id = pr.property_id
+                        WHERE p.payment_status = 'Paid' AND p.payment_date IS NOT NULL
+                        AND YEAR(p.payment_date) = YEAR(CURRENT_DATE()) AND pr.landlord_id = $landlordId
+                    ";
 
 $yearlyIncomeResult = mysqli_query($conn, $yearlyIncomeQuery);
 $yearlyIncomeRow = mysqli_fetch_assoc($yearlyIncomeResult);
@@ -367,14 +367,16 @@ $result->free();
 
 </div>
 <?php if (isset($_GET['map']) && $_GET['map'] == 1): ?>
-<script>
-window.addEventListener('load', () => {
-    const target = document.getElementById("propertyMap");
-    if (target) {
-        target.scrollIntoView({ behavior: 'smooth' });
-    }
-});
-</script>
+    <script>
+        window.addEventListener('load', () => {
+            const target = document.getElementById("propertyMap");
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    </script>
 <?php endif; ?>
 <script>
     // Run initChart when the page loads
@@ -384,7 +386,6 @@ window.addEventListener('load', () => {
 <!-- JavaScript for Map -->
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script>
-
     // Initialize the map
     document.addEventListener('DOMContentLoaded', function() {
         // Calculate average coordinates from properties

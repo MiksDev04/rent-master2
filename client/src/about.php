@@ -1,8 +1,70 @@
+<?php
+require '../database/config.php';
+
+$user_id = $_SESSION['user_id'] ?? null;
+$message = null;
+$user = null;
+$application_status = null;
+
+// Separate: FORM SUBMISSION HANDLING
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $user_id) {
+    $stmt = $conn->prepare("SELECT user_role FROM users WHERE user_id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $stmt->bind_result($role);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Check existing application
+    $check = $conn->prepare("SELECT landlord_status FROM landlords WHERE user_id = ?");
+    $check->bind_param("i", $user_id);
+    $check->execute();
+    $result = $check->get_result()->fetch_assoc();
+    $application_status = $result['landlord_status'] ?? null;
+
+    if ($role === 'tenant') {
+        header("Location: /rent-master2/client/?page=src/about&message");
+        exit();
+    } elseif ($application_status) {
+        header("Location: /rent-master2/client/?page=src/about&message");
+        exit();
+    } else {
+        $insert = $conn->prepare("INSERT INTO landlords (user_id) VALUES (?)");
+        $insert->bind_param("i", $user_id);
+        if ($insert->execute()) {
+            $application_status = 'pending';
+            header("Location: /rent-master2/client/?page=src/about&message");
+            exit();
+        } else {
+            header("Location: /rent-master2/client/?page=src/about&message");
+            exit();
+        }
+    }
+}
+
+// Separate: DISPLAY USER INFO + STATUS
+if ($user_id) {
+    $stmt = $conn->prepare("SELECT * FROM users WHERE user_id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $user = $stmt->get_result()->fetch_assoc();
+
+    if (!$application_status) {
+        $check = $conn->prepare("SELECT landlord_status FROM landlords WHERE user_id = ?");
+        $check->bind_param("i", $user_id);
+        $check->execute();
+        $res = $check->get_result()->fetch_assoc();
+        $application_status = $res['landlord_status'] ?? null;
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <style>
         .system-hero {
             background-color: #f0f8ff;
@@ -48,84 +110,82 @@
             <p class="lead">A comprehensive solution for modern rental property management</p>
         </div>
     </section>
-    <!-- Landlord/Admin Profile Section - Styled to Match Existing Design -->
-    <section class="bg-light py-5 mb-5">
-        <div class="container">
-            <h2 class="text-center fw-bold mb-5">System Administrator Profile</h2>
-            <div class="row justify-content-center">
-                <div class="col-lg-10">
-                    <?php
-                    // Database connection (make sure this is secure in production)
-                    require_once '../database/config.php'; // Adjust path as necessary
 
-                    // Query for landlord/admin (user_role = 'landlord')
-                    $query = "SELECT * FROM users WHERE user_role = 'landlord' LIMIT 1";
-                    $result = $conn->query($query);
+    <div class="container py-5">
+        <h2 class="mb-4">Apply to Become a Landlord</h2>
 
-                    if ($result && $result->num_rows > 0) {
-                        $landlord = $result->fetch_assoc();
-                    ?>
-                        <div class="card user-card"> <!-- Added user-card class for hover effect -->
-                            <div class="card-body">
-                                <div class="row align-items-center">
-                                    <div class="col-md-4 text-center mb-4 mb-md-0">
-                                        <img src="<?php echo htmlspecialchars($landlord['user_image']); ?>"
-                                            class="img-fluid rounded-circle shadow"
-                                            alt="<?php echo htmlspecialchars($landlord['user_name']); ?>"
-                                            style="width: 200px; height: 200px; object-fit: cover;">
-                                    </div>
-                                    <div class="col-md-8">
-                                        <div class="system-feature"> <!-- Using system-feature class for consistent styling -->
-                                            <h3 class="text-primary">
-                                                <i class="fas fa-user-tie benefit-icon"></i>
-                                                <?php echo htmlspecialchars($landlord['user_name']); ?>
-                                            </h3>
-                                            <p class="text-muted mb-4">Property Manager & System Administrator</p>
+        <?php if (!$user_id): ?>
+            <div class="alert alert-info">
+                <h5>Please <a href="?page=src/login">log in</a> to apply.</h5>
+            </div>
 
-                                            <div class=" mb-3">
-                                                <h4><i class="fas fa-info-circle benefit-icon"></i>About</h4>
-                                                <p><?php echo htmlspecialchars($landlord['user_description']); ?></p>
-                                            </div>
+        <?php else: ?>
+            <div class="alert alert-warning">Note: Tenant cannot apply as a landlord</div>
+            <form method="POST" action="" class="mb-3" id="landlordForm">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" value="<?= htmlspecialchars($user['user_name']) ?>" disabled>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" value="<?= htmlspecialchars($user['user_email']) ?>" disabled>
+                    </div>
+                </div>
+                <?php if (!$application_status && $user['user_role'] !== 'tenant'): ?>
+                    <button type="button" data-bs-toggle="modal" data-bs-target="#termsModal" class="btn btn-primary px-4">Submit Application</button>
+                <?php else: ?>
+                    <button type="button" class="btn btn-secondary px-4" disabled>Submit Application</button>
+                <?php endif; ?>
+            </form>
 
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div>
-                                                        <h4><i class="fas fa-envelope benefit-icon"></i>Contact</h4>
-                                                        <p>
-                                                            <a href="#"><?php echo htmlspecialchars($landlord['user_email']); ?></a>
-                                                            <br>
-                                                            <?php echo htmlspecialchars($landlord['user_phone_number']); ?>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div>
-                                                        <h4><i class="fas fa-map-marker-alt benefit-icon"></i>Location</h4>
-                                                        <p><?php echo htmlspecialchars($landlord['user_address']); ?></p>
-                                                    </div>
-                                                </div>
-                                            </div>
 
-                                            <div class="mt-4">
-                                                <a href="?page=src/home#contact" class="btn btn-primary me-2">
-                                                    <i class="fas fa-envelope me-1"></i> Contact Admin
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <?php
-                    } else {
-                        echo '<div class="alert alert-warning text-center">No administrator profile available at this time.</div>';
-                    }
-                    $conn->close();
-                    ?>
+            <?php if ($application_status): ?>
+                <?php if ($application_status === 'approved'): ?>
+                    <div class="alert alert-success">
+                        You are already a verified <strong>landlord</strong>. Welcome aboard.
+                    </div>
+                <?php elseif ($application_status === 'pending'): ?>
+                    <div class="alert alert-warning">
+                        Your landlord application is still <strong>pending</strong>. Please wait for admin approval.
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+
+
+        <?php endif; ?>
+    </div>
+
+    <!-- Terms Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-hidden="true" style="z-index: 111111;">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Terms and Conditions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6>Landlord Responsibilities</h6>
+                    <p>As a landlord on Rent Master, you agree to:</p>
+                    <ul>
+                        <li>Provide accurate information about your properties</li>
+                        <li>Respond to tenant inquiries in a timely manner</li>
+                        <li>Maintain your properties in good condition</li>
+                        <li>Abide by all local rental laws and regulations</li>
+                    </ul>
+
+                    <h6 class="mt-4">Fees and Payments</h6>
+                    <p>Rent Master charges a 5% service fee on all successful rentals.</p>
+
+                    <h6 class="mt-4">Termination</h6>
+                    <p>We reserve the right to remove landlords who violate our terms of service.</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="submitLandlordRequest" type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
     <!-- System Overview -->
     <section class="container mb-5">
         <div class="row align-items-center">
@@ -301,6 +361,12 @@
             </div>
         </div>
     </section>
+
+    <script>
+        document.getElementById('submitLandlordRequest').addEventListener('click', () => {
+            document.getElementById('landlordForm').submit()
+        })
+    </script>
 </body>
 
 </html>

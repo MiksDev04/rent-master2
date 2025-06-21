@@ -15,6 +15,7 @@ $sql = "SELECT p.payment_id , u.user_name, pr.property_name, pr.property_rental_
         INNER JOIN tenants t ON p.tenant_id = t.tenant_id
         INNER JOIN properties pr ON t.property_id = pr.property_id
         INNER JOIN users u ON u.user_id = t.user_id
+        WHERE p.landlord_id = $landlordId
         ORDER BY p.payment_id DESC";
 $result = $conn->query($sql);
 

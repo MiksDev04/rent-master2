@@ -23,12 +23,12 @@ $name = $user['user_name'];
 $imagePath = $user['user_image'];
 
 // ADMIN-SPECIFIC: Get all unread notifications count
-$notifCountQuery = "SELECT COUNT(*) as count FROM notifications WHERE is_read = 0";
+$notifCountQuery = "SELECT COUNT(*) as count FROM notifications WHERE is_read = 0 AND landlord_id = $landlordId";
 $notifCountResult = mysqli_query($conn, $notifCountQuery);
 $notifCount = $notifCountResult ? mysqli_fetch_assoc($notifCountResult)['count'] : 0;
 
 // ADMIN-SPECIFIC: Get all recent notifications
-$notifQuery = "SELECT * FROM notifications ORDER BY created_at DESC LIMIT 20";
+$notifQuery = "SELECT * FROM notifications WHERE landlord_id = $landlordId ORDER BY created_at DESC LIMIT 20";
 $notifResult = mysqli_query($conn, $notifQuery);
 $notifications = [];
 if ($notifResult) {
@@ -52,9 +52,10 @@ if (!empty($searchTerm)) {
             property_rental_price,
             property_capacity
         FROM properties 
-        WHERE property_name LIKE ? OR 
+        WHERE (property_name LIKE ? OR 
             property_location LIKE ? OR 
-            property_description LIKE ?
+            property_description LIKE ?) 
+            AND landlord_id = $landlordId
         LIMIT 3";
     $stmt = $conn->prepare($propertyQuery);
     $likeTerm = "%$searchTerm%";
@@ -76,7 +77,7 @@ if (!empty($searchTerm)) {
             u.user_phone_number LIKE ? OR 
             u.user_address LIKE ? OR 
             u.user_description LIKE ?
-        )
+        ) AND t.landlord_id = $landlordId
         LIMIT 3
     ";
 
@@ -99,7 +100,7 @@ if (!empty($searchTerm)) {
         property_amenities pa ON p.property_id = pa.property_id
     LEFT JOIN 
         amenities a ON pa.amenity_id = a.amenity_id
-    WHERE a.amenity_name LIKE ?
+    WHERE a.amenity_name LIKE ? AND p.landlord_id = $landlordId
     LIMIT 3";
     $stmt = $conn->prepare($amenityQuery);
     $stmt->bind_param("s", $likeTerm);

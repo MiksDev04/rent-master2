@@ -38,8 +38,9 @@ function uploadSingleImage($file)
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (!empty($_POST['property_name']) && !empty($_POST['location']) && !empty($_POST['description']) && !empty($_POST['date_created']) && !empty($_POST['rental-price'])) {
-
+        session_start();
         // In your create.php file, update the INSERT statement:
+        $landlordId = $_SESSION['landlord_id']; // Assuming landlord_id is stored in session
         $property_name = mysqli_real_escape_string($conn, $_POST['property_name']);
         $location = mysqli_real_escape_string($conn, $_POST['location']);
         $latitude = isset($_POST['latitude']) ? (float)$_POST['latitude'] : null;
@@ -50,9 +51,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $capacity = mysqli_real_escape_string($conn, $_POST['capacity']);
 
         $queryInsert = "INSERT INTO properties 
-    (property_name, property_location, latitude, longitude, 
+    (landlord_id, property_name, property_location, latitude, longitude, 
      property_date_created, property_description, property_rental_price, property_capacity) 
-    VALUES ('$property_name', '$location', $latitude, $longitude, 
+    VALUES ( $landlordId,'$property_name', '$location', $latitude, $longitude, 
             '$date_created', '$description', '$rental_price', '$capacity')";
         mysqli_query($conn, $queryInsert);
         $property_id = mysqli_insert_id($conn);

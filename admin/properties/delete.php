@@ -118,7 +118,7 @@ mysqli_close($conn);
     <div class="mt-2">
         <label class="form-label fw-bold">Status</label>
         <div class="form-control-plaintext">
-            <span class="badge bg-<?php echo htmlspecialchars($property['property_status']) === 'active' ? 'success' : 'secondary'; ?>">
+            <span class="badge bg-<?php echo htmlspecialchars($property['property_status']) === 'available' ? 'success' : 'secondary'; ?>">
                 <?php echo ucfirst(htmlspecialchars($property['property_status'])); ?>
             </span>
         </div>

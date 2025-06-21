@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_POST['filter'] == 'changeStatus') 
     $query = "SELECT * FROM properties WHERE ";
 }
 // Adjust the query based on the filter
-$query .= " property_status = '$status_filter' ORDER BY property_date_created DESC"; // Order by date created
+$query .= " property_status = '$status_filter' AND landlord_id = $landlordId  ORDER BY property_date_created DESC"; // Order by date created
 $result = mysqli_query($conn, $query);
 
 

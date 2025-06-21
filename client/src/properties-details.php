@@ -18,11 +18,21 @@ if (isset($_GET['property_id'])) {
     $testimonialsResult = mysqli_query($conn, $testimonialsQuery);
     $testimonials = mysqli_fetch_all($testimonialsResult, MYSQLI_ASSOC);
     // Get property info
-    $sql = "SELECT * FROM properties WHERE property_id = $property_id";
-    $result = $conn->query($sql);
+    $sqlProperties = "SELECT * FROM properties WHERE property_id = $property_id";
+    $propertyResult = $conn->query($sqlProperties);
 
-    if ($result && $result->num_rows > 0) {
-        $property = $result->fetch_assoc();
+    // Get landlord info
+    $sqlLandlords = "SELECT u.user_name, u.user_image
+            FROM users AS u 
+            JOIN landlords AS l ON u.user_id = l.user_id 
+            JOIN properties AS p ON p.landlord_id = l.landlord_id 
+            WHERE p.property_id = $property_id";
+    $landlord_result = $conn->query($sqlLandlords);
+
+
+    if ($propertyResult && $propertyResult->num_rows > 0) {
+        $property = $propertyResult->fetch_assoc();
+        $landlord = $landlord_result->fetch_assoc();
     } else {
         echo "<p>Property not found.</p>";
         exit;
@@ -56,6 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
     }
 
     $user_id = intval($_SESSION['user_id']);
+    $landlord_id = intval($property['landlord_id']);
+    
     // Landlord check (insert this part)
     $landlord_check = "SELECT user_role FROM users WHERE user_id = $user_id AND user_role = 'landlord'";
     $landlord_result = mysqli_query($conn, $landlord_check);
@@ -75,8 +87,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
             $success_message = "You already have an active rental. You cannot rent another property.";
         } else {
 
-            $insert_sql = "INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created)
-                           VALUES ($user_id, $property_id, 'pending', NOW())";
+            $insert_sql = "INSERT INTO tenants (user_id, property_id, landlord_id, tenant_status, tenant_date_created)
+                           VALUES ($user_id, $property_id, $landlord_id, 'pending', NOW())";
 
             if (mysqli_query($conn, $insert_sql)) {
                 $success_message = "Rent request sent successfully! Wait for the landlord's approval.";
@@ -84,8 +96,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
 
                 // Add notification for property owner
                 $message = "New tenant request received for property: {$property['property_name']}. Status: Pending";
-                $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
-                                    VALUES ($user_id, 'property', '$message', $property_id)";
+                $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id, landlord_id) 
+                                    VALUES ($user_id, 'property', '$message', $property_id, $landlord_id)";
                 mysqli_query($conn, $notification_sql);
             } else {
                 echo "<p>Error inserting tenant: " . mysqli_error($conn) . "</p>";
@@ -211,6 +223,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                                 </svg> <strong>House capacity:</strong></p>
                             <p><?php echo $property['property_capacity']; ?> Persons</p>
                         </div>
+                        <div class="col-md-6 mb-3">
+                            <p class="mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 512 512">
+                                    <path d="M399 384.2C376.9 345.8 335.4 320 288 320l-64 0c-47.4 0-88.9 25.8-111 64.2c35.2 39.2 86.2 63.8 143 63.8s107.8-24.7 143-63.8zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 16a72 72 0 1 0 0-144 72 72 0 1 0 0 144z" />
+                                </svg>
+                                </svg> <strong>Landlord:</strong>
+                            </p>
+                            <div class=" d-flex ">
+                                <img src="<?php echo $landlord['user_image'] ?>" alt="Profile" class="rounded-circle me-2" style="width: 30px; height: 30px; object-fit: cover;">
+                                <p><?php echo $landlord['user_name']; ?></p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -284,6 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <form method="POST" class="text-center" id="rent-form">
+                            <input type="hidden" name="landlord_id" value="<?php echo htmlspecialchars($property['landlord_id']); ?>">
                             <button type="submit" name="rent_submit" id="send-rent-btn" class="btn btn-primary">Confirm</button>
                         </form>
                     </div>

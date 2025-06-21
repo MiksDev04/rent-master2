@@ -43,10 +43,10 @@ try {
     // Connect to database
     $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName", $dbUser, $dbPass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
+
     // Check if user exists (select all needed fields)
     $stmt = $pdo->prepare("SELECT user_id, user_email, user_name, user_image, user_role FROM users WHERE user_email = ?");
-    $stmt->execute([$email]); 
+    $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($user) {
@@ -55,14 +55,14 @@ try {
         $_SESSION['user_email'] = $user['user_email'];
         $_SESSION['user_name'] = $user['user_name'];
         $_SESSION['user_image'] = $user['user_image'];
-        $_SESSION['user_role'] = $user['user_role'] ?? 'tenant';
+        $_SESSION['user_role'] = $user['user_role'];
         $userId = $user['user_id'];
     } else {
         // Insert new user
         $stmt = $pdo->prepare("INSERT INTO users (user_name, user_email, user_image, user_role) VALUES (?, ?, ?, 'visitor')");
         $stmt->execute([$name, $email, $picture]);
         $userId = $pdo->lastInsertId();
-        
+
         // Set session for new user
         $_SESSION['user_id'] = $userId;
         $_SESSION['user_email'] = $email;
@@ -71,14 +71,25 @@ try {
         $_SESSION['user_role'] = 'visitor';
     }
 
+    if ($_SESSION['user_role'] === 'landlord') {
+        $landlordSql = "SELECT landlord_id FROM landlords WHERE user_id = ? AND landlord_status = 'active'";
+        $stmt = $pdo->prepare($landlordSql); // ✅ prepare new statement
+        $stmt->execute([$userId]);         // ✅ correct variable, as array
+        $landlordRow = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($landlordRow) {
+            $_SESSION['landlord_id'] = $landlordRow['landlord_id'];
+        }
+    }
+
+
+
     echo json_encode([
-        'success' => true, 
+        'success' => true,
         'user_id' => $userId,
-        'redirect' => ($_SESSION['user_role'] === 'landlord') 
-            ? '/rent-master2/admin/?page=dashboard/index&message=Welcome! You’ve successfully logged in.' 
+        'redirect' => ($_SESSION['user_role'] === 'landlord')
+            ? '/rent-master2/admin/?page=dashboard/index&message=Welcome! You’ve successfully logged in.'
             : '/rent-master2/client/?page=src/home&message=Welcome! You’ve successfully logged in.'
     ]);
-
 } catch (PDOException $e) {
     http_response_code(500);
     error_log("Database error: " . $e->getMessage());

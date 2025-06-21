@@ -28,6 +28,7 @@ $payment_data = mysqli_fetch_assoc($payment_result);
 // Handle testimonial submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_testimonial'])) {
     $rating = intval($_POST['rating']);
+    $landlordId = intval($_POST['landlord_id']);
     $comment = mysqli_real_escape_string($conn, $_POST['comment']);
     
     // Create testimonial table if not exists
@@ -42,10 +43,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_testimonial'])
         FOREIGN KEY (property_id) REFERENCES properties(property_id)
     )";
     mysqli_query($conn, $create_table);
+
     
     // Insert testimonial
-    $insert_testimonial = "INSERT INTO testimonials (tenant_id, property_id, rating, comment)
-                          VALUES ({$tenant_data['tenant_id']}, {$tenant_data['property_id']}, $rating, '$comment')";
+    $insert_testimonial = "INSERT INTO testimonials (tenant_id, property_id, landlord_id, rating, comment)
+                          VALUES ({$tenant_data['tenant_id']}, {$tenant_data['property_id']}, $landlordId,  $rating, '$comment')";
     
     if (mysqli_query($conn, $insert_testimonial)) {
         $testimonial_message = "Thank you for your feedback!";
@@ -186,6 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_testimonial'])
                     <p class="text-muted mb-4">We'd love to hear your feedback about your rental experience</p>
                     
                     <form method="POST">
+                        <input type="hidden" name="landlord_id" value="<?= $tenant_data['landlord_id']?>">
                         <div class="mb-4">
                             <div class="d-flex justify-content-center mb-2" id="rating-stars">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>

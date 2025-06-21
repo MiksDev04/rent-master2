@@ -9,21 +9,7 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Fetch available properties
-$queryProperties = "SELECT property_id, property_name FROM properties WHERE property_status = 'available'";
-$propertiesResult = mysqli_query($conn, $queryProperties);
-$properties = [];
-while ($row = mysqli_fetch_assoc($propertiesResult)) {
-    $properties[] = $row;
-}
 
-// Fetch users with 'visitor' status
-$queryUsers = "SELECT user_id, user_name FROM users WHERE user_role = 'visitor'";
-$usersResult = mysqli_query($conn, $queryUsers);
-$users = [];
-while ($row = mysqli_fetch_assoc($usersResult)) {
-    $users[] = $row;
-}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -31,12 +17,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $user_id = mysqli_real_escape_string($conn, $_POST['user_id']);
         $property_id = mysqli_real_escape_string($conn, $_POST['property_id']);
 
-
+        session_start();
+        // In your create.php file, update the INSERT statement:
+        $landlordId = $_SESSION['landlord_id']; // Assuming landlord_id is stored in session
         // Insert new tenant
-        $queryInsertTenant = "
-                INSERT INTO tenants (user_id, property_id, tenant_status, tenant_date_created, tenant_terminated_at) 
-                VALUES ('$user_id', '$property_id', 'active', NOW(), NULL)
-                ";
+        $queryInsertTenant = " INSERT INTO tenants (user_id, property_id, landlord_id, tenant_status, tenant_date_created, tenant_terminated_at) 
+                                VALUES ('$user_id', '$property_id', '$landlordId', 'active', NOW(), NULL)
+                                ";
         mysqli_query($conn, $queryInsertTenant);
 
 
@@ -53,6 +40,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         echo "Both user and property are required.";
     }
+}
+
+// Fetch available properties
+$queryProperties = "SELECT property_id, property_name FROM properties WHERE property_status = 'available' AND landlord_id = $landlordId";
+$propertiesResult = mysqli_query($conn, $queryProperties);
+$properties = [];
+while ($row = mysqli_fetch_assoc($propertiesResult)) {
+    $properties[] = $row;
+}
+
+// Fetch users with 'visitor' status
+$queryUsers = "SELECT user_id, user_name FROM users WHERE user_role = 'visitor'";
+$usersResult = mysqli_query($conn, $queryUsers);
+$users = [];
+while ($row = mysqli_fetch_assoc($usersResult)) {
+    $users[] = $row;
 }
 
 mysqli_close($conn);

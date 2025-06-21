@@ -2,9 +2,12 @@
 session_start();
 
 // Get admin user info
-if (!isset($_SESSION['user_id'])) {
-    die("Admin not logged in");
+if (!isset($_SESSION['landlord_id'])) {
+    header('Location: /rent-master2/client/?page=src/login'); // Redirect to login page if not logged in
+    exit();
 }
+$landlordId = $_SESSION['landlord_id'];
+
 
 ?>
 <!DOCTYPE html>

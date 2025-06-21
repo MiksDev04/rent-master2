@@ -41,6 +41,7 @@ $sql = "SELECT m.request_id, m.tenant_id, m.category, m.description, m.request_d
         FROM maintenance_requests m
         JOIN tenants t ON m.tenant_id = t.tenant_id
         JOIN users u ON u.user_id = t.user_id
+        WHERE m.landlord_id = $landlordId
         ORDER BY m.request_date DESC";
 $result = $conn->query($sql);
 

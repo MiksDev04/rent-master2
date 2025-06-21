@@ -11,13 +11,12 @@ if (!$conn) {
 
 // Query to get tenant info joined with users and properties, including date created and terminated date
 // Query to get tenant info joined with users and properties, including date created and terminated date
-$query = "
-    SELECT tenants.*, users.*, properties.*, tenants.tenant_date_created, tenants.tenant_terminated_at
-    FROM tenants
-    JOIN users ON tenants.user_id = users.user_id
-    JOIN properties ON tenants.property_id = properties.property_id
-    WHERE tenants.tenant_status = 'active' 
-";
+$query = "SELECT tenants.*, users.*, properties.*, tenants.tenant_date_created, tenants.tenant_terminated_at
+            FROM tenants
+            JOIN users ON tenants.user_id = users.user_id
+            JOIN properties ON tenants.property_id = properties.property_id
+            WHERE tenants.tenant_status = 'active' AND tenants.landlord_id = $landlordId
+        ";
 
 if (isset($_GET['tenant_id'])) {
     $tenant_id = $_GET['tenant_id'];

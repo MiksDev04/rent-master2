@@ -87,7 +87,7 @@
       <a href="?page=settings/index" class="btn btn-outline-secondary">
         <i class="fas fa-arrow-left me-1"></i> Back
       </a>
-      <h4>Admin Usage Manual</h4>
+      <h4>Landlord Usage Manual</h4>
     </header>
     <hr>
 

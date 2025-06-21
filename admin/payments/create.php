@@ -9,21 +9,13 @@ if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// Initialize variables
-$errors = [];
-$tenant_id = '';
 
-// Fetch active tenants with their properties
-$tenants_sql = "SELECT t.tenant_id, t.user_id, t.property_id, p.property_name, p.property_rental_price, u.user_name
-                FROM tenants t
-                INNER JOIN properties p ON t.property_id = p.property_id
-                INNER JOIN users u ON t.user_id = u.user_id
-                WHERE t.tenant_status = 'active'";
-$tenants_result = $conn->query($tenants_sql);
 
 // Process form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tenant_id'])) {
     $tenant_id = intval($_POST['tenant_id']);
+    session_start();
+    $landlordId = $_SESSION['landlord_id'];
 
     // Get the latest paid payment for the tenant
     $query = "SELECT payment_end_date FROM payments 
@@ -39,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tenant_id'])) {
         $next_end_date = date('Y-m-d', strtotime($next_start_date . ' +1 month -1 day'));
 
         // Insert the next month's payment record with payment_date as NULL
-        $insert_query = "INSERT INTO payments (tenant_id, payment_start_date, payment_end_date, payment_status, payment_date, payment_method)
-                         VALUES ($tenant_id, '$next_start_date', '$next_end_date', 'Pending', NULL, NULL)";
+        $insert_query = "INSERT INTO payments (tenant_id, landlord_id, payment_start_date, payment_end_date, payment_status, payment_date, payment_method)
+                         VALUES ($tenant_id, $landlordId, '$next_start_date', '$next_end_date', 'Pending', NULL, NULL)";
 
         if (mysqli_query($conn, $insert_query)) {
             header("Location: /rent-master2/admin/?page=payments/index&message=Payment record created successfully! The tenant now has a pending payment.");
@@ -54,8 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tenant_id'])) {
         $next_start_date = date('Y-m-d');
         $next_end_date = date('Y-m-d', strtotime($next_start_date . ' +1 month -1 day'));
 
-        $insert_query = "INSERT INTO payments (tenant_id, payment_start_date, payment_end_date, payment_status, payment_date, payment_method)
-                         VALUES ($tenant_id, '$next_start_date', '$next_end_date', 'Pending', NULL, NULL)";
+        $insert_query = "INSERT INTO payments (tenant_id, landlord_id, payment_start_date, payment_end_date, payment_status, payment_date, payment_method)
+                         VALUES ($tenant_id, $landlordId, '$next_start_date', '$next_end_date', 'Pending', NULL, NULL)";
 
         if (mysqli_query($conn, $insert_query)) {
 
@@ -67,6 +59,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['tenant_id'])) {
         }
     }
 }
+
+// Initialize variables
+$errors = [];
+$tenant_id = '';
+
+// Fetch active tenants with their properties
+$tenants_sql = "SELECT t.tenant_id, t.user_id, t.property_id, p.property_name, p.property_rental_price, u.user_name
+                FROM tenants t
+                INNER JOIN properties p ON t.property_id = p.property_id
+                INNER JOIN users u ON t.user_id = u.user_id
+                WHERE t.tenant_status = 'active' AND p.landlord_id = $landlordId";
+$tenants_result = $conn->query($tenants_sql);
 ?>
 
 <div class="container px-lg-5">

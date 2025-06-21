@@ -10,7 +10,8 @@ $searchType = $_GET['search_type'] ?? 'list';
 $sql = "SELECT p.*, pi.image1 
         FROM properties p 
         LEFT JOIN property_images pi ON p.property_id = pi.property_id 
-        WHERE (p.property_status = 'available' OR p.property_status = 'unavailable')";
+        LEFT JOIN landlords AS l ON p.landlord_id = l.landlord_id
+        WHERE (p.property_status = 'available' OR p.property_status = 'unavailable') AND l.landlord_status = 'active' ";
 
 $params = [];
 $types = '';

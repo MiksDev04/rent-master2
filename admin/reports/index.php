@@ -15,8 +15,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $tenant_id = $_POST['id'];
     $tenant_email = $_POST['email'] ?? null; // Get email if available
     $action = $_POST['action'];
-    $info_sql = "
-                SELECT 
+    $info_sql = "SELECT 
                     u.user_name, 
                     u.user_address, 
                     u.user_phone_number, 
@@ -27,7 +26,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 FROM tenants t
                 JOIN users u ON t.user_id = u.user_id
                 JOIN properties p ON t.property_id = p.property_id
-                WHERE t.tenant_id = '$tenant_id'
+                WHERE t.tenant_id = '$tenant_id AND t.landlord_id = $landlordId'
             ";
 
     $result = mysqli_query($conn, $info_sql);
@@ -108,6 +107,7 @@ $sql = "SELECT *
         JOIN users ON tenants.user_id = users.user_id
         JOIN properties ON tenants.property_id = properties.property_id
         WHERE tenants.tenant_status = 'pending'
+        AND properties.landlord_id = $landlordId
         ORDER BY tenants.tenant_date_created DESC";
 
 $result = mysqli_query($conn, $sql);
@@ -127,7 +127,9 @@ if (mysqli_num_rows($result) == 0) {
 ?>
 
 <div class="container px-lg-5 mb-4">
-    <h4 class="fw-medium mt-3">Rental Requests</h4>
+     <header class="d-flex justify-content-between my-3">
+        <h4 class="fw-medium">Rental Requests</h4>
+    </header>
 
     <?php if (isset($_GET['success'])): ?>
         <div class="alert alert-success alert-dismissible fade show mb-4"><?= $_GET['success'] ?>

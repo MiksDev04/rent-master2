@@ -34,27 +34,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         echo "Invalid request.";
     }
-} else {
-    // Fetch tenant details for termination confirmation
-    if (isset($_GET['tenant_id'])) {
-        $tenant_id = $_GET['tenant_id'];
+}
+// Fetch tenant details for termination confirmation
+if (isset($_GET['tenant_id'])) {
+    $tenant_id = $_GET['tenant_id'];
 
-        $query = "SELECT t.*, u.user_name, p.property_name FROM tenants t
+    $query = "SELECT t.*, u.user_name, p.property_name FROM tenants t
                 JOIN users u ON t.user_id = u.user_id
                 JOIN properties p ON t.property_id = p.property_id
                 WHERE t.tenant_id = '$tenant_id'";
-        $result = mysqli_query($conn, $query);
-        $tenant = mysqli_fetch_assoc($result);
+    $result = mysqli_query($conn, $query);
+    $tenant = mysqli_fetch_assoc($result);
 
         if (!$tenant) {
-            echo "Tenant not found.";
-            exit();
-        }
-    } else {
-        echo "No tenant ID provided.";
+        echo "Tenant not found.";
         exit();
     }
+} else {
+    echo "No tenant ID provided.";
+    exit();
 }
+
 
 mysqli_close($conn);
 ?>
@@ -64,7 +64,7 @@ mysqli_close($conn);
     <header class="d-flex align-items-center mt-3 gap-2">
         <a href="?page=tenants/index" class="btn btn-sm btn-outline-secondary">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" />
             </svg>
             Back
         </a>
@@ -82,7 +82,7 @@ mysqli_close($conn);
         <label class="form-label fw-bold">Property</label>
         <div class="form-control-plaintext"><?php echo htmlspecialchars($tenant['property_name']); ?></div>
     </div>
-    
+
     <form action="tenants/delete.php" method="POST">
         <input type="hidden" name="tenant_id" value="<?php echo htmlspecialchars($tenant['tenant_id']); ?>">
         <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($tenant['user_id']); ?>">

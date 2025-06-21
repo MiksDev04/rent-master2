@@ -15,6 +15,7 @@ if ($user_id) {
         $tenant_data = mysqli_fetch_assoc($tenant_result);
         $is_tenant = true;
         $tenant_id = $tenant_data['tenant_id'];
+        $landlordId = $tenant_data['landlord_id'];
     }
 }
 
@@ -30,6 +31,7 @@ if ($tenant_id) {
                     JOIN tenants AS t ON p.tenant_id = t.tenant_id
                     JOIN properties AS pr ON t.property_id = pr.property_id
                     WHERE t.tenant_id = $tenant_id
+                    AND p.landlord_id = $landlordId
                     ORDER BY p.payment_end_date DESC
                     LIMIT 1";
 
@@ -44,7 +46,7 @@ if ($tenant_id) {
         // Check if current date is past payment_end_date
         if ($current_date > $payment_end_date && $new_status !== 'Paid') {
             $new_status = 'Overdue';
-        } 
+        }
 
         // Update DB if the current status is different
         if ($payment_info['payment_status'] !== $new_status) {
@@ -84,8 +86,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_payment'])) {
 
                 $message = "Payment received for property: {$payment_info['property_name']}. Status: Paid.";
 
-                $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
-                             VALUES ($user_id, 'payment', '$message', $payment_id)";
+                $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id, landlord_id) 
+                             VALUES ($user_id, 'payment', '$message', $payment_id, $landlordId)";
                 mysqli_query($conn, $notification_sql);
 
                 $payment_message = "You paid for this month";
@@ -108,8 +110,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
     $category = mysqli_real_escape_string($conn, $_POST['category']);
     $description = mysqli_real_escape_string($conn, $_POST['description']);
 
-    $insert_maintenance = "INSERT INTO maintenance_requests (tenant_id, category, description, request_date, status)
-                           VALUES ($tenant_id, '$category', '$description', NOW(), 'pending')";
+    $landlordId = intval($_POST['landlord_id']);
+    $insert_maintenance = "INSERT INTO maintenance_requests (tenant_id, landlord_id, category, description, request_date, status)
+                           VALUES ($tenant_id, $landlordId, '$category', '$description', NOW(), 'pending')";
 
     if (mysqli_query($conn, $insert_maintenance)) {
         $request_id = mysqli_insert_id($conn);
@@ -126,8 +129,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
         if ($property_row = mysqli_fetch_assoc($property_result)) {
             $message = "New maintenance request received for property: {$property_row['property_name']}. Status: Pending";
 
-            $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id) 
-                         VALUES ($user_id, 'maintenance', '$message', $request_id)";
+
+            $notification_sql = "INSERT INTO notifications (user_id, type, message, related_id, landlord_id) 
+                         VALUES ($user_id, 'maintenance', '$message', $request_id, $landlordId)";
             mysqli_query($conn, $notification_sql);
         } else {
             // Optional: handle case where property/tenant not found
@@ -394,7 +398,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
                                     <?php endif; ?>
 
                                 </div>
-                                <form method="POST" class=" mb-4">
+                                <form method="POST" class=" mb-4" id="paymentForm">
+                                    <input type="hidden" name="submit_payment" value="-1">
                                     <div class="row g-3 row-cols-lg-2 row-cols-1 mb-4">
                                         <div class="col">
                                             <label class="payment-option d-block">
@@ -452,13 +457,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
                                             </label>
                                         </div>
                                     </div>
-                                    <button type="submit" name="submit_payment" class="btn btn-success btn-custom w-100 mt-2">Submit Payment</button>
+                                    <button type="button" class="btn btn-success btn-custom w-100 mt-2" id="paymentBtn">
+                                        Submit Payment
+                                    </button>
+
                                 </form>
                             <?php endif; ?>
                             <?php if ($payment_info['payment_status'] == 'Paid'): ?>
                                 <h2>You've already paid for this month</h2>
                             <?php endif; ?>
-
 
 
                             <?php
@@ -527,7 +534,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
                         </div>
                     <?php endif; ?>
                 </div>
+                <!-- Confirmation Modal -->
+                <div class="modal fade" id="confirmPayment" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="paymentReviewModalLabel">Review Payment Details</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <dl class="row">
+                                    <dt class="col-sm-4">Property Name</dt>
+                                    <dd class="col-sm-8"><?php echo htmlspecialchars($payment_info['property_name']); ?></dd>
 
+                                    <dt class="col-sm-4">Location</dt>
+                                    <dd class="col-sm-8"><?php echo htmlspecialchars($payment_info['property_location']); ?></dd>
+
+                                    <dt class="col-sm-4">Rental Price</dt>
+                                    <dd class="col-sm-8">₱<?php echo number_format($payment_info['property_rental_price'], 2); ?></dd>
+
+                                    <dt class="col-sm-4">Payment Period</dt>
+                                    <dd class="col-sm-8"><?php echo htmlspecialchars($payment_info['payment_start_date']) . ' to ' . htmlspecialchars($payment_info['payment_end_date']); ?></dd>
+
+                                    <dt class="col-sm-4">Payment Method</dt>
+                                    <dd class="col-sm-8" id="paymentMethodSelected"></dd>
+                                </dl>
+                                <div class="alert alert-warning d-flex align-items-center px-3 py-2 rounded-3" role="alert">
+                                    <div>This amount will be deducted. Are you sure you want to proceed?</div>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                <button type="button" class="btn btn-success" id="confirmSubmit">Yes, Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="col">
                     <!-- Maintenance Section -->
                     <div class="card p-4">
@@ -543,6 +586,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
                         <?php endif; ?>
 
                         <form method="POST" id="maintenance-form">
+                            <input type="text" name="landlord_id" value="<?= $landlordId ?>" hidden>
                             <div class="mb-4">
                                 <label for="category" class="form-label">Maintenance Category</label>
                                 <select name="category" id="category" class="form-select" required>
@@ -570,13 +614,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_request']) && 
     <script>
         // Handle payment method selection
         document.addEventListener('DOMContentLoaded', function() {
-            // const form = document.getElementById('maintenance-form');
-            // const submitBtn = document.getElementById('maintenance-btn');
+            document.getElementById('paymentBtn').addEventListener('click', () => {
+                let methodSelected = false;
 
-            // form.addEventListener('submit', function() {
-            //     submitBtn.disabled = true;
-            //     submitBtn.textContent = 'Sending...';
-            // });
+                document.querySelectorAll('input[name="payment_method"]').forEach(method => {
+                    if (method.checked) {
+                        methodSelected = true;
+                        document.getElementById('paymentMethodSelected').textContent = method.value;
+                    }
+                });
+
+                if (methodSelected) {
+                    const modal = new bootstrap.Modal(document.getElementById('confirmPayment'));
+                    modal.show();
+                } else {
+                    document.getElementById('paymentForm').submit();
+                }
+            });
+
+            document.getElementById('confirmSubmit').addEventListener('click', () => {
+                document.getElementById('paymentForm').submit();
+            });
+
+
             const paymentOptions = document.querySelectorAll('.payment-option');
 
             paymentOptions.forEach(option => {

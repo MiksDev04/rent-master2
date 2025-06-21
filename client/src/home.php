@@ -4,11 +4,10 @@ require_once '../database/config.php';
 
 // Fetch 3 latest available properties with image and amenities
 $sql = "SELECT p.property_id, p.property_name, p.property_location, p.property_rental_price, 
-            (SELECT image1 FROM property_images WHERE property_images.property_id = p.property_id LIMIT 1) as property_image,
-            GROUP_CONCAT(a.amenity_name SEPARATOR ', ') as amenities
+            (SELECT image1 FROM property_images WHERE property_images.property_id = p.property_id LIMIT 1) as property_image
         FROM properties p
-        LEFT JOIN property_amenities pa ON p.property_id = pa.property_id
-        LEFT JOIN amenities a ON pa.amenity_id = a.amenity_id
+        JOIN landlords AS l ON p.landlord_id = l.landlord_id
+        WHERE l.landlord_status = 'active'
         GROUP BY p.property_id
         ORDER BY p.property_date_created DESC 
         LIMIT 3";
@@ -56,7 +55,7 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
         <p class="lead">Find your dream home from our carefully curated selection of premium properties worldwide.</p>
         <div class="d-flex flex-wrap gap-3 mt-4">
             <a href="#properties" class="btn btn-primary">Browse Properties</a>
-            <a href="#how-to-rent" class="btn btn-outline-light">How to Rent</a>
+            <a href="#how-to-rent" class="btn btn-outline-light">How to Apply</a>
         </div>
     </div>
 </section>
@@ -154,20 +153,21 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
 <section id="how-to-rent" class="section">
     <div class="container">
         <div class="text-center mb-5">
-            <h2 class="section-title">How to Rent with Us</h2>
-            <p class="section-subtitle">Simple steps to your new home</p>
+            <h2 class="section-title">Join Our Community</h2>
+            <p class="section-subtitle">Follow these simple steps to become a verified tenant or landlord</p>
         </div>
 
         <div class="row g-4 mb-5">
             <div class="col-md-6">
                 <div class="step-card">
                     <div class="step-number">1</div>
-                    <h4>Online Process</h4>
+                    <h4>For Tenants</h4>
                     <ol class="mt-4 ps-3">
+                        <li class="mb-3"><a href="?page=src/register" class=" text-decoration-none">Create account</a> or <a href="?page=src/login" class=" text-decoration-none">Sign in With Google</a></li>
                         <li class="mb-3">Browse our properties collection</li>
                         <li class="mb-3">Select your ideal property</li>
-                        <li class="mb-3">Click the rent button</li>
-                        <li>Wait for landlord approval</li>
+                        <li class="mb-3">Click the "Rent This Property" button</li>
+                        <li>Wait for landlord confirmation and approval</li>
                     </ol>
                 </div>
             </div>
@@ -175,12 +175,16 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
             <div class="col-md-6">
                 <div class="step-card">
                     <div class="step-number">2</div>
-                    <h4>Direct Contact</h4>
+                    <h4>For Landlord</h4>
                     <ol class="mt-4 ps-3">
-                        <li class="mb-3">Message the landlord/admin via email</li>
-                        <li class="mb-3">Express your interest in a property</li>
-                        <li>The admin will guide you through the rental process</li>
+                        <li class="mb-3"><a href="?page=src/register" class=" text-decoration-none">Create account</a> or <a href="?page=src/login" class=" text-decoration-none">Sign in With Google</a></li>
+                        <li class="mb-3">Go to <a href="?page=src/about" class=" text-decoration-none">about page</a></li>
+                        <li class="mb-3">Click <span class=" badge bg-primary">Submit Application</span> button</li>
+                        <li>Wait for approval from the system administrator</li>
                     </ol>
+                    <div class="alert alert-warning mt-3 mb-0">
+                        <strong>Note:</strong> Users currently registered as tenants are not eligible to become landlords.
+                    </div>
                 </div>
             </div>
         </div>
