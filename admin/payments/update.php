@@ -78,4 +78,3 @@ $payment = $result->fetch_assoc();
     <?php endif; ?>
 </div>
 
-<?php $conn->close(); ?>

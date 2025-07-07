@@ -56,7 +56,6 @@ if (isset($_GET['tenant_id'])) {
 }
 
 
-mysqli_close($conn);
 ?>
 
 <!-- Tenant Termination Confirmation -->

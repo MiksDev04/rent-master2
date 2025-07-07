@@ -167,5 +167,3 @@ if (isset($_GET['request_id'])) {
         <div class='text-center text-bg-warning'>No maintenance requests found</div>
     <?php endif; ?>
 </div>
-
-<?php $conn->close(); ?>

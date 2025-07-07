@@ -229,7 +229,7 @@ body {
 .btn-primary:hover {
   background-color: var(--dark-color);
   border-color: var(--dark-color);
-  transform: translateY(-2px);
+  /* transform: translateY(-2px); */
 }
 
 .btn-outline-light {
@@ -240,8 +240,9 @@ body {
 .btn-outline-light:hover {
   background-color: var(--light-color);
   color: var(--dark-color);
-  transform: translateY(-2px);
 }
+
+
 
 .section {
   padding: 5rem 0;

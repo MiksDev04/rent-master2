@@ -90,4 +90,3 @@ if (isset($_GET['property_id'])) {
     </div>
 </div>
 
-<?php mysqli_close($conn); ?>

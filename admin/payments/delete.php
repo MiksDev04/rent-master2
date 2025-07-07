@@ -90,4 +90,3 @@ $payment = $result->fetch_assoc();
         </div>
     <?php endif; ?>
 </div>
-<?php $conn->close(); ?>

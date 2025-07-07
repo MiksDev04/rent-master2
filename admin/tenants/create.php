@@ -58,7 +58,6 @@ while ($row = mysqli_fetch_assoc($usersResult)) {
     $users[] = $row;
 }
 
-mysqli_close($conn);
 ?>
 
 <div class="container px-lg-5 mb-3">

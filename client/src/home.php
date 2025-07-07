@@ -383,5 +383,3 @@ if ($result2 && mysqli_num_rows($result2) > 0) {
         });
     });
 </script>
-
-<?php $conn->close(); ?>

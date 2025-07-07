@@ -98,6 +98,3 @@ if (isset($_GET['payment_id'])) {
     <?php endif; ?>
 </div>
 
-
-
-<?php $conn->close(); ?>

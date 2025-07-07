@@ -110,10 +110,12 @@ $landlordId = $_SESSION['landlord_id'];
                 $page = 'dashboard/index';
             }
             include_once "$page.php";
+
+            include 'includes/chat.php';
             ?>
         </div>
     </main>
-
+    
 
     <script src="./js/script.js?v=<?php echo time(); ?>" defer></script>
     <!-- <script src="./js/script.js"></script> -->

@@ -430,4 +430,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_submit'])) {
         });
     });
 </script>
-<?php $conn->close(); ?>

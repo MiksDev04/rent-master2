@@ -107,5 +107,3 @@ $request = $result->fetch_assoc();
         </div>
     </div>
 </div>
-
-<?php $conn->close(); ?>

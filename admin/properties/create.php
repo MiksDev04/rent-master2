@@ -118,7 +118,6 @@ $result = mysqli_query($conn, "SELECT * FROM amenities");
 if (!$result) {
     die("Query failed: " . mysqli_error($conn));
 }
-mysqli_close($conn);
 ?>
 
 

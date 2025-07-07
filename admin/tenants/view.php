@@ -152,6 +152,5 @@ if (isset($_GET['tenant_id'])) {
         echo "<div class='text-center text-bg-warning'>Tenant not found</div>";
         exit;
     }
-    mysqli_close($conn);
 }
 ?>

@@ -59,7 +59,6 @@ while ($row = $result->fetch_assoc()) {
     $properties[] = $row;
 }
 
-$stmt->close();
 $result->free();
 ?>
 
@@ -425,7 +424,3 @@ $result->free();
 
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-
-<?php
-$conn->close();
-?>

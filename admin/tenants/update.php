@@ -77,7 +77,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
-mysqli_close($conn);
 ?>
 
 <div class="container px-lg-5 mb-3">

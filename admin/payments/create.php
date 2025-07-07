@@ -144,5 +144,3 @@ $tenants_result = $conn->query($tenants_sql);
             })
     })()
 </script>
-
-<?php $conn->close(); ?>

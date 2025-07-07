@@ -89,5 +89,3 @@ $property_details = $property_result->fetch_assoc();
         </div>
     </div>
 </div>
-
-<?php $conn->close(); ?>

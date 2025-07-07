@@ -155,7 +155,24 @@ if ($user_id) {
 
         <?php endif; ?>
     </div>
-
+    <!-- Team Members -->
+    <section class="container mb-5">
+        <h2 class="text-center fw-bold mb-4"><i class="fas fa-users me-2"></i>BSIT 2A Team</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fas fa-search me-2 text-primary"></i>Anareta, Yzabel - Tester</li>
+                    <li class="list-group-item"><i class="fas fa-pen-fancy me-2 text-primary"></i>Austria, Karl Matthew - Technical Writer</li>
+                    <li class="list-group-item"><i class="fas fa-code me-2 text-primary"></i>Caricot, Jericho - Front-end Developer</li>
+                    <li class="list-group-item"><i class="fas fa-crown me-2 text-primary"></i>Dela Rosa, Jan Patrick - Leader</li>
+                    <li class="list-group-item"><i class="fas fa-server me-2 text-primary"></i>Gapasan, Miko - Back-end Developer</li>
+                    <li class="list-group-item"><i class="fas fa-pen-fancy me-2 text-primary"></i>Miranda, Jasfer Ryle - Technical Writer</li>
+                    <li class="list-group-item"><i class="fas fa-pen-fancy me-2 text-primary"></i>Ogerio, Margarette - Technical Writer</li>
+                    <li class="list-group-item"><i class="fas fa-user-shield me-2 text-primary"></i>Pasigan, Chinee - Co-Leader</li>
+                </ul>
+            </div>
+        </div>
+    </section>
     <!-- Terms Modal -->
     <div class="modal fade" id="termsModal" tabindex="-1" aria-hidden="true" style="z-index: 111111;">
         <div class="modal-dialog modal-lg">

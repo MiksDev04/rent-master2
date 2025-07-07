@@ -12,7 +12,6 @@
 
 <body>
 
-
     <?php
     include('src/navbar.php'); // Include the navbar file
     $page = isset($_GET['page']) ? htmlspecialchars($_GET['page']) : 'src/home';
@@ -44,6 +43,9 @@
         echo "Page not found!";
     }
     include('src/footer.php'); // Include the footer file
+
+    include('includes/chat.php');
+
     ?>
 
     <!-- Bootstrap 4 JS and dependencies -->

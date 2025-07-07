@@ -142,7 +142,7 @@ foreach ($monthlyIncomeData as $data) {
 $maxIncome = max($incomeByMonth) ?: 1; // Avoid division by zero
 
 
-$stmt->close();
+// $stmt->close();
 $result->free();
 ?>
 
@@ -592,8 +592,3 @@ $result->free();
         }
     });
 </script>
-
-
-<?php
-$conn->close();
-?>
